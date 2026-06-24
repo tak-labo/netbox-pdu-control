@@ -8,7 +8,7 @@ https://docs.netbox.dev/en/stable/plugins/development/#pluginconfig-attributes
 """
 
 __author__ = "Takahiro Nagafuchi"
-__email__ = "github@tak-lab.com"
+__email__ = "8895617+tak-55@users.noreply.github.com"
 __version__ = "0.2.0"
 
 
@@ -20,7 +20,7 @@ class PduConfig(PluginConfig):
     verbose_name = "NetBox PDU Control"
     description = "NetBox plugin for Managed PDUs (Raritan / Ubiquiti)."
     author = "Takahiro Nagafuchi"
-    author_email = "github@tak-lab.com"
+    author_email = "8895617+tak-55@users.noreply.github.com"
     version = __version__
     base_url = "pdu"
     min_version = "4.5.0"

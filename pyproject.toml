@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 name =  "netbox-pdu-control"
 version = "0.2.0"
 authors = [
-    {name = "Takahiro Nagafuchi", email = "github@tak-lab.com"},
+    {name = "Takahiro Nagafuchi", email = "8895617+tak-55@users.noreply.github.com"},
 ]
 description = "NetBox plugin for Managed PDUs."
 readme = "README.md"
