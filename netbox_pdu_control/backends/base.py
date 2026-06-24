@@ -7,8 +7,9 @@ To add a new vendor:
 3. Add the vendor to choices.VendorChoices
 """
 
-import urllib3
 from abc import ABC, abstractmethod
+
+import urllib3
 
 
 class PDUClientError(Exception):
