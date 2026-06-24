@@ -40,7 +40,6 @@ class UniFiPDUClient(BasePDUClient):
         self.session = requests.Session()
         if not verify_ssl:
             self.session.verify = False
-            requests.packages.urllib3.disable_warnings()
 
         # Parse site from URL path (e.g. https://host/s/mysite → "mysite")
         m = re.search(r"/s/([^/]+)", base_url)

@@ -7,6 +7,7 @@ To add a new vendor:
 3. Add the vendor to choices.VendorChoices
 """
 
+import urllib3
 from abc import ABC, abstractmethod
 
 
@@ -29,6 +30,8 @@ class BasePDUClient(ABC):
         self.username = username
         self.password = password
         self.verify_ssl = verify_ssl
+        if not verify_ssl:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     #: Set to True in backends that implement get_all_metrics_prometheus().
     supports_prometheus_metrics: bool = False
