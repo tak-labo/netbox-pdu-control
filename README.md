@@ -2,7 +2,7 @@
 
 NetBox plugin for PDU management.
 
-![NetBox](https://img.shields.io/badge/NetBox-4.5-blue)
+![NetBox](https://img.shields.io/badge/NetBox-4.5%20%7C%204.6-blue)
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![PyPI](https://img.shields.io/pypi/v/netbox-pdu-control)
 ![License](https://img.shields.io/badge/License-Apache%202.0-green)
@@ -182,6 +182,7 @@ On an outlet or inlet detail page, click **Push Name to PDU** to write the name 
 
 | Plugin version | NetBox version |
 |---------------|----------------|
+| 0.3.0 | 4.5.0 – 4.6.xx |
 | 0.2.0 | 4.5.0 – 4.5.xx |
 
 ---
@@ -424,6 +425,8 @@ ManagedPDU 詳細ページで **Sync** をクリックすると、ハードウ�
 
 | プラグインバージョン | NetBox バージョン |
 |-------------------|-----------------|
+| 0.3.0 | 4.5.0 – 4.6.xx |
+| 0.2.0 | 4.5.0 – 4.5.xx |
 | 0.1.0 | 4.5.0 – 4.5.xx |
 
 ---

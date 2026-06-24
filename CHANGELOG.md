@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-06-25
+
+### Release Summary
+Compatibility release adding NetBox 4.6 support.
+
+### Added
+- NetBox 4.6.x support (`max_version` bumped to 4.6.99)
+
+### Changed
+- Package renamed from `netbox-pdu-plugin` to `netbox-pdu-control`
+
+### Fixed
+- Test configuration: set `DEBUG=False` to avoid django-debug-toolbar system check in NetBox 4.6
+
+---
+
 ## [0.2.0] - 2026-03-29
 
 ### Release Summary
