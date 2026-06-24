@@ -11,21 +11,31 @@ make ci                    # lint + Docker integration tests (mirrors CI)
 
 # Integration tests (requires netbox-docker running at ../netbox-docker)
 DC="docker compose -f ../netbox-docker/docker-compose.yml -f ../netbox-docker/docker-compose.override.yml"
-$DC exec netbox python manage.py test netbox_pdu_plugin.tests -v 2
+$DC exec netbox python manage.py test netbox_pdu_control.tests -v 2
 
 # Run a single test class
-$DC exec netbox python manage.py test netbox_pdu_plugin.tests.test_models.ManagedPDUModelTest -v 2
+$DC exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest -v 2
 
 # Unit tests only (no NetBox/DB required)
-uvx pytest netbox_pdu_plugin/tests/test_backends_raritan.py
-uvx pytest netbox_pdu_plugin/tests/test_backends_unifi.py
+uvx pytest netbox_pdu_control/tests/test_backends_raritan.py
+uvx pytest netbox_pdu_control/tests/test_backends_unifi.py
 
 # After code changes
+# NOTE: The plugin is baked into the image (not volume-mounted).
+# Changed files must be copied into the running container before restarting.
+SITE_PKG=/opt/netbox/venv/lib/python3.12/site-packages/netbox_pdu_control
+for f in forms.py views.py models.py filtersets.py; do
+  docker compose -f ../netbox-docker/docker-compose.yml -f ../netbox-docker/docker-compose.override.yml \
+    cp netbox_pdu_control/$f netbox:$SITE_PKG/$f
+done
 $DC exec netbox python manage.py migrate
 $DC restart netbox netbox-worker
 
+# To rebuild the image permanently (required after docker compose down -v)
+docker compose -f ../netbox-docker/docker-compose.yml -f ../netbox-docker/docker-compose.override.yml build
+
 # Generate migrations (model changes)
-$DC exec -e DEVELOPER=True netbox python manage.py makemigrations netbox_pdu_plugin
+$DC exec -e DEVELOPER=True netbox python manage.py makemigrations netbox_pdu_control
 ```
 
 ## Architecture
@@ -95,5 +105,5 @@ Strawberry/strawberry-django. Covers all three main models. `enums.py` mirrors `
 - **Integration tests** (`tests/test_models.py`, `test_api.py`, `test_views.py`, `test_graphql.py`): require running netbox-docker. Use `manage.py test`.
 - **Unit tests** (`tests/test_backends_raritan.py`, `tests/test_backends_unifi.py`): mock HTTP, no DB needed. Use `uvx pytest`.
 - View POST tests use superuser (`is_superuser=True`) to bypass NetBox `ObjectPermission` system.
-- Power control and push-name view tests mock the backend via `@patch('netbox_pdu_plugin.views.get_pdu_client')` — no Docker required.
+- Power control and push-name view tests mock the backend via `@patch('netbox_pdu_control.views.get_pdu_client')` — no Docker required.
 - `testing/configuration.py` is the Django settings file used during CI and Docker test runs.

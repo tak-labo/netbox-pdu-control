@@ -1,1 +1,1 @@
-"""Unit test package for netbox_pdu_plugin."""
+"""Unit test package for netbox_pdu_control."""

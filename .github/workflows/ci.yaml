@@ -28,7 +28,7 @@ jobs:
           pip install ruff==0.11.12
 
       - name: Run Ruff
-        run: ruff check netbox_pdu_plugin/
+        run: ruff check netbox_pdu_control/
 
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -119,7 +119,7 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
         run: |
-          python manage.py makemigrations --check netbox_pdu_plugin
+          python manage.py makemigrations --check netbox_pdu_control
 
       - name: Collect static files
         working-directory: netbox/netbox
@@ -145,4 +145,4 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
         run: |
-          python manage.py test netbox_pdu_plugin.tests --keepdb -v 2
+          python manage.py test netbox_pdu_control.tests --keepdb -v 2

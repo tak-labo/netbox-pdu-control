@@ -5,7 +5,7 @@ This configuration is used when running tests and should not be used in producti
 
 Usage:
     export NETBOX_CONFIGURATION=testing.configuration
-    python manage.py test netbox_pdu_plugin.tests
+    python manage.py test netbox_pdu_control.tests
 """
 
 import os
@@ -53,11 +53,11 @@ DEBUG = True
 
 # Plugin configuration
 PLUGINS = [
-    'netbox_pdu_plugin',
+    'netbox_pdu_control',
 ]
 
 PLUGINS_CONFIG = {
-    'netbox_pdu_plugin': {
+    'netbox_pdu_control': {
         # Add any plugin configuration needed for testing
     },
 }
@@ -84,7 +84,7 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': False,
         },
-        'netbox_pdu_plugin': {
+        'netbox_pdu_control': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },

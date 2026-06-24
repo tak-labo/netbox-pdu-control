@@ -35,7 +35,7 @@ default_columns = (
 )
 ```
 
-### 2. `templates/netbox_pdu_plugin/managedpdu.html` — Bulk form outside the table
+### 2. `templates/netbox_pdu_control/managedpdu.html` — Bulk form outside the table
 
 The Outlets table rendered by `{% render_table outlets_table %}` contains individual action buttons, each with its own `<form>` tag. Wrapping the whole table in another `<form>` would create nested forms (invalid HTML), breaking all individual buttons.
 
@@ -47,11 +47,11 @@ The Outlets table rendered by `{% render_table outlets_table %}` contains indivi
   <div class="table-responsive">
     {% render_table outlets_table %}
   </div>
-  {% if perms.netbox_pdu_plugin.change_managedpdu %}
+  {% if perms.netbox_pdu_control.change_managedpdu %}
   <div class="card-footer d-flex align-items-center gap-2">
     <span class="text-muted small me-2" id="outlet-selected-count">0 selected</span>
     <form id="bulk-power-form" method="post"
-          action="{% url 'plugins:netbox_pdu_plugin:pduoutlet_bulk_power' pk=object.pk %}">
+          action="{% url 'plugins:netbox_pdu_control:pduoutlet_bulk_power' pk=object.pk %}">
       {% csrf_token %}
       <div id="bulk-pk-inputs"></div>
       <button type="submit" name="action" value="on"  class="btn btn-success btn-sm">Power ON</button>
@@ -111,7 +111,7 @@ class PDUOutletBulkPowerView(View):
     def post(self, request, pk):
         managed_pdu = get_object_or_404(models.ManagedPDU, pk=pk)
 
-        if not request.user.has_perm("netbox_pdu_plugin.change_managedpdu"):
+        if not request.user.has_perm("netbox_pdu_control.change_managedpdu"):
             messages.error(request, "Permission denied.")
             return redirect(managed_pdu.get_absolute_url())
 

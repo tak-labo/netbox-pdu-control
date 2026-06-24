@@ -1,7 +1,7 @@
 site_name: NetBox PDU Plugin
-site_url: https://tak-labo.github.io/netbox-pdu-plugin
-repo_url: https://github.com/tak-labo/netbox-pdu-plugin
-repo_name: tak-labo/netbox-pdu-plugin
+site_url: https://tak-labo.github.io/netbox-pdu-control
+repo_url: https://github.com/tak-labo/netbox-pdu-control
+repo_name: tak-labo/netbox-pdu-control
 #strict: true
 nav:
   - Home: index.md
@@ -62,7 +62,7 @@ plugins:
   - search:
       lang: en
 watch:
-  - netbox_pdu_plugin
+  - netbox_pdu_control
 extra:
   social:
     - icon: fontawesome/brands/twitter
@@ -74,7 +74,7 @@ extra:
       link: https://github.com/netbox-community/cookiecutter-netbox-plugin
       name: Facebook
     - icon: fontawesome/brands/github
-      link: https://github.com/tak-labo/netbox-pdu-plugin
+      link: https://github.com/tak-labo/netbox-pdu-control
       name: Github
     - icon: material/email
       link: "mailto:github@tak-lab.com"

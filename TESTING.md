@@ -4,10 +4,10 @@ This guide explains how to write and run tests for NetBox PDU Plugin.
 
 ## Test Structure
 
-Tests are organized in the `netbox_pdu_plugin/tests/` directory:
+Tests are organized in the `netbox_pdu_control/tests/` directory:
 
 ```
-netbox_pdu_plugin/
+netbox_pdu_control/
 ├── tests/
 │   ├── __init__.py
 │   ├── test_models.py    # Model tests
@@ -27,13 +27,13 @@ This plugin provides standalone base test classes that encapsulate common testin
 Base class for all tests with user management and permissions.
 
 ```python
-from netbox_pdu_plugin.testing import PluginTestCase
+from netbox_pdu_control.testing import PluginTestCase
 
 class MyTestCase(PluginTestCase):
     def test_something(self):
         # self.user is automatically created
         # self.client is logged in
-        self.add_permissions('netbox_pdu_plugin.view_pdu')
+        self.add_permissions('netbox_pdu_control.view_pdu')
         # ... test code ...
 ```
 
@@ -48,7 +48,7 @@ class MyTestCase(PluginTestCase):
 For testing models with instance comparison utilities.
 
 ```python
-from netbox_pdu_plugin.testing import PluginModelTestCase
+from netbox_pdu_control.testing import PluginModelTestCase
 
 class MyModelTestCase(PluginModelTestCase):
     def test_model(self):
@@ -75,13 +75,13 @@ class MyModelTestCase(PluginModelTestCase):
 For testing REST API endpoints.
 
 ```python
-from netbox_pdu_plugin.testing import PluginAPITestCase
+from netbox_pdu_control.testing import PluginAPITestCase
 
 class MyAPITestCase(PluginAPITestCase):
     def setUp(self):
         super().setUp()
-        self.list_url_name = 'plugins-api:netbox_pdu_plugin-api:mymodel-list'
-        self.detail_url_name = 'plugins-api:netbox_pdu_plugin-api:mymodel-detail'
+        self.list_url_name = 'plugins-api:netbox_pdu_control-api:mymodel-list'
+        self.detail_url_name = 'plugins-api:netbox_pdu_control-api:mymodel-detail'
 
     def test_list(self):
         url = self._get_list_url()
@@ -99,12 +99,12 @@ class MyAPITestCase(PluginAPITestCase):
 For testing web views and forms.
 
 ```python
-from netbox_pdu_plugin.testing import PluginViewTestCase
+from netbox_pdu_control.testing import PluginViewTestCase
 
 class MyViewTestCase(PluginViewTestCase):
     def setUp(self):
         super().setUp()
-        self.base_url = 'plugins:netbox_pdu_plugin:mymodel'
+        self.base_url = 'plugins:netbox_pdu_control:mymodel'
 
     def test_create(self):
         url = self._get_url('add')
@@ -123,7 +123,7 @@ class MyViewTestCase(PluginViewTestCase):
 For testing GraphQL queries.
 
 ```python
-from netbox_pdu_plugin.testing import PluginGraphQLTestCase
+from netbox_pdu_control.testing import PluginGraphQLTestCase
 
 class MyGraphQLTestCase(PluginGraphQLTestCase):
     def test_query(self):
@@ -141,10 +141,10 @@ class MyGraphQLTestCase(PluginGraphQLTestCase):
 
 ## Test Utilities
 
-The `netbox_pdu_plugin.testing.utils` module provides helpful utilities:
+The `netbox_pdu_control.testing.utils` module provides helpful utilities:
 
 ```python
-from netbox_pdu_plugin.testing.utils import (
+from netbox_pdu_control.testing.utils import (
     get_random_string,      # Generate random test data
     create_test_user,       # Create users with permissions
     post_data,              # Convert dict to form POST format
@@ -157,7 +157,7 @@ from netbox_pdu_plugin.testing.utils import (
 
 # Example usage
 name = get_random_string(20)
-user = create_test_user(permissions=['netbox_pdu_plugin.view_pdu'])
+user = create_test_user(permissions=['netbox_pdu_control.view_pdu'])
 tags = create_tags(['important', 'test'])
 
 with disable_warnings('django.request'):
@@ -173,25 +173,25 @@ with disable_warnings('django.request'):
 cd /path/to/netbox/netbox
 
 # Run all plugin tests
-python manage.py test netbox_pdu_plugin.tests
+python manage.py test netbox_pdu_control.tests
 
 # Run specific test file
-python manage.py test netbox_pdu_plugin.tests.test_models
+python manage.py test netbox_pdu_control.tests.test_models
 
 # Run specific test class
-python manage.py test netbox_pdu_plugin.tests.test_models.PduTestCase
+python manage.py test netbox_pdu_control.tests.test_models.PduTestCase
 
 # Run specific test method
-python manage.py test netbox_pdu_plugin.tests.test_models.PduTestCase.test_create
+python manage.py test netbox_pdu_control.tests.test_models.PduTestCase.test_create
 
 # Run with verbose output
-python manage.py test netbox_pdu_plugin.tests -v 2
+python manage.py test netbox_pdu_control.tests -v 2
 
 # Run in parallel (faster)
-python manage.py test netbox_pdu_plugin.tests --parallel
+python manage.py test netbox_pdu_control.tests --parallel
 
 # Keep database between runs (faster during development)
-python manage.py test netbox_pdu_plugin.tests --keepdb
+python manage.py test netbox_pdu_control.tests --keepdb
 ```
 
 ### With Docker Compose (recommended for contributors)
@@ -201,10 +201,10 @@ python manage.py test netbox_pdu_plugin.tests --keepdb
 docker-compose up -d
 
 # Run tests
-docker-compose exec netbox python manage.py test netbox_pdu_plugin.tests
+docker-compose exec netbox python manage.py test netbox_pdu_control.tests
 
 # Run specific tests
-docker-compose exec netbox python manage.py test netbox_pdu_plugin.tests.test_api
+docker-compose exec netbox python manage.py test netbox_pdu_control.tests.test_api
 
 # Stop services
 docker-compose down
@@ -260,7 +260,7 @@ def test_view_without_permission(self):
 
 def test_view_with_permission(self):
     """Test view with proper permission."""
-    self.add_permissions('netbox_pdu_plugin.view_pdu')
+    self.add_permissions('netbox_pdu_control.view_pdu')
     url = reverse('...')
     response = self.client.get(url)
     self.assertHttpStatus(response, 200)
@@ -290,7 +290,7 @@ def test_multiple_scenarios(self):
 ```python
 def test_form_validation(self):
     """Test form validation."""
-    url = reverse('netbox_pdu_plugin:mymodel_add')
+    url = reverse('netbox_pdu_control:mymodel_add')
 
     # Test with invalid data
     bad_data = self.post_data({'name': ''})
@@ -370,7 +370,7 @@ Tests must pass before PRs can be merged.
 
 ## Troubleshooting
 
-**"No module named 'netbox_pdu_plugin'"**
+**"No module named 'netbox_pdu_control'"**
 - Ensure plugin is installed: `pip install -e .`
 - Ensure plugin is in PLUGINS list in configuration.py
 

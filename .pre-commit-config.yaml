@@ -8,10 +8,10 @@ repos:
     hooks:
     -   id: ruff
         name: "Ruff linter"
-        args: [--fix, netbox_pdu_plugin/]
+        args: [--fix, netbox_pdu_control/]
     -   id: ruff-format
         name: "Ruff formatter"
-        args: [netbox_pdu_plugin/]
+        args: [netbox_pdu_control/]
 
 -   repo: https://github.com/mgedmin/check-manifest
     rev: "0.51"
@@ -32,7 +32,7 @@ repos:
     -   id: django-tests
         name: "Run Django integration tests"
         description: "Run plugin tests via Docker before push"
-        entry: docker compose -f ../netbox-docker/docker-compose.yml -f ../netbox-docker/docker-compose.override.yml exec -T netbox python manage.py test netbox_pdu_plugin.tests -v 2
+        entry: docker compose -f ../netbox-docker/docker-compose.yml -f ../netbox-docker/docker-compose.override.yml exec -T netbox python manage.py test netbox_pdu_control.tests -v 2
         language: system
         pass_filenames: false
         stages: [pre-push]
