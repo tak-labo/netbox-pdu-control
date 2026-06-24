@@ -51,6 +51,9 @@ ALLOWED_HOSTS = ["*"]
 # Enable debug mode for testing
 DEBUG = True
 
+# Suppress django-debug-toolbar system check in NetBox 4.6+ (toolbar is not needed for tests)
+DEBUG_TOOLBAR_CONFIG = {"IS_RUNNING_TESTS": False}
+
 # Plugin configuration
 PLUGINS = [
     "netbox_pdu_control",
