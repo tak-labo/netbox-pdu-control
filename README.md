@@ -1,4 +1,4 @@
-# NetBox PDU Plugin
+# NetBox PDU Control
 
 NetBox plugin for PDU management.
 
@@ -247,7 +247,7 @@ See [NOTICE](NOTICE) for attribution details.
 
 ---
 
-# NetBox PDU プラグイン
+# NetBox PDU Control
 
 [NetBox](https://github.com/netbox-community/netbox) 用プラグイン。Managed PDUを NetBox の Device レコードに紐付け、Vendor API 経由でアウトレット・インレットの監視と電源制御を行います。
 
