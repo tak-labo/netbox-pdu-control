@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('netbox_pdu_control', '0001_initial'),
+        ("netbox_pdu_control", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='managedpdu',
-            name='last_metrics_fetched',
+            model_name="managedpdu",
+            name="last_metrics_fetched",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

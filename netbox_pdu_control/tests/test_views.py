@@ -391,9 +391,7 @@ class PDUOutletBulkPowerViewTest(PluginViewTestCase):
         mock_client = MagicMock()
         mock_get_client.return_value = mock_client
 
-        response = self.client.post(
-            self._url(), {"action": "on", "pk": [self.outlet1.pk, self.outlet2.pk]}
-        )
+        response = self.client.post(self._url(), {"action": "on", "pk": [self.outlet1.pk, self.outlet2.pk]})
 
         self.assertHttpStatus(response, 302)
         mock_client.set_outlet_power_state.assert_any_call(0, "on")
@@ -410,9 +408,7 @@ class PDUOutletBulkPowerViewTest(PluginViewTestCase):
         mock_client = MagicMock()
         mock_get_client.return_value = mock_client
 
-        response = self.client.post(
-            self._url(), {"action": "off", "pk": [self.outlet1.pk, self.outlet2.pk]}
-        )
+        response = self.client.post(self._url(), {"action": "off", "pk": [self.outlet1.pk, self.outlet2.pk]})
 
         self.assertHttpStatus(response, 302)
         self.outlet1.refresh_from_db()
@@ -437,9 +433,7 @@ class PDUOutletBulkPowerViewTest(PluginViewTestCase):
         mock_client = MagicMock()
         mock_get_client.return_value = mock_client
 
-        response = self.client.post(
-            self._url(), {"action": "cycle", "pk": [self.outlet1.pk]}
-        )
+        response = self.client.post(self._url(), {"action": "cycle", "pk": [self.outlet1.pk]})
 
         self.assertHttpStatus(response, 302)
         mock_client.set_outlet_power_state.assert_not_called()
@@ -468,9 +462,7 @@ class PDUOutletBulkPowerViewTest(PluginViewTestCase):
             None,
         ]
 
-        response = self.client.post(
-            self._url(), {"action": "on", "pk": [self.outlet1.pk, self.outlet2.pk]}
-        )
+        response = self.client.post(self._url(), {"action": "on", "pk": [self.outlet1.pk, self.outlet2.pk]})
 
         self.assertHttpStatus(response, 302)
         self.assertEqual(mock_client.set_outlet_power_state.call_count, 2)

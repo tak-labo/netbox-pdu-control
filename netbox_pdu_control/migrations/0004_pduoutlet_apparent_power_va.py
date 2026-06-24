@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("netbox_pdu_control", "0003_pduinlet_poleline_l1_current_a_and_more"),
     ]

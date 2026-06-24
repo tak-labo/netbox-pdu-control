@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("netbox_pdu_control", "0004_pduoutlet_apparent_power_va"),
     ]

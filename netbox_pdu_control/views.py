@@ -23,7 +23,6 @@ from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
 logger = logging.getLogger(__name__)
 
 
-
 #
 # ManagedPDU views
 #
@@ -150,6 +149,7 @@ class ManagedPDUGetMetricsView(View):
             )
         except PDUClientError as e:
             from .choices import SyncStatusChoices
+
             managed_pdu.metrics_status = SyncStatusChoices.FAILED
             managed_pdu.save(update_fields=["metrics_status"])
             messages.error(request, f"Metrics fetch error: {e}")

@@ -31,6 +31,7 @@ class PduConfig(PluginConfig):
     def ready(self):
         super().ready()
         from . import jobs  # noqa: F401 — registers @system_job if metrics_poll_interval is set
+
         self._cleanup_stuck_jobs()
 
     def _cleanup_stuck_jobs(self):

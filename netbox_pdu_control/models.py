@@ -13,7 +13,16 @@ class ManagedPDU(NetBoxModel):
     and holds the connection details for the PDU management API.
     """
 
-    clone_fields = ["vendor", "api_url", "api_username", "api_password", "verify_ssl", "sync_enabled", "metrics_enabled", "comments"]
+    clone_fields = [
+        "vendor",
+        "api_url",
+        "api_username",
+        "api_password",
+        "verify_ssl",
+        "sync_enabled",
+        "metrics_enabled",
+        "comments",
+    ]
 
     device = models.OneToOneField(
         to=Device,
