@@ -68,6 +68,17 @@ Add to `/opt/netbox/netbox/netbox/configuration.py`:
 
 ```python
 PLUGINS = ["netbox_pdu_control"]
+
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # Interval in minutes for automatic Prometheus metrics fetch.
+        # Set to 0 or remove to disable periodic fetching.
+        "metrics_poll_interval": 5,
+        # Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).
+        # Set to 0 or remove to disable periodic syncing.
+        "sync_poll_interval": 60,
+    }
+}
 ```
 
 **3. Run migrations and restart**
@@ -127,6 +138,17 @@ Add to `configuration/plugins.py`:
 
 ```python
 PLUGINS = ["netbox_pdu_control"]
+
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # Interval in minutes for automatic Prometheus metrics fetch.
+        # Set to 0 or remove to disable periodic fetching.
+        "metrics_poll_interval": 5,
+        # Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).
+        # Set to 0 or remove to disable periodic syncing.
+        "sync_poll_interval": 60,
+    }
+}
 ```
 
 **5. Build, start, and migrate**
@@ -311,6 +333,17 @@ pip install netbox-pdu-control
 
 ```python
 PLUGINS = ["netbox_pdu_control"]
+
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # Prometheus メトリクスを自動取得する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "metrics_poll_interval": 5,
+        # PDU 全体（ハードウェア情報・アウトレット・インレット）を自動同期する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "sync_poll_interval": 60,
+    }
+}
 ```
 
 **3. マイグレーション実行と再起動**
@@ -370,6 +403,17 @@ services:
 
 ```python
 PLUGINS = ["netbox_pdu_control"]
+
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # Prometheus メトリクスを自動取得する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "metrics_poll_interval": 5,
+        # PDU 全体（ハードウェア情報・アウトレット・インレット）を自動同期する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "sync_poll_interval": 60,
+    }
+}
 ```
 
 **5. ビルド・起動・マイグレーション**
