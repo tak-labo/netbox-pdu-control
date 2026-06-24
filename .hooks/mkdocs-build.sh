@@ -6,7 +6,7 @@ echo "Running mkdocs build..."
 TEMP_SITE_DIR=$(mktemp -d)
 
 # Run mkdocs build into temp dir
-if mkdocs build --site-dir "$TEMP_SITE_DIR" --strict; then
+if uvx --with mkdocs-material --with mkdocs-include-markdown-plugin mkdocs build --site-dir "$TEMP_SITE_DIR" --strict; then
  echo "Build successful."
 else
  echo "Build failed." >&2
