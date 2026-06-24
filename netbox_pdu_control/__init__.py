@@ -9,7 +9,7 @@ https://docs.netbox.dev/en/stable/plugins/development/#pluginconfig-attributes
 
 __author__ = "tak-55"
 __email__ = "8895617+tak-55@users.noreply.github.com"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 
 from netbox.plugins import PluginConfig
@@ -24,7 +24,7 @@ class PduConfig(PluginConfig):
     version = __version__
     base_url = "pdu"
     min_version = "4.5.0"
-    max_version = "4.5.99"
+    max_version = "4.6.99"
     graphql_schema = "graphql.schema"
     queues = ["default"]
 

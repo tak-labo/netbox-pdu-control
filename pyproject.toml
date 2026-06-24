@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name =  "netbox-pdu-control"
-version = "0.2.0"
+version = "0.3.0"
 authors = [
     {name = "tak-55", email = "8895617+tak-55@users.noreply.github.com"},
 ]
@@ -21,6 +21,7 @@ classifiers=[
     'Development Status :: 3 - Alpha',
     'Framework :: Django',
     'Framework :: Django :: 5.1',
+    'Framework :: Django :: 6.0',
     'Intended Audience :: Developers',
     'Intended Audience :: System Administrators',
     'Intended Audience :: Telecommunications Industry',
