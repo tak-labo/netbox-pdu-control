@@ -168,8 +168,7 @@ class ManagedPDU(NetBoxModel):
         blank=True,
         verbose_name=_("Grafana Panel URL"),
         help_text=_(
-            "Grafana embed URL without var-pduname. "
-            "e.g. https://grafana:3000/d-solo/UID/slug?orgId=1&panelId=2"
+            "Grafana embed URL without var-pduname. e.g. https://grafana:3000/d-solo/UID/slug?orgId=1&panelId=2"
         ),
     )
     comments = models.TextField(

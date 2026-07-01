@@ -1,9 +1,7 @@
-import django.core.validators
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("netbox_pdu_control", "0007_managedpdu_sync_metrics_enabled"),
     ]
