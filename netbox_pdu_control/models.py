@@ -163,6 +163,14 @@ class ManagedPDU(NetBoxModel):
         verbose_name=_("PDU Name"),
         help_text=_("Device name as configured on the PDU hardware"),
     )
+    grafana_panel_base_url = models.URLField(
+        max_length=1000,
+        blank=True,
+        verbose_name=_("Grafana Panel URL"),
+        help_text=_(
+            "Grafana embed URL without var-pduname. e.g. https://grafana:3000/d-solo/UID/slug?orgId=1&panelId=2"
+        ),
+    )
     comments = models.TextField(
         blank=True,
     )
