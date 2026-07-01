@@ -188,6 +188,21 @@
       {% include 'inc/panels/comments.html' %}
     </div>
   </div>
+  {% if object.grafana_panel_base_url and object.pdu_name %}
+  <div class="row">
+    <div class="col col-md-12">
+      <div class="card">
+        <h5 class="card-header">Grafana</h5>
+        <div class="card-body p-0">
+          <iframe
+            src="{{ object.grafana_panel_base_url }}&var-pduname={{ object.pdu_name }}&refresh=30s"
+            width="100%" height="400" frameborder="0">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div class="row">
     <div class="col col-md-12">
       <div class="card">
