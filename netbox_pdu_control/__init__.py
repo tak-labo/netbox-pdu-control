@@ -7,10 +7,11 @@ For a complete list of PluginConfig attributes, see:
 https://docs.netbox.dev/en/stable/plugins/development/#pluginconfig-attributes
 """
 
+from importlib.metadata import version
+
 __author__ = "Takahiro Nagafuchi"
 __email__ = "8895617+tak-55@users.noreply.github.com"
-__version__ = "0.3.2"
-
+__version__ = version("netbox-pdu-control")
 
 from netbox.plugins import PluginConfig
 
