@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name =  "netbox-pdu-control"
-version = "0.3.3"
+version = "0.3.4"
 authors = [
     {name = "Takahiro Nagafuchi", email = "8895617+tak-55@users.noreply.github.com"},
 ]
