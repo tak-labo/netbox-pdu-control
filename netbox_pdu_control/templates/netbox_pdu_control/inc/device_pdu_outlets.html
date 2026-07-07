@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="card">
   <h2 class="card-header">PDU Outlets</h2>
   <table class="table table-hover">
@@ -19,22 +20,22 @@
         <td>{{ outlet.managed_pdu.device.name }}</td>
         <td><a href="{{ outlet.get_absolute_url }}">Outlet {{ outlet.outlet_number }}{% if outlet.outlet_name %} — {{ outlet.outlet_name }}{% endif %}</a></td>
         <td><span class="badge bg-{{ outlet.get_status_color }}">{{ outlet.get_status_display }}</span></td>
-        <td class="text-end">{% if outlet.power_w is not None %}{{ outlet.power_w|floatformat:1 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if outlet.power_w is not None %}{{ outlet.power_w|floatformat:1|intcomma }}{% else %}—{% endif %}</td>
         <td class="text-end">{% if outlet.current_a is not None %}{{ outlet.current_a|floatformat:2 }}{% else %}—{% endif %}</td>
         <td class="text-end">{% if outlet.voltage_v is not None %}{{ outlet.voltage_v|floatformat:1 }}{% else %}—{% endif %}</td>
         <td class="text-end">{% if outlet.power_factor is not None %}{{ outlet.power_factor|floatformat:2 }}{% else %}—{% endif %}</td>
-        <td class="text-end">{% if outlet.energy_wh is not None %}{{ outlet.energy_wh|floatformat:0 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if outlet.energy_wh is not None %}{{ outlet.energy_wh|floatformat:0|intcomma }}{% else %}—{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>
     <tfoot>
       <tr class="table-secondary fw-bold">
         <td colspan="3">Total</td>
-        <td class="text-end">{% if total_power_w is not None %}{{ total_power_w|floatformat:1 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if total_power_w is not None %}{{ total_power_w|floatformat:1|intcomma }}{% else %}—{% endif %}</td>
         <td class="text-end">{% if total_current_a is not None %}{{ total_current_a|floatformat:2 }}{% else %}—{% endif %}</td>
         <td class="text-end">—</td>
         <td class="text-end">—</td>
-        <td class="text-end">{% if total_energy_wh is not None %}{{ total_energy_wh|floatformat:0 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if total_energy_wh is not None %}{{ total_energy_wh|floatformat:0|intcomma }}{% else %}—{% endif %}</td>
       </tr>
     </tfoot>
   </table>
