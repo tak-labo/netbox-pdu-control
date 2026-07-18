@@ -204,8 +204,8 @@ On an outlet or inlet detail page, click **Push Name to PDU** to write the name 
 
 | Plugin version | NetBox version |
 |---------------|----------------|
-| 0.3.0 | 4.5.0 – 4.6.xx |
-| 0.2.0 | 4.5.0 – 4.5.xx |
+| 0.3.0 – 0.3.6 | 4.5.0 – 4.6.xx |
+| 0.1.0 – 0.2.0 | 4.5.0 – 4.5.xx |
 
 ---
 

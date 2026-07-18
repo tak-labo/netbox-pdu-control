@@ -13,6 +13,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.5] - 2026-07-07
+
+### Changed
+- Device PDU Outlets card: W and Wh columns now use comma-separated
+  thousands formatting (`intcomma`) for readability
+
+---
+
+## [0.3.4] - 2026-07-06
+
+### Added
+- Device "PDU Outlets" card: table now shows Status, W, A, V, PF, and Wh
+  columns per outlet, plus a totals row (power, current, energy) and a
+  "Last updated" timestamp footer
+
+---
+
+## [0.3.3] - 2026-07-02
+
+### Fixed
+- `__version__` in `netbox_pdu_control/__init__.py` had drifted out of sync
+  with `pyproject.toml`; corrected to 0.3.2 as an interim fix
+
+### Changed
+- `__version__` is now derived from package metadata via
+  `importlib.metadata.version("netbox-pdu-control")` for a single source of
+  truth, preventing future version-drift issues
+
+---
+
+## [0.3.2] - 2026-07-01
+
+### Added
+- `grafana_panel_base_url` field on ManagedPDU; when set alongside
+  `pdu_name`, an embedded Grafana panel iframe is rendered on the detail
+  page, filtered by `var-pduname`
+
+### Changed
+- Corrected author name in `pyproject.toml`
+
+---
+
 ## [0.3.1] - 2026-06-25
 
 ### Fixed
