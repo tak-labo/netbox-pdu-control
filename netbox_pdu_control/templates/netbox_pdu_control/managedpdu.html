@@ -2,6 +2,14 @@
 {% load helpers %}
 {% load render_table from django_tables2 %}
 
+{% block extra_controls %}
+  {% if object.vendor == "raritan" and object.api_url %}
+    <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary">
+      <i class="mdi mdi-open-in-new"></i> PDU WebGUI
+    </a>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   <div class="row">
     <div class="col col-md-6">
