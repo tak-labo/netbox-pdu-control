@@ -67,6 +67,17 @@ backends/
 
 To add a vendor: implement `BasePDUClient` → register in `_VENDOR_BACKENDS` → add to `VendorChoices` → migrate.
 
+### Credentials (`credentials.py`)
+
+`get_pdu_client(managed_pdu, request=None)` resolves credentials via `credentials.get_credential()`, mirroring the pattern in `netbox-bmc`:
+
+1. **netbox-secrets** (if installed) — `Secret` with role `pdu-credentials` assigned to the Device. `Secret.name` = username, `Secret.plaintext` = password. Decrypted via the request's session key (web views) or a service account's private key (background/system jobs, `request=None`).
+2. **Plaintext fallback** — `ManagedPDU.api_username`/`api_password`, used when netbox-secrets is unavailable, has no matching secret, or decryption fails.
+
+All django/netbox-secrets imports in `credentials.py` are function-local (not module-level), so `backends/__init__.py` stays importable in isolated unit tests that run without Django installed (`test_backends_raritan.py`, `test_backends_unifi.py`, `test_factory.py`, `test_credentials.py`). Do not move these imports to module scope.
+
+Every view that calls `get_pdu_client()` must pass `request=request`; system jobs and RQ jobs call it with no `request` (service account path).
+
 ### Views (`views.py`)
 
 Uses NetBox generics (`netbox.views.generic`) and `@register_model_view`. Key non-CRUD views:

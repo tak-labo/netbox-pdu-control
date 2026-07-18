@@ -65,6 +65,7 @@ graph TB
 - `views.py` は `get_pdu_client()` 経由でのみベンダー API にアクセスし、ベンダー固有コードを持たない([CLAUDE.md](../CLAUDE.md) の規約通り)。
 - 電源サイクル(Power Cycle)のみ `django_rq` でバックグラウンドジョブ化し、5 秒後に状態を再取得する(PDU 側の反映ラグを吸収)。
 - 定期実行(`PDUSyncJob` / `PDUGetMetricsJob`)は NetBox 標準の `system_job` デコレータで登録され、`PLUGINS_CONFIG` の `sync_poll_interval` / `metrics_poll_interval` が 0 より大きい場合のみ有効化される。
+- `get_pdu_client()` は認証情報を直接 `ManagedPDU` から読まず、`credentials.get_credential()` 経由で解決する(netbox-secrets 優先・平文フォールバック、詳細は[§9](#9-セキュリティ上の考慮事項))。
 
 ---
 
@@ -411,8 +412,14 @@ NetBox標準の `get_model_urls()` によるCRUD URL(一覧・詳細・作成・
 
 ## 9. セキュリティ上の考慮事項
 
-- `ManagedPDU.api_password` は **平文で DB に保存**される(NetBox標準の暗号化フィールドは未使用)。
+- 認証情報は `credentials.py` の `get_credential()` が解決する。優先順位は次の通り(`netbox-bmc` プラグインの方式を踏襲):
+  1. **netbox-secrets**(導入済みの場合)— role `pdu-credentials` を持ち Device に紐づけられた `Secret`。`Secret.name`=ユーザー名、`Secret.plaintext`=パスワード(RSA暗号化)。Web View 経由ならリクエストのセッションキーで、バックグラウンドジョブ(system job / RQ)なら `PLUGINS_CONFIG["netbox_pdu_control"]["service_account"]` のサービスアカウント秘密鍵で復号する。
+  2. **平文フォールバック** — netbox-secrets 未導入・該当Secretなし・復号失敗時は `ManagedPDU.api_username`/`api_password` にフォールバックする。
+  復号に失敗した場合はエラーログを残した上でフォールバックする(無音でのフォールバックは運用上気付きにくいため)。
+- `get_pdu_client(managed_pdu, request=None)` は `request` を `get_credential()` に転送する。View 層からは常に `request` を渡し、System Job/RQ ジョブからは `request=None`(サービスアカウント経路)で呼び出す。
+- `ManagedPDU.api_password`(フォールバックフィールド)は **平文で DB に保存**される(NetBox標準の暗号化フィールドは未使用)。
 - REST APIシリアライザ・ログ出力のいずれにも `api_password` を含めないこと(`CLAUDE.md` にも明記された規約)。
+- 電源サイクル用のRQジョブ(`jobs.update_outlet_status`)は、以前は `managed_pdu.api_password` を平文でジョブ引数としてRedisに渡していたが、実装はその引数を使わず `outlet.managed_pdu` から再取得していたため、この不要な平文受け渡しは削除済み。
 - 全ての制御系View(sync / power / push-name)は `request.user.has_perm("netbox_pdu_control.change_managedpdu")` を個別にチェックしてから処理する。
 - `verify_ssl=False` の場合、両バックエンドで `urllib3.disable_warnings(InsecureRequestWarning)` を呼び出し、自己署名証明書運用時の警告ログ氾濫を抑止(意図的な設計)。
 

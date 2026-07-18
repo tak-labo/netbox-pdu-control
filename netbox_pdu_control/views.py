@@ -96,7 +96,9 @@ class ManagedPDUSyncView(View):
             return redirect(managed_pdu.get_absolute_url())
 
         try:
-            outlet_created, outlet_updated, inlet_created, inlet_updated = sync_managed_pdu(managed_pdu)
+            outlet_created, outlet_updated, inlet_created, inlet_updated = sync_managed_pdu(
+                managed_pdu, request=request
+            )
             messages.success(
                 request,
                 f"PDU sync complete: outlets {outlet_created} created, {outlet_updated} updated; "
@@ -135,7 +137,7 @@ class ManagedPDUGetMetricsView(View):
             return redirect(managed_pdu.get_absolute_url())
 
         try:
-            outlet_updated, inlet_updated, ocp_updated = fetch_pdu_metrics(managed_pdu)
+            outlet_updated, inlet_updated, ocp_updated = fetch_pdu_metrics(managed_pdu, request=request)
             messages.success(
                 request,
                 f"Metrics updated: {outlet_updated} outlets, {inlet_updated} inlets, {ocp_updated} OCPs.",
@@ -175,7 +177,7 @@ class PDUOutletSyncView(View):
             messages.error(request, _("You do not have permission to sync this PDU."))
             return redirect(outlet.get_absolute_url())
 
-        client = get_pdu_client(managed_pdu)
+        client = get_pdu_client(managed_pdu, request=request)
 
         try:
             outlet_data = client.get_single_outlet_data(outlet.outlet_number - 1)
@@ -215,7 +217,7 @@ class PDUOutletView(generic.ObjectView):
     def get_extra_context(self, request, instance):
         thresholds = []
         try:
-            client = get_pdu_client(instance.managed_pdu)
+            client = get_pdu_client(instance.managed_pdu, request=request)
             thresholds = client.get_outlet_thresholds(instance.outlet_number - 1)
         except PDUClientError:
             pass
@@ -243,7 +245,7 @@ class PDUOutletPowerView(View):
             messages.error(request, _("You do not have permission to control this outlet."))
             return redirect(request.META.get("HTTP_REFERER") or outlet.get_absolute_url())
 
-        client = get_pdu_client(managed_pdu)
+        client = get_pdu_client(managed_pdu, request=request)
 
         try:
             outlet_index = outlet.outlet_number - 1
@@ -257,10 +259,6 @@ class PDUOutletPowerView(View):
                     timedelta(seconds=5),
                     jobs.update_outlet_status,
                     outlet.pk,
-                    managed_pdu.api_url,
-                    managed_pdu.api_username,
-                    managed_pdu.api_password,
-                    managed_pdu.verify_ssl,
                     outlet_index,
                 )
                 messages.success(
@@ -327,7 +325,7 @@ class PDUOutletBulkPowerView(View):
             return redirect(managed_pdu.get_absolute_url())
 
         outlets = models.PDUOutlet.objects.filter(pk__in=outlet_pks, managed_pdu=managed_pdu)
-        client = get_pdu_client(managed_pdu)
+        client = get_pdu_client(managed_pdu, request=request)
         success, failed = 0, 0
 
         for outlet in outlets:
@@ -374,7 +372,7 @@ class PDUOutletPushNameView(View):
             messages.error(request, _("You do not have permission to update this PDU."))
             return redirect(request.META.get("HTTP_REFERER") or outlet.get_absolute_url())
 
-        client = get_pdu_client(outlet.managed_pdu)
+        client = get_pdu_client(outlet.managed_pdu, request=request)
         push_succeeded = False
         try:
             client.set_outlet_name(outlet.outlet_number - 1, outlet.outlet_name)
@@ -418,7 +416,7 @@ class PDUInletSyncView(View):
             messages.error(request, _("You do not have permission to sync this PDU."))
             return redirect(inlet.get_absolute_url())
 
-        client = get_pdu_client(managed_pdu)
+        client = get_pdu_client(managed_pdu, request=request)
 
         try:
             inlet_data = client.get_single_inlet_data(inlet.inlet_number - 1)
@@ -459,7 +457,7 @@ class PDUInletPushNameView(View):
             messages.warning(request, "Inlet name is empty — nothing to push.")
             return redirect(request.META.get("HTTP_REFERER") or inlet.get_absolute_url())
 
-        client = get_pdu_client(inlet.managed_pdu)
+        client = get_pdu_client(inlet.managed_pdu, request=request)
         push_succeeded = False
         try:
             client.set_inlet_name(inlet.inlet_number - 1, inlet.inlet_name)
@@ -491,7 +489,7 @@ class PDUInletView(generic.ObjectView):
     def get_extra_context(self, request, instance):
         thresholds = []
         try:
-            client = get_pdu_client(instance.managed_pdu)
+            client = get_pdu_client(instance.managed_pdu, request=request)
             thresholds = client.get_inlet_thresholds(instance.inlet_number - 1)
         except PDUClientError:
             pass

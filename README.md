@@ -79,6 +79,10 @@ PLUGINS_CONFIG = {
         # Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).
         # Set to 0 or remove to disable periodic syncing.
         "sync_poll_interval": 60,
+        # Only needed if netbox-secrets is installed and used for PDU credentials —
+        # lets background/system jobs decrypt secrets without an HTTP session.
+        # "service_account": "pdu-sync",
+        # "service_private_key_path": "/opt/netbox/pdu-sync.pem",
     }
 }
 ```
@@ -149,6 +153,10 @@ PLUGINS_CONFIG = {
         # Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).
         # Set to 0 or remove to disable periodic syncing.
         "sync_poll_interval": 60,
+        # Only needed if netbox-secrets is installed and used for PDU credentials —
+        # lets background/system jobs decrypt secrets without an HTTP session.
+        # "service_account": "pdu-sync",
+        # "service_private_key_path": "/opt/netbox/pdu-sync.pem",
     }
 }
 ```
@@ -183,6 +191,20 @@ Go to **Plugins → PDU Management → Add** and fill in the connection details.
 - **API key mode**: leave `API Username` blank and set `API Password` to the API key — no session required
 - **Controller type**: UDM/UCG and standalone controllers are auto-detected
 - **Site**: append `/s/<site>` to the API URL to target a non-default site (e.g. `https://192.168.1.1/s/mysite`)
+
+---
+
+## Credentials
+
+netbox-pdu-control resolves PDU credentials in the following order:
+
+1. **netbox-secrets** (preferred) — `Secret` with role `pdu-credentials` assigned to the Device.
+   `Secret.name` = API username, `Secret.plaintext` = API password (RSA-encrypted).
+2. **Plaintext fallback** — the `API Username` / `API Password` fields on `ManagedPDU`, used when
+   netbox-secrets is not installed or no matching secret is found.
+
+For background jobs (scheduled sync/metrics), set `service_account` and `service_private_key_path`
+in `PLUGINS_CONFIG` so the job can decrypt secrets without an HTTP session.
 
 ---
 
@@ -346,6 +368,10 @@ PLUGINS_CONFIG = {
         # PDU 全体（ハードウェア情報・アウトレット・インレット）を自動同期する間隔（分）。
         # 0 を設定するか削除すると無効になります。
         "sync_poll_interval": 60,
+        # netbox-secrets を導入してPDU認証情報を管理する場合のみ必要 —
+        # バックグラウンド/システムジョブがHTTPセッションなしでSecretを復号できるようにする。
+        # "service_account": "pdu-sync",
+        # "service_private_key_path": "/opt/netbox/pdu-sync.pem",
     }
 }
 ```
@@ -416,6 +442,10 @@ PLUGINS_CONFIG = {
         # PDU 全体（ハードウェア情報・アウトレット・インレット）を自動同期する間隔（分）。
         # 0 を設定するか削除すると無効になります。
         "sync_poll_interval": 60,
+        # netbox-secrets を導入してPDU認証情報を管理する場合のみ必要 —
+        # バックグラウンド/システムジョブがHTTPセッションなしでSecretを復号できるようにする。
+        # "service_account": "pdu-sync",
+        # "service_private_key_path": "/opt/netbox/pdu-sync.pem",
     }
 }
 ```
@@ -450,6 +480,20 @@ docker compose exec netbox python manage.py migrate
 - **API キーモード**: `API Username` を空欄にし、`API Password` に API キーを設定（セッション認証不要）
 - **コントローラー種別**: UDM/UCG とスタンドアロンコントローラーを自動判別
 - **サイト指定**: デフォルト以外のサイトを指定する場合は API URL に `/s/<site>` を付加（例: `https://192.168.1.1/s/mysite`）
+
+---
+
+## 認証情報
+
+netbox-pdu-control は以下の優先順位で PDU の認証情報を解決します:
+
+1. **netbox-secrets（優先）** — role `pdu-credentials` を持ち、対象 Device に紐づけられた `Secret`。
+   `Secret.name` = API ユーザー名、`Secret.plaintext` = API パスワード（RSA暗号化）。
+2. **平文フォールバック** — `ManagedPDU` の `API Username` / `API Password` フィールド。netbox-secrets
+   が未導入、または該当する Secret が見つからない場合に使用されます。
+
+バックグラウンドジョブ（定期同期・メトリクス取得）でSecretを復号するには、`PLUGINS_CONFIG` に
+`service_account` と `service_private_key_path` を設定してください（HTTPセッションなしで復号するため）。
 
 ---
 

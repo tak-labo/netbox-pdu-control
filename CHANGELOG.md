@@ -11,10 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tested Hardware: add Raritan PX4-534AJ-E7 and PX4-5884J-E7
 - `docs/design.md`: detailed design document with architecture, ER, and
   sequence diagrams (Mermaid), linked into the MkDocs nav
+- PDU credential resolution via [netbox-secrets](https://github.com/netboxlabs/netbox-secrets)
+  (`SecretRole` slug `pdu-credentials`, assigned to the Device), mirroring the
+  pattern used by netbox-bmc. Falls back to the existing plaintext
+  `api_username`/`api_password` fields when netbox-secrets is not installed or
+  has no matching secret. Add `service_account`/`service_private_key_path` to
+  `PLUGINS_CONFIG["netbox_pdu_control"]` to let background/system jobs decrypt
+  secrets without an HTTP session.
 
 ### Changed
 - CI: cache the cloned NetBox repo and pip packages per NetBox/Python matrix
   combination to speed up the `test` job
+- `get_pdu_client()` now accepts an optional `request` argument, forwarded
+  from all views so netbox-secrets can decrypt using the requesting user's
+  session key
+- `ManagedPDU.api_password` is now `blank=True` (optional), since it may be
+  fully superseded by a netbox-secrets `Secret`
+
+### Fixed
+- The Power Cycle background job no longer receives the PDU password as a
+  plaintext RQ job argument (stored in Redis) — the argument was unused by
+  the job, which already re-fetched credentials via the outlet's `managed_pdu`
 
 ---
 
