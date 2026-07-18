@@ -6,7 +6,15 @@ on:
     branches:
       - main
       - develop
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
 
 jobs:
   lint:
@@ -38,7 +46,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.12', '3.13']
-        netbox-version: ['v4.5.4', 'v4.6.3']
+        netbox-version: ['v4.6.3']
 
     services:
       postgres:

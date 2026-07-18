@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### **Breaking Changes**
+- Dropped support for NetBox 4.5.x; `min_version` is now `4.6.0`. CI no longer
+  tests against NetBox 4.5.4. If you are running NetBox 4.5.x, upgrade to
+  4.6.x before updating this plugin past 0.3.6.
+
 ### Added
 - Tested Hardware: add Raritan PX4-534AJ-E7 and PX4-5884J-E7
 - `docs/design.md`: detailed design document with architecture, ER, and
@@ -22,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - CI: cache the cloned NetBox repo and pip packages per NetBox/Python matrix
   combination to speed up the `test` job
+- CI: drop NetBox 4.5.4 from the test matrix (see Breaking Changes above);
+  only NetBox 4.6.3 is tested now
+- CI: skip the `test` job entirely for docs-only changes (`*.md`, `docs/**`,
+  `mkdocs.yml`)
 - `get_pdu_client()` now accepts an optional `request` argument, forwarded
   from all views so netbox-secrets can decrypt using the requesting user's
   session key
