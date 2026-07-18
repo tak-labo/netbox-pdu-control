@@ -34,6 +34,18 @@ PLUGINS_CONFIG = {
 }
 ```
 
+**`apps` について:** netbox-secrets がどの NetBox モデルに Secret を紐付け可能にするかを、
+`app_label.model` 形式で列挙する設定です。ここに列挙されていないモデルには Secret を
+紐付けることはできません。効果は2つあります:
+
+1. **割り当て先の制限** — Secret 作成時に `assigned_object_type` として選択できるモデルを、
+   ここに列挙したものだけに絞る(netbox-secrets 内部の `SECRET_ASSIGNABLE_MODELS` フィルタ)
+2. **UIへの自動表示** — 列挙したモデルの詳細画面に「Secrets」パネル/タブが自動的に追加される
+
+本プラグインは PDU の認証情報を **Device** に紐付ける設計(§2〜§5 参照)なので、
+`"apps": ["dcim.device"]` が必須です。他のモデル(仮想マシンなど)にも netbox-secrets を
+使いたい場合は、そのモデルをこのリストに追記してください。
+
 マイグレーションと static ファイル収集:
 
 ```bash
