@@ -24,7 +24,7 @@ class PduConfig(PluginConfig):
     author_email = "8895617+tak-55@users.noreply.github.com"
     version = __version__
     base_url = "pdu"
-    min_version = "4.5.0"
+    min_version = "4.6.0"
     max_version = "4.6.99"
     graphql_schema = "graphql.schema"
     queues = ["default"]
