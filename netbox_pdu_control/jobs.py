@@ -41,17 +41,20 @@ def pdu_local_epoch_to_dt(epoch):
         return None
 
 
-def sync_managed_pdu(managed_pdu):
+def sync_managed_pdu(managed_pdu, request=None):
     """
     Full sync for a single ManagedPDU: hardware info, outlets, inlets, network interfaces.
     Returns (outlet_created, outlet_updated, inlet_created, inlet_updated).
     Raises PDUClientError on failure (caller is responsible for updating sync_status).
+
+    `request` is forwarded to get_pdu_client() for netbox-secrets session-key
+    decryption; pass None from background/system jobs to use the service account.
     """
     from dcim.models import PowerOutlet
 
     from . import models
 
-    client = get_pdu_client(managed_pdu)
+    client = get_pdu_client(managed_pdu, request=request)
 
     with transaction.atomic():
         now = timezone.now()
@@ -174,10 +177,13 @@ def sync_managed_pdu(managed_pdu):
     return outlet_created, outlet_updated, inlet_created, inlet_updated
 
 
-def update_outlet_status(outlet_pk, api_url, username, password, verify_ssl, outlet_index):
+def update_outlet_status(outlet_pk, outlet_index):
     """
     Background job: fetch outlet power state from PDU and save to DB.
     Intended to be enqueued after a power cycle command.
+
+    Runs with no request (RQ job), so credentials are resolved via the
+    service account when netbox-secrets is in use.
     """
     from .models import PDUOutlet
 
@@ -196,15 +202,18 @@ def update_outlet_status(outlet_pk, api_url, username, password, verify_ssl, out
         logger.error("Background status update failed for outlet pk=%s: %s", outlet_pk, e)
 
 
-def fetch_pdu_metrics(managed_pdu):
+def fetch_pdu_metrics(managed_pdu, request=None):
     """
     Fetch Prometheus metrics for a single ManagedPDU and save to DB.
     Returns (outlet_updated, inlet_updated, ocp_updated) counts.
     Raises PDUClientError if the backend does not support Prometheus metrics or fetch fails.
+
+    `request` is forwarded to get_pdu_client() for netbox-secrets session-key
+    decryption; pass None from background/system jobs to use the service account.
     """
     from . import models
 
-    client = get_pdu_client(managed_pdu)
+    client = get_pdu_client(managed_pdu, request=request)
     if not client.supports_prometheus_metrics:
         raise PDUClientError("Backend does not support Prometheus metrics")
 

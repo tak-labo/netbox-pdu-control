@@ -47,10 +47,13 @@ class ManagedPDU(NetBoxModel):
         max_length=100,
         blank=True,
         verbose_name=_("API Username"),
+        help_text=_("Fallback when netbox-secrets is not available or has no matching secret"),
     )
     api_password = models.CharField(
         max_length=200,
+        blank=True,
         verbose_name=_("API Password"),
+        help_text=_("Fallback when netbox-secrets is not available or has no matching secret (plaintext)"),
     )
     verify_ssl = models.BooleanField(
         default=False,
