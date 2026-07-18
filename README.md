@@ -31,6 +31,8 @@ The following hardware has been confirmed to work with this plugin:
 | Raritan | PX3-5496JV | Firmware 4.3.x (Xerus) | Full support: outlets, inlets, power control, thresholds |
 | Raritan | PX3-5497JV | Firmware 4.3.x (Xerus) | Full support: outlets, inlets, power control, thresholds |
 | Raritan | PX3-5702JV | Firmware 4.3.x (Xerus) | Full support: outlets, inlets, power control, thresholds |
+| Raritan | PX4-534AJ-E7 | Firmware 4.3.x (Xerus) | Full support: outlets, inlets, power control, thresholds |
+| Raritan | PX4-5884J-E7 | Firmware 4.3.x (Xerus) | Full support: outlets, inlets, power control, thresholds |
 | Ubiquiti | USP-PDU-Pro | UniFi OS 5.0.16 / Network 10.1.89 | Outlet control/monitoring; inlet data via aggregate power; no thresholds |
 
 Other Raritan PDUs running Xerus firmware (PX2, PX3, PX4, BCM families) should work, but have not been directly tested.
@@ -296,6 +298,8 @@ See [NOTICE](NOTICE) for attribution details.
 | Raritan | PX3-5496JV | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
 | Raritan | PX3-5497JV | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
 | Raritan | PX3-5702JV | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX4-534AJ-E7 | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX4-5884J-E7 | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
 | Ubiquiti | USP-PDU-Pro | UniFi OS 5.0.16 / Network 10.1.89 | アウトレット制御・監視に対応；インレットは合計消費電力で代替表示；しきい値は非対応 |
 
 Xerus ファームウェアが動作する他の Raritan PDU（PX2、PX3、PX4、BCM 系）も動作すると考えられますが、直接のテストは行っていません。
