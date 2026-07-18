@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Tested Hardware: add Raritan PX4-534AJ-E7 and PX4-5884J-E7
 
+### Changed
+- CI: cache the cloned NetBox repo and pip packages per NetBox/Python matrix
+  combination to speed up the `test` job
+
 ---
 
 ## [0.3.6] - 2026-07-18

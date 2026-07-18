@@ -71,14 +71,24 @@ jobs:
         with:
           path: plugin
 
+      - name: Cache NetBox clone
+        id: cache-netbox
+        uses: actions/cache@v4
+        with:
+          path: netbox
+          key: netbox-${{ matrix.netbox-version }}
+
+      - name: Clone NetBox
+        if: steps.cache-netbox.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch ${{ matrix.netbox-version }} https://github.com/netbox-community/netbox.git
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Clone NetBox
-        run: |
-          git clone --depth 1 --branch ${{ matrix.netbox-version }} https://github.com/netbox-community/netbox.git
+          cache: pip
+          cache-dependency-path: netbox/requirements.txt
 
       - name: Install NetBox dependencies
         working-directory: netbox
