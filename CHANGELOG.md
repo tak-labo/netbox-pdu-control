@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Tested Hardware: add Raritan PX4-534AJ-E7 and PX4-5884J-E7
+- `docs/design.md`: detailed design document with architecture, ER, and
+  sequence diagrams (Mermaid), linked into the MkDocs nav
 
 ### Changed
 - CI: cache the cloned NetBox repo and pip packages per NetBox/Python matrix

@@ -5,6 +5,7 @@ repo_name: tak-labo/netbox-pdu-control
 #strict: true
 nav:
   - Home: index.md
+  - Design: design.md
   - Contributing: contributing.md
   - Changelog: changelog.md
 theme:
@@ -48,7 +49,11 @@ markdown_extensions:
       generic: true
   - pymdownx.highlight:
       linenums: false
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.inlinehilite
   - pymdownx.details
   - admonition
