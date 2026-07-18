@@ -99,6 +99,7 @@ Strawberry/strawberry-django. Covers all three main models. `enums.py` mirrors `
 - **`ManagedPDUSyncView`** wraps all DB writes in `transaction.atomic()`; on failure only `sync_status` is saved via `update_fields=['sync_status']`
 - **pre-push hook**: `uvx pre-commit install --hook-type pre-push` (runs lint + Docker tests before every push)
 - **UniFi power cycle**: contains `time.sleep(3)` — known blocking limitation, do not remove
+- **Releases**: every PR that ships in a release must add a `CHANGELOG.md` entry (see `CONTRIBUTING.md` § Deploying)
 
 ## Testing
 
