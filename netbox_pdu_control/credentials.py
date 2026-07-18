@@ -147,11 +147,12 @@ def _resolve_master_key(request: HttpRequest | None) -> bytes:
 
 
 def _master_key_from_request(request) -> bytes:
-    from netbox_secrets.models import UserKey
+    from netbox_secrets.constants import SESSION_COOKIE_NAME
+    from netbox_secrets.models import SessionKey, UserKey
 
-    session_key_b64 = request.META.get("HTTP_X_SESSION_KEY") or request.COOKIES.get("session_key")
+    session_key_b64 = request.META.get("HTTP_X_SESSION_KEY") or request.COOKIES.get(SESSION_COOKIE_NAME)
     if not session_key_b64:
-        raise Exception("No X-Session-Key header or session_key cookie in request")
+        raise Exception(f"No X-Session-Key header or {SESSION_COOKIE_NAME} cookie in request")
 
     session_key = base64.b64decode(session_key_b64)
     try:
@@ -159,10 +160,14 @@ def _master_key_from_request(request) -> bytes:
     except UserKey.DoesNotExist as e:
         raise Exception(f"No UserKey found for user {request.user}") from e
 
-    master_key = uk.get_master_key(session_key)
-    if master_key is None:
-        raise Exception("get_master_key returned None — session key may be expired")
-    return master_key
+    try:
+        session_key_obj = uk.session_key
+    except SessionKey.DoesNotExist as e:
+        raise Exception(f"No active session key for user {request.user}") from e
+
+    # Decryption failure (expired/invalid session key) raises InvalidKey, which
+    # the caller (get_credential) catches via the generic `except Exception`.
+    return session_key_obj.get_master_key(session_key)
 
 
 def _master_key_from_service_account() -> bytes:

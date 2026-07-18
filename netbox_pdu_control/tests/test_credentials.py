@@ -9,11 +9,12 @@ isolation, without requiring Django to be installed/configured
 test_factory.py, which also require no NetBox/DB).
 """
 
+import base64
 import builtins
 import unittest
 from unittest.mock import MagicMock, patch
 
-from netbox_pdu_control.credentials import Credential, get_credential
+from netbox_pdu_control.credentials import Credential, _master_key_from_request, get_credential
 
 
 def _mock_managed_pdu(api_username="admin", api_password="secret"):
@@ -144,6 +145,130 @@ class TestGetCredentialFallback(unittest.TestCase):
 
         self.assertEqual(cred, Credential(username="secret_user", password="secret_pass", source="netbox_secrets"))
         fake_secret.decrypt.assert_called_once_with(b"key")
+
+
+class TestMasterKeyFromRequest(unittest.TestCase):
+    """
+    Regression tests for _master_key_from_request(): it must read the real
+    netbox-secrets session cookie name ("netbox_secrets_sessionid", via
+    constants.SESSION_COOKIE_NAME — not a hardcoded "session_key") and
+    decrypt via UserKey.session_key.get_master_key(), not
+    UserKey.get_master_key() directly (that method only accepts a private
+    key in the real netbox-secrets API).
+    """
+
+    def _fake_request(self, cookies=None, headers=None, user=None):
+        request = MagicMock()
+        request.COOKIES = cookies or {}
+        request.META = headers or {}
+        request.user = user or MagicMock()
+        return request
+
+    def _fake_netbox_secrets(self, user_key=None, user_key_missing=False):
+        constants = MagicMock()
+        constants.SESSION_COOKIE_NAME = "netbox_secrets_sessionid"
+
+        models = MagicMock()
+
+        class _DoesNotExist(Exception):
+            pass
+
+        models.UserKey.DoesNotExist = _DoesNotExist
+        models.SessionKey.DoesNotExist = _DoesNotExist
+        if user_key_missing:
+            models.UserKey.objects.get.side_effect = _DoesNotExist
+        else:
+            models.UserKey.objects.get.return_value = user_key
+
+        return {
+            "netbox_secrets": MagicMock(),
+            "netbox_secrets.constants": constants,
+            "netbox_secrets.models": models,
+        }
+
+    def test_reads_real_session_cookie_name(self):
+        """The cookie must be read under 'netbox_secrets_sessionid', not 'session_key'."""
+        session_key_obj = MagicMock()
+        session_key_obj.get_master_key.return_value = b"master-key-bytes"
+        user_key = MagicMock()
+        user_key.session_key = session_key_obj
+
+        request = self._fake_request(cookies={"netbox_secrets_sessionid": base64.b64encode(b"sesskey").decode()})
+
+        with patch.dict("sys.modules", self._fake_netbox_secrets(user_key=user_key)):
+            result = _master_key_from_request(request)
+
+        self.assertEqual(result, b"master-key-bytes")
+        session_key_obj.get_master_key.assert_called_once_with(b"sesskey")
+
+    def test_old_wrong_cookie_name_is_ignored(self):
+        """A cookie under the old/incorrect 'session_key' name must NOT be picked up."""
+        request = self._fake_request(cookies={"session_key": base64.b64encode(b"sesskey").decode()})
+
+        with patch.dict("sys.modules", self._fake_netbox_secrets(user_key=MagicMock())):
+            with self.assertRaises(Exception):  # noqa: B017
+                _master_key_from_request(request)
+
+    def test_x_session_key_header_takes_priority(self):
+        session_key_obj = MagicMock()
+        session_key_obj.get_master_key.return_value = b"from-header"
+        user_key = MagicMock()
+        user_key.session_key = session_key_obj
+
+        request = self._fake_request(
+            headers={"HTTP_X_SESSION_KEY": base64.b64encode(b"headerkey").decode()},
+            cookies={"netbox_secrets_sessionid": base64.b64encode(b"cookiekey").decode()},
+        )
+
+        with patch.dict("sys.modules", self._fake_netbox_secrets(user_key=user_key)):
+            result = _master_key_from_request(request)
+
+        self.assertEqual(result, b"from-header")
+        session_key_obj.get_master_key.assert_called_once_with(b"headerkey")
+
+    def test_decrypts_via_session_key_object_not_userkey_directly(self):
+        """Must call UserKey.session_key.get_master_key(), not UserKey.get_master_key()."""
+        session_key_obj = MagicMock()
+        session_key_obj.get_master_key.return_value = b"ok"
+        user_key = MagicMock()
+        user_key.session_key = session_key_obj
+
+        request = self._fake_request(cookies={"netbox_secrets_sessionid": base64.b64encode(b"k").decode()})
+
+        with patch.dict("sys.modules", self._fake_netbox_secrets(user_key=user_key)):
+            _master_key_from_request(request)
+
+        user_key.get_master_key.assert_not_called()
+        session_key_obj.get_master_key.assert_called_once()
+
+    def test_raises_when_no_cookie_or_header(self):
+        request = self._fake_request()
+        with patch.dict("sys.modules", self._fake_netbox_secrets(user_key=MagicMock())):
+            with self.assertRaises(Exception):  # noqa: B017
+                _master_key_from_request(request)
+
+    def test_raises_when_no_userkey_for_user(self):
+        request = self._fake_request(cookies={"netbox_secrets_sessionid": base64.b64encode(b"k").decode()})
+        with patch.dict("sys.modules", self._fake_netbox_secrets(user_key_missing=True)):
+            with self.assertRaises(Exception):  # noqa: B017
+                _master_key_from_request(request)
+
+    def test_raises_when_no_session_key_object(self):
+        """UserKey exists but has no active SessionKey (uk.session_key raises DoesNotExist)."""
+        user_key = MagicMock()
+
+        class _DoesNotExist(Exception):
+            pass
+
+        type(user_key).session_key = property(lambda self: (_ for _ in ()).throw(_DoesNotExist()))
+
+        request = self._fake_request(cookies={"netbox_secrets_sessionid": base64.b64encode(b"k").decode()})
+        fake_modules = self._fake_netbox_secrets(user_key=user_key)
+        fake_modules["netbox_secrets.models"].SessionKey.DoesNotExist = _DoesNotExist
+
+        with patch.dict("sys.modules", fake_modules):
+            with self.assertRaises(Exception):  # noqa: B017
+                _master_key_from_request(request)
 
 
 if __name__ == "__main__":
