@@ -11,7 +11,17 @@ def _fmt2(value):
     return f"{value:.2f}"
 
 
+MANAGEDPDU_WEBGUI_BUTTON = """
+{% if record.vendor == "raritan" and record.api_url %}
+<a href="{{ record.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary" title="Open PDU WebGUI">
+  <i class="mdi mdi-open-in-new"></i>
+</a>
+{% endif %}
+"""
+
+
 class ManagedPDUTable(NetBoxTable):
+    actions = columns.ActionsColumn(extra_buttons=MANAGEDPDU_WEBGUI_BUTTON)
     name = tables.Column(
         accessor="device.name",
         linkify=lambda record: record.get_absolute_url(),
