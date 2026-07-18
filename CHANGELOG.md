@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tested Hardware: add Raritan PX4-534AJ-E7 and PX4-5884J-E7
 - `docs/design.md`: detailed design document with architecture, ER, and
   sequence diagrams (Mermaid), linked into the MkDocs nav
-- PDU credential resolution via [netbox-secrets](https://github.com/netboxlabs/netbox-secrets)
+- PDU credential resolution via [netbox-secrets](https://github.com/Onemind-Services-LLC/netbox-secrets)
   (`SecretRole` slug `pdu-credentials`, assigned to the Device), mirroring the
   pattern used by netbox-bmc. Falls back to the existing plaintext
   `api_username`/`api_password` fields when netbox-secrets is not installed or
