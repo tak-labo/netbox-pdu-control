@@ -6,6 +6,7 @@ repo_name: tak-labo/netbox-pdu-control
 nav:
   - Home: index.md
   - Design: design.md
+  - netbox-secrets Setup: netbox-secrets-setup.md
   - Contributing: contributing.md
   - Changelog: changelog.md
 theme:

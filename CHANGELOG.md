@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tested Hardware: add Raritan PX4-534AJ-E7 and PX4-5884J-E7
 - `docs/design.md`: detailed design document with architecture, ER, and
   sequence diagrams (Mermaid), linked into the MkDocs nav
+- `docs/netbox-secrets-setup.md`: step-by-step guide for configuring
+  netbox-secrets (SecretRole, User Keys, service account) with this plugin
 - PDU credential resolution via [netbox-secrets](https://github.com/Onemind-Services-LLC/netbox-secrets)
   (`SecretRole` slug `pdu-credentials`, assigned to the Device), mirroring the
   pattern used by netbox-bmc. Falls back to the existing plaintext
@@ -32,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Power Cycle background job no longer receives the PDU password as a
   plaintext RQ job argument (stored in Redis) — the argument was unused by
   the job, which already re-fetched credentials via the outlet's `managed_pdu`
+- `credentials.py`'s session-key decryption path now matches the real
+  netbox-secrets API: reads the `netbox_secrets_sessionid` cookie (via
+  `netbox_secrets.constants.SESSION_COOKIE_NAME`, not a hardcoded
+  `session_key`) and decrypts through `UserKey.session_key.get_master_key()`
+  rather than calling `UserKey.get_master_key()` directly (that method only
+  accepts a private key in netbox-secrets, not a session key)
 
 ---
 
