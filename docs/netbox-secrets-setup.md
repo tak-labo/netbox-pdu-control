@@ -170,8 +170,14 @@ NetBox を再起動してPLUGINS_CONFIGを反映する。
 ```bash
 mkdir -p ../netbox-docker/secrets
 mv pdu-sync.pem ../netbox-docker/secrets/
-chmod 600 ../netbox-docker/secrets/pdu-sync.pem
+chmod 640 ../netbox-docker/secrets/pdu-sync.pem
 ```
+
+**パーミッションについて:** netbox-docker の `netbox`/`netbox-worker` コンテナは `uid=999`
+(`netbox` ユーザー)・`gid=0`(`root` グループ)で動作します。ファイル所有者を `root:root` の
+ままにする場合、`600`(所有者のみ読み取り可)ではコンテナ内の `netbox` ユーザーが読み取れず
+`Permission denied` になります。**`640`**(所有者rw・グループr)にして、グループ経由で
+読み取れるようにしてください。
 
 2. `docker-compose.override.yml` の `netbox` (と、定期実行させる場合は `netbox-worker`)サービスに
    volumeを追加してコンテナ内へ読み取り専用でマウントする:
@@ -257,6 +263,7 @@ docker compose logs netbox | grep netbox_pdu_control.credentials
 | バックグラウンドジョブ実行時にフォールバックする | `service_account` / `service_private_key_path` が未設定、またはそのユーザーの User Key が非アクティブ |
 | エラーログに "No UserKey found" | 該当ユーザー(ログインユーザーまたはサービスアカウント)の User Key が作成されていない |
 | エラーログに "No active session key" | ブラウザ側でセッションキーが未取得(netbox-secrets 側のUI操作を一度行う) |
+| `docker compose exec netbox cat <pem>` で `Permission denied`(Docker環境) | 秘密鍵ファイルのパーミッションが `600` かつ所有者が `root` のまま。コンテナ内の `netbox` ユーザーは `uid=999`/`gid=0(root)` で動作するため、`chmod 640` でグループ読み取りを許可する必要がある |
 
 ---
 
