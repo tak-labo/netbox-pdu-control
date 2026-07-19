@@ -143,7 +143,7 @@ User Key が自動的にマスターキーを生成します。
 
    | 項目 | 値 |
    |---|---|
-   | Name | `secret-readonly`(用途が分かる名前ならなんでも良い) |
+   | Name | `secret-access`(用途が分かる名前ならなんでも良い) |
    | Object types | `netbox_secrets \| Secret` / `netbox_secrets \| Secret Role` / `netbox_secrets \| User Key` の3つ(`Session Key` は含めない) |
    | Actions | `View` のみ(User Key 作成直後は一時的に `Add` を追加 → 作成後に外す) |
    | Users | `pdu-sync` |
