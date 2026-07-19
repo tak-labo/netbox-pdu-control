@@ -138,6 +138,20 @@ User Key が自動的にマスターキーを生成します。
      `view` のみに戻してよい。
    - **鍵ローテーション時のみ一時的に**: 既存 User Key の `public_key` を更新する場合は `add` ではなく
      **`change`** が必要。これも作業後は `view` のみに戻す。
+
+   **設定例(Admin → Permissions → Add、URL: `/users/permissions/add/`)**:
+
+   | 項目 | 値 |
+   |---|---|
+   | Name | `secret-readonly`(用途が分かる名前ならなんでも良い) |
+   | Object types | `netbox_secrets \| Secret` / `netbox_secrets \| Secret Role` / `netbox_secrets \| User Key` の3つ(`Session Key` は含めない) |
+   | Actions | `View` のみ(User Key 作成直後は一時的に `Add` を追加 → 作成後に外す) |
+   | Users | `pdu-sync` |
+   | Groups | (空のまま) |
+   | Constraints | (空のまま、全インスタンス対象) |
+
+   実際にこの設定で運用できることを確認済み(`view` のみで `credentials.py` のサービスアカウント
+   経路が正常に動作し、`add` は User Key 作成時にのみ一時的に必要だった)。
 2. このユーザーで(または管理権限を持つユーザーが代理で)RSA鍵ペアを生成する
 3. **Secrets → User Keys → Add** で `pdu-sync` ユーザーの User Key を作成(この操作には上記の一時的な
    `add` 権限が必要)
