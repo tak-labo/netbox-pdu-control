@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ManagedPDU.web_gui_url_dns` property: when `ip_address.dns_name` is set,
+  the Actions card shows separate "PDU WebGUI (IP)" / "PDU WebGUI (DNS)"
+  links instead of a single link, mirroring netbox-bmc's Web GUI (IP)/(DNS)
+  behavior
+
 ### Changed
 - ManagedPDU detail page: consolidated the "PDU WebGUI" link (previously in
   the page header), and the "Sync PDU" / "Get Metrics" buttons (previously

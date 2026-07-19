@@ -96,9 +96,18 @@
         <h5 class="card-header">Actions</h5>
         <div class="card-body d-flex flex-wrap gap-2">
           {% if object.vendor == "raritan" and object.api_url %}
-            <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
-              <i class="mdi mdi-web"></i> PDU WebGUI
-            </a>
+            {% if object.web_gui_url_dns %}
+              <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-web"></i> PDU WebGUI (IP)
+              </a>
+              <a href="{{ object.web_gui_url_dns }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-web"></i> PDU WebGUI (DNS)
+              </a>
+            {% else %}
+              <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-web"></i> PDU WebGUI
+              </a>
+            {% endif %}
           {% endif %}
           {% if perms.netbox_pdu_control.change_managedpdu %}
             <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_sync' pk=object.pk %}" class="d-inline">

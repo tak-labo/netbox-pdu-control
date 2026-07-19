@@ -8,6 +8,7 @@ Run inside Docker:
 from dcim.models import Device, DeviceRole, DeviceType, Manufacturer, Site
 from django.db import IntegrityError
 from django.test import TestCase
+from ipam.models import IPAddress
 
 from ..choices import OutletStatusChoices, SyncStatusChoices, VendorChoices
 from ..models import ManagedPDU, PDUInlet, PDUNetworkInterface, PDUOutlet
@@ -81,6 +82,25 @@ class ManagedPDUModelTest(TestCase):
 
     def test_sync_status_default(self):
         self.assertEqual(self.pdu.sync_status, SyncStatusChoices.NEVER)
+
+    def test_web_gui_url_dns_none_without_ip_address(self):
+        self.assertIsNone(self.pdu.web_gui_url_dns)
+
+    def test_web_gui_url_dns_none_when_ip_has_no_dns_name(self):
+        ip = IPAddress.objects.create(address="10.0.0.50/32", dns_name="")
+        self.pdu.ip_address = ip
+        self.assertIsNone(self.pdu.web_gui_url_dns)
+
+    def test_web_gui_url_dns_uses_ip_dns_name(self):
+        ip = IPAddress.objects.create(address="10.0.0.51/32", dns_name="pdu1.example.com")
+        self.pdu.ip_address = ip
+        self.assertEqual(self.pdu.web_gui_url_dns, "https://pdu1.example.com")
+
+    def test_web_gui_url_dns_preserves_port_and_path(self):
+        ip = IPAddress.objects.create(address="10.0.0.52/32", dns_name="pdu2.example.com")
+        self.pdu.ip_address = ip
+        self.pdu.api_url = "https://10.0.0.52:8443/ui"
+        self.assertEqual(self.pdu.web_gui_url_dns, "https://pdu2.example.com:8443/ui")
 
 
 class PDUOutletModelTest(TestCase):
