@@ -129,9 +129,18 @@ User Key が自動的にマスターキーを生成します。
 ログインユーザーのセッションキーではなく、専用のサービスアカウントの秘密鍵でマスターキーを復号します。
 
 1. NetBox に新規ユーザーを作成する(例: `pdu-sync`)。ログイン用途ではないので強力なランダムパスワードを設定し、
-   グループ/パーミッションは Secret の読み取りに必要な最小限に絞る
+   `is_superuser` は付けず、Permission (ObjectPermission) で以下のように最小権限を付与する:
+   - **定常運用時(推奨)**: `netbox_secrets.secret` / `secretrole` / `userkey` に対する **`view`** のみ。
+     `credentials.py` はこれら3モデルを読むだけで、`sessionkey` は参照しない(セッションキー経由の
+     復号はログインユーザー本人の場合のみ使われる別経路のため)。
+   - **User Key の新規作成時のみ一時的に**: `netbox_secrets.userkey` への **`add`** も必要
+     (`view` だけでは Secrets → User Keys → Add でオブジェクトを作成できない)。作成完了後は
+     `view` のみに戻してよい。
+   - **鍵ローテーション時のみ一時的に**: 既存 User Key の `public_key` を更新する場合は `add` ではなく
+     **`change`** が必要。これも作業後は `view` のみに戻す。
 2. このユーザーで(または管理権限を持つユーザーが代理で)RSA鍵ペアを生成する
-3. **Secrets → User Keys → Add** で `pdu-sync` ユーザーの User Key を作成
+3. **Secrets → User Keys → Add** で `pdu-sync` ユーザーの User Key を作成(この操作には上記の一時的な
+   `add` 権限が必要)
    - 手順3で最初のUser Keyが既に存在する場合、この新しいUser Keyは非アクティブな状態で作成される
    - **Secrets → User Keys → Activate User Keys** を開き、既にアクティブな鍵を持つ管理者が
      自分の秘密鍵を使って `pdu-sync` の User Key を有効化する(マスターキーが `pdu-sync` の公開鍵でも
