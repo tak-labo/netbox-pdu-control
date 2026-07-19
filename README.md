@@ -180,11 +180,15 @@ Go to **Plugins → PDU Management → Add** and fill in the connection details.
 | Field | Description |
 |-------|-------------|
 | Device | NetBox Device record for this PDU |
+| IP Address | Optional: pick from IPs already assigned to the selected Device — auto-fills API URL with `https://<ip>` |
 | Vendor | `Raritan` or `Ubiquiti (USP-PDU-Pro)` |
 | API URL | Base URL of the PDU or UniFi controller (e.g. `https://192.168.1.1`) |
 | API Username | Username for authentication. Leave blank on Ubiquiti to use API key mode |
 | API Password | Password or API key |
 | Verify SSL | Uncheck if the PDU uses a self-signed certificate |
+
+Click **Test Connection** on the Add/Edit form to verify the vendor/API URL/credentials work
+before saving — this does not write anything to NetBox, it only checks connectivity.
 
 ### Ubiquiti-specific options
 
@@ -470,11 +474,15 @@ docker compose exec netbox python manage.py migrate
 | フィールド | 説明 |
 |-----------|------|
 | Device | NetBox に登録済みの PDU デバイス |
+| IP Address | 任意: 選択した Device に紐づく登録済みIPから選択すると、API URL に `https://<ip>` を自動入力 |
 | Vendor | `Raritan` または `Ubiquiti (USP-PDU-Pro)` |
 | API URL | PDU または UniFi コントローラーの URL（例: `https://192.168.1.1`） |
 | API Username | 認証ユーザー名。Ubiquiti で API キーモードを使う場合は空欄 |
 | API Password | パスワードまたは API キー |
 | Verify SSL | 自己署名証明書の場合はオフにする |
+
+Add/Edit 画面の **Test Connection** ボタンで、保存前に vendor/API URL/認証情報の疎通確認ができます
+(NetBoxへの書き込みは一切行わず、接続確認のみ)。
 
 ### Ubiquiti 固有の設定
 

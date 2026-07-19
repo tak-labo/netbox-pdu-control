@@ -9,11 +9,13 @@ from . import filters
 
 if TYPE_CHECKING:
     from dcim.graphql.types import DeviceType
+    from ipam.graphql.types import IPAddressType
 
 
 @strawberry_django.type(models.ManagedPDU, fields="__all__", filters=filters.ManagedPDUFilter)
 class ManagedPDUType(NetBoxObjectType):
     device: Annotated["DeviceType", strawberry.lazy("dcim.graphql.types")]
+    ip_address: Annotated["IPAddressType", strawberry.lazy("ipam.graphql.types")] | None
     outlets: list[Annotated["PDUOutletType", strawberry.lazy("netbox_pdu_control.graphql.types")]]
 
 

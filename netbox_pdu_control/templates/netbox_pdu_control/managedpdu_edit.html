@@ -1,0 +1,83 @@
+{% extends 'generic/object_edit.html' %}
+{% load i18n %}
+
+{% block buttons %}
+  <button type="button" id="pdu-test-connection-btn" class="btn btn-outline-info">
+    <i class="mdi mdi-lan-connect"></i> {% trans "Test Connection" %}
+  </button>
+  <span id="pdu-test-connection-result" class="ms-2"></span>
+  {{ block.super }}
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+(function () {
+  const ipPicker = document.getElementById("id_ip_address");
+  const apiUrlInput = document.getElementById("id_api_url");
+
+  if (ipPicker && apiUrlInput) {
+    ipPicker.addEventListener("change", function () {
+      const ipId = ipPicker.value;
+      if (!ipId) return;
+      fetch("/api/ipam/ip-addresses/" + encodeURIComponent(ipId) + "/")
+        .then((r) => (r.ok ? r.json() : Promise.reject(r)))
+        .then((data) => {
+          const ip = (data.address || "").split("/")[0];
+          if (ip) apiUrlInput.value = "https://" + ip;
+        })
+        .catch(() => {});
+    });
+  }
+
+  const btn = document.getElementById("pdu-test-connection-btn");
+  const result = document.getElementById("pdu-test-connection-result");
+  if (!btn) return;
+
+  function fieldValue(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+  }
+
+  function setResult(ok, message) {
+    result.textContent = "";
+    const icon = document.createElement("i");
+    icon.className = "mdi " + (ok ? "mdi-check-circle text-success" : "mdi-alert-circle text-danger");
+    const span = document.createElement("span");
+    span.className = ok ? "text-success ms-1" : "text-danger ms-1";
+    span.textContent = message;
+    result.appendChild(icon);
+    result.appendChild(span);
+  }
+
+  btn.addEventListener("click", function () {
+    const data = new FormData();
+    data.append("vendor", fieldValue("id_vendor"));
+    data.append("api_url", fieldValue("id_api_url"));
+    data.append("api_username", fieldValue("id_api_username"));
+    data.append("api_password", fieldValue("id_api_password"));
+    const verifySslEl = document.getElementById("id_verify_ssl");
+    data.append("verify_ssl", verifySslEl && verifySslEl.checked ? "true" : "false");
+
+    btn.disabled = true;
+    result.textContent = "";
+    const spinner = document.createElement("span");
+    spinner.className = "text-muted";
+    spinner.textContent = "{% trans 'Testing...' %}";
+    result.appendChild(spinner);
+
+    const csrfInput = document.querySelector("[name=csrfmiddlewaretoken]");
+
+    fetch("{% url 'plugins:netbox_pdu_control:managedpdu_test_connection' %}", {
+      method: "POST",
+      headers: csrfInput ? { "X-CSRFToken": csrfInput.value } : {},
+      body: data,
+    })
+      .then((r) => r.json())
+      .then((json) => setResult(!!json.ok, json.message || ""))
+      .catch(() => setResult(false, "{% trans 'Request failed.' %}"))
+      .finally(() => { btn.disabled = false; });
+  });
+})();
+</script>
+{% endblock %}

@@ -18,6 +18,7 @@ class ManagedPDUSerializer(NetBoxModelSerializer):
             "url",
             "display",
             "device",
+            "ip_address",
             "vendor",
             "api_url",
             "api_username",

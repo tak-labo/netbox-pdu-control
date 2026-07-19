@@ -10,6 +10,11 @@ urlpatterns = (
         include(get_model_urls("netbox_pdu_control", "managedpdu", detail=False)),
     ),
     path(
+        "managed-pdus/test-connection/",
+        views.ManagedPDUConnectionTestView.as_view(),
+        name="managedpdu_test_connection",
+    ),
+    path(
         "managed-pdus/<int:pk>/",
         include(get_model_urls("netbox_pdu_control", "managedpdu")),
     ),

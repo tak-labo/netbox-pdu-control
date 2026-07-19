@@ -38,6 +38,15 @@ class ManagedPDU(NetBoxModel):
         verbose_name=_("Vendor"),
         help_text=_("PDU vendor / communication protocol"),
     )
+    ip_address = models.ForeignKey(
+        to="ipam.IPAddress",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="managed_pdus",
+        verbose_name=_("IP Address"),
+        help_text=_("NetBox-registered IP Address for this PDU (optional; used to fill in API URL)"),
+    )
     api_url = models.CharField(
         max_length=200,
         verbose_name=_("API URL"),

@@ -16,7 +16,7 @@ class ManagedPDUFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = ManagedPDU
-        fields = ("id", "device", "sync_status", "sync_enabled", "metrics_enabled")
+        fields = ("id", "device", "ip_address", "sync_status", "sync_enabled", "metrics_enabled")
 
     def search(self, queryset, name, value):
         return queryset.filter(device__name__icontains=value)
