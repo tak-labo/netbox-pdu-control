@@ -1,3 +1,5 @@
+from urllib.parse import urlsplit, urlunsplit
+
 from dcim.models import Device
 from django.db import models
 from django.urls import reverse
@@ -214,6 +216,20 @@ class ManagedPDU(NetBoxModel):
         if self.inlets.exists():
             return "single"
         return None
+
+    @property
+    def web_gui_url_dns(self):
+        """
+        Same as api_url but with the host replaced by ip_address.dns_name.
+        Returns None if ip_address is not set or has no DNS name registered.
+        """
+        if not self.ip_address or not self.ip_address.dns_name:
+            return None
+        parts = urlsplit(self.api_url)
+        netloc = self.ip_address.dns_name
+        if parts.port:
+            netloc = f"{netloc}:{parts.port}"
+        return urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment))
 
 
 class PDUOutlet(NetBoxModel):

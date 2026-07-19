@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `ManagedPDU.web_gui_url_dns` property: when `ip_address.dns_name` is set,
+  the Actions card shows separate "Web GUI (IP)" / "Web GUI (DNS)" links
+  instead of a single link, mirroring netbox-bmc's Web GUI (IP)/(DNS)
+  behavior
+- ManagedPDU detail page: new "Credentials" card showing whether PDU
+  credentials are resolved from a netbox-secrets `Secret` (role
+  `pdu-credentials`) or the plaintext fallback fields, mirroring
+  netbox-bmc's Credentials card. The redundant "API Username" row was
+  removed from the main info card (now shown here instead, only when
+  falling back to plaintext)
+
+### Changed
+- ManagedPDU detail page: consolidated the "PDU WebGUI" link (previously in
+  the page header, renamed to "Web GUI" to match netbox-bmc), and the
+  "Sync PDU" / "Get Metrics" buttons (previously in the Sync Status card
+  footer) into a single "Actions" card at the top of the right column,
+  mirroring the pattern used by netbox-bmc
+
+---
+
 ## [0.4.1] - 2026-07-19
 
 ### Added

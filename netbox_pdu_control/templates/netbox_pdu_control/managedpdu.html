@@ -2,14 +2,6 @@
 {% load helpers %}
 {% load render_table from django_tables2 %}
 
-{% block extra_controls %}
-  {% if object.vendor == "raritan" and object.api_url %}
-    <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary">
-      <i class="mdi mdi-open-in-new"></i> PDU WebGUI
-    </a>
-  {% endif %}
-{% endblock %}
-
 {% block content %}
   <div class="row">
     <div class="col col-md-6">
@@ -31,10 +23,6 @@
           <tr>
             <th scope="row">API URL</th>
             <td><code>{{ object.api_url }}</code></td>
-          </tr>
-          <tr>
-            <th scope="row">API Username</th>
-            <td>{{ object.api_username }}</td>
           </tr>
           <tr>
             <th scope="row">Verify SSL</th>
@@ -97,9 +85,83 @@
       </div>
       {% endif %}
       {% endwith %}
+      <div class="card mt-3">
+        <h5 class="card-header">Credentials</h5>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">Source</th>
+            <td>
+              {% if secrets_available %}
+                {% if secret_found %}
+                  <i class="mdi mdi-lock-check text-success"></i>
+                  netbox-secrets — Secret found (pdu-credentials role)
+                {% else %}
+                  <i class="mdi mdi-lock-alert text-warning"></i>
+                  netbox-secrets — No secret found for this device
+                  <div class="text-muted small mt-1">
+                    Add a Secret with role <code>pdu-credentials</code>
+                    assigned to <strong>{{ object.device }}</strong>.<br>
+                    Set <em>Name</em> = PDU username,
+                    <em>Plaintext</em> = PDU password.
+                    {% if object.api_username %}
+                      Falling back to plaintext fields.
+                    {% endif %}
+                  </div>
+                {% endif %}
+              {% else %}
+                <i class="mdi mdi-file-document-outline text-muted"></i>
+                Plaintext (netbox-secrets not installed)
+              {% endif %}
+            </td>
+          </tr>
+          {% if object.api_username and not secret_found %}
+            <tr>
+              <th scope="row">Username</th>
+              <td><code>{{ object.api_username }}</code></td>
+            </tr>
+            <tr>
+              <th scope="row">Password</th>
+              <td><em class="text-muted">stored (plaintext)</em></td>
+            </tr>
+          {% endif %}
+        </table>
+      </div>
       {% include 'inc/panels/custom_fields.html' %}
     </div>
     <div class="col col-md-6">
+      <div class="card mb-3">
+        <h5 class="card-header">Actions</h5>
+        <div class="card-body d-flex flex-wrap gap-2">
+          {% if object.vendor == "raritan" and object.api_url %}
+            {% if object.web_gui_url_dns %}
+              <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-web"></i> Web GUI (IP)
+              </a>
+              <a href="{{ object.web_gui_url_dns }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-web"></i> Web GUI (DNS)
+              </a>
+            {% else %}
+              <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-web"></i> Web GUI
+              </a>
+            {% endif %}
+          {% endif %}
+          {% if perms.netbox_pdu_control.change_managedpdu %}
+            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_sync' pk=object.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i class="mdi mdi-refresh"></i> Sync PDU
+              </button>
+            </form>
+            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_get_metrics' pk=object.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="mdi mdi-chart-line"></i> Get Metrics
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
       <div class="card">
         <h2 class="card-header">Sync Status</h2>
         <table class="table table-hover attr-table">
@@ -120,22 +182,6 @@
             <td>{{ object.last_metrics_fetched|placeholder }}</td>
           </tr>
         </table>
-        {% if perms.netbox_pdu_control.change_managedpdu %}
-          <div class="card-footer d-flex gap-2">
-            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_sync' pk=object.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary btn-sm">
-                <i class="mdi mdi-refresh"></i> Sync PDU
-              </button>
-            </form>
-            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_get_metrics' pk=object.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline-primary btn-sm">
-                <i class="mdi mdi-chart-line"></i> Get Metrics
-              </button>
-            </form>
-          </div>
-        {% endif %}
       </div>
       {% if object.pdu_model or object.serial_number or object.firmware_version or object.rated_voltage or object.rated_current or object.phase_type %}
       <div class="card">

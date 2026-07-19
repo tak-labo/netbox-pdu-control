@@ -19,7 +19,7 @@ from . import filtersets, forms, jobs, models, tables
 from .backends import _VENDOR_BACKENDS, get_pdu_client
 from .backends.base import PDUClientError
 from .choices import OutletStatusChoices, SyncStatusChoices
-from .credentials import get_credential
+from .credentials import SECRET_ROLE_SLUG, get_credential
 from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
 
 logger = logging.getLogger(__name__)
@@ -51,12 +51,30 @@ class ManagedPDUView(generic.ObjectView):
 
         ocps = list(instance.ocps.order_by("ocp_id"))
 
+        secrets_available = False
+        secret_found = False
+        try:
+            from django.contrib.contenttypes.models import ContentType
+            from netbox_secrets.models import Secret
+
+            secrets_available = True
+            device_ct = ContentType.objects.get_for_model(Device)
+            secret_found = Secret.objects.filter(
+                role__slug=SECRET_ROLE_SLUG,
+                assigned_object_type=device_ct,
+                assigned_object_id=instance.device.pk,
+            ).exists()
+        except ImportError:
+            pass
+
         return {
             "outlets_table": outlets_table,
             "outlet_count": outlets.count(),
             "inlets_table": inlets_table,
             "inlet_count": inlets.count(),
             "ocps": ocps,
+            "secrets_available": secrets_available,
+            "secret_found": secret_found,
         }
 
 

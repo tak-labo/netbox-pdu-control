@@ -50,6 +50,50 @@ class ManagedPDUViewTest(PluginViewTestCase):
         self.assertHttpStatus(response, 200)
         self.assertEqual(response.context["object"], self.pdu)
 
+    def test_detail_view_credentials_card_plaintext_fallback_when_secrets_unavailable(self):
+        """netbox-secrets not installed -> plaintext source message, no secret_found lookup performed."""
+        self.add_permissions("netbox_pdu_control.view_managedpdu")
+        url = self._get_url("detail", self.pdu)
+        with patch.dict("sys.modules", {"netbox_secrets": None, "netbox_secrets.models": None}):
+            response = self.client.get(url)
+        self.assertHttpStatus(response, 200)
+        self.assertFalse(response.context["secrets_available"])
+        self.assertFalse(response.context["secret_found"])
+        self.assertContains(response, "netbox-secrets not installed")
+
+    def test_detail_view_credentials_card_no_secret_found(self):
+        """netbox-secrets installed but no Secret exists for this device -> fallback message + plaintext fields shown."""
+        self.add_permissions("netbox_pdu_control.view_managedpdu")
+        url = self._get_url("detail", self.pdu)
+        fake_secret_qs = MagicMock()
+        fake_secret_qs.exists.return_value = False
+        fake_secrets_module = MagicMock()
+        fake_secrets_module.Secret.objects.filter.return_value = fake_secret_qs
+        with patch.dict("sys.modules", {"netbox_secrets": MagicMock(), "netbox_secrets.models": fake_secrets_module}):
+            response = self.client.get(url)
+        self.assertHttpStatus(response, 200)
+        self.assertTrue(response.context["secrets_available"])
+        self.assertFalse(response.context["secret_found"])
+        self.assertContains(response, "No secret found for this device")
+        self.assertContains(response, "Falling back to plaintext fields")
+        self.assertContains(response, self.pdu.api_username)
+
+    def test_detail_view_credentials_card_secret_found(self):
+        """netbox-secrets installed and a matching Secret exists -> success message, no plaintext fields shown."""
+        self.add_permissions("netbox_pdu_control.view_managedpdu")
+        url = self._get_url("detail", self.pdu)
+        fake_secret_qs = MagicMock()
+        fake_secret_qs.exists.return_value = True
+        fake_secrets_module = MagicMock()
+        fake_secrets_module.Secret.objects.filter.return_value = fake_secret_qs
+        with patch.dict("sys.modules", {"netbox_secrets": MagicMock(), "netbox_secrets.models": fake_secrets_module}):
+            response = self.client.get(url)
+        self.assertHttpStatus(response, 200)
+        self.assertTrue(response.context["secrets_available"])
+        self.assertTrue(response.context["secret_found"])
+        self.assertContains(response, "Secret found (pdu-credentials role)")
+        self.assertNotContains(response, "stored (plaintext)")
+
     def test_add_view_get(self):
         self.add_permissions("netbox_pdu_control.add_managedpdu")
         url = self._get_url("add")
