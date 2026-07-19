@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- ManagedPDU detail page: consolidated the "PDU WebGUI" link (previously in
+  the page header), and the "Sync PDU" / "Get Metrics" buttons (previously
+  in the Sync Status card footer) into a single "Actions" card at the top
+  of the right column, mirroring the pattern used by netbox-bmc
+
+---
+
 ## [0.4.1] - 2026-07-19
 
 ### Added

@@ -2,14 +2,6 @@
 {% load helpers %}
 {% load render_table from django_tables2 %}
 
-{% block extra_controls %}
-  {% if object.vendor == "raritan" and object.api_url %}
-    <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary">
-      <i class="mdi mdi-open-in-new"></i> PDU WebGUI
-    </a>
-  {% endif %}
-{% endblock %}
-
 {% block content %}
   <div class="row">
     <div class="col col-md-6">
@@ -100,6 +92,30 @@
       {% include 'inc/panels/custom_fields.html' %}
     </div>
     <div class="col col-md-6">
+      <div class="card mb-3">
+        <h5 class="card-header">Actions</h5>
+        <div class="card-body d-flex flex-wrap gap-2">
+          {% if object.vendor == "raritan" and object.api_url %}
+            <a href="{{ object.api_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+              <i class="mdi mdi-web"></i> PDU WebGUI
+            </a>
+          {% endif %}
+          {% if perms.netbox_pdu_control.change_managedpdu %}
+            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_sync' pk=object.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i class="mdi mdi-refresh"></i> Sync PDU
+              </button>
+            </form>
+            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_get_metrics' pk=object.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="mdi mdi-chart-line"></i> Get Metrics
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
       <div class="card">
         <h2 class="card-header">Sync Status</h2>
         <table class="table table-hover attr-table">
@@ -120,22 +136,6 @@
             <td>{{ object.last_metrics_fetched|placeholder }}</td>
           </tr>
         </table>
-        {% if perms.netbox_pdu_control.change_managedpdu %}
-          <div class="card-footer d-flex gap-2">
-            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_sync' pk=object.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary btn-sm">
-                <i class="mdi mdi-refresh"></i> Sync PDU
-              </button>
-            </form>
-            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_get_metrics' pk=object.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline-primary btn-sm">
-                <i class="mdi mdi-chart-line"></i> Get Metrics
-              </button>
-            </form>
-          </div>
-        {% endif %}
       </div>
       {% if object.pdu_model or object.serial_number or object.firmware_version or object.rated_voltage or object.rated_current or object.phase_type %}
       <div class="card">
