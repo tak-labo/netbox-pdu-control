@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   assigned to the selected Device. Selecting one auto-fills the API URL
   field with `https://<ip>` via JS; the API URL field remains the value
   actually used for connections
+- `docs/netbox-secrets-setup.md`: added a Docker (netbox-docker) setup path
+  alongside the existing non-Docker instructions, including how to bind-mount
+  the service account's private key into the container
 
 ### Changed
 - The **Test Connection** button now prefers a netbox-secrets `Secret` on
