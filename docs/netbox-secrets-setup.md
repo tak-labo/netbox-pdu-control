@@ -240,6 +240,39 @@ docker compose exec netbox cat /opt/netbox/pdu-sync.pem | head -1
 # -----BEGIN PRIVATE KEY----- 等が表示されればOK
 ```
 
+### サービスアカウントの権限モデル(2層構造)
+
+サービスアカウント(`pdu-sync`)まわりの認可は、独立した2つの層で構成されます。**どちらか一方
+だけでは不十分**で、両方が揃って初めてバックグラウンドジョブがSecretを復号できます。
+
+```mermaid
+graph TB
+    subgraph Layer1["① Unixファイルパーミッション(ホスト〜コンテナ)"]
+        HostFile["ホスト側 pdu-sync.pem<br/>owner=root:root, mode=640"]
+        Mount["bind mount (:ro)"]
+        ContainerUser["netbox コンテナプロセス<br/>uid=999, gid=0(root)"]
+        HostFile -->|"group(root)経由で読み取り可"| Mount --> ContainerUser
+    end
+
+    subgraph Layer2["② NetBox ObjectPermission(アプリ内DB)"]
+        Perm["secret-access<br/>actions=[view]<br/>models=Secret/SecretRole/UserKey"]
+        PduSyncUser["NetBoxユーザー pdu-sync<br/>is_superuser=False"]
+        Perm -->|付与| PduSyncUser
+    end
+
+    ContainerUser -->|"private_key=pdu-sync.pemの中身"| Decrypt["UserKey.get_master_key()<br/>(credentials.py)"]
+    PduSyncUser -->|"UserKey.objects.get(user__username='pdu-sync')"| Decrypt
+    Decrypt --> MasterKey["master_key を取得"]
+    MasterKey --> SecretDecrypt["Secret.decrypt(master_key)<br/>→ PDU の username/password"]
+```
+
+- **① が欠けると**(パーミッション不足): コンテナがそもそも秘密鍵ファイルを読めず
+  `_master_key_from_service_account()` が例外を投げる → ログにERROR記録 → 平文フィールドへフォールバック
+- **② が欠けると**(ObjectPermission未設定・view権限なし): `credentials.py` は
+  `UserKey.objects.get(...)` を生のmodelマネージャで呼ぶため②は実は直接は参照されないが、
+  `pdu-sync` アカウント自体でNetBox UI/APIからSecretsを閲覧・管理する場合はこちらが必要になる
+  (詳細は本節冒頭の権限テーブルを参照)
+
 ---
 
 ## 5. PDU の認証情報を Secret として登録する
