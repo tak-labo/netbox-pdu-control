@@ -52,6 +52,7 @@
 
   btn.addEventListener("click", function () {
     const data = new FormData();
+    data.append("device", fieldValue("id_device"));
     data.append("vendor", fieldValue("id_vendor"));
     data.append("api_url", fieldValue("id_api_url"));
     data.append("api_username", fieldValue("id_api_username"));
