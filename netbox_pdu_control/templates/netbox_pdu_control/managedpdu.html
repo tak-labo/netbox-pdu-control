@@ -25,6 +25,10 @@
             <td>{{ object.device.name }}</td>
           </tr>
           <tr>
+            <th scope="row">IP Address</th>
+            <td>{{ object.ip_address|linkify|placeholder }}</td>
+          </tr>
+          <tr>
             <th scope="row">API URL</th>
             <td><code>{{ object.api_url }}</code></td>
           </tr>

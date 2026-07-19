@@ -28,6 +28,7 @@ class ManagedPDUTable(NetBoxTable):
         verbose_name="Managed PDU",
     )
     device = tables.Column(linkify=True)
+    ip_address = tables.Column(linkify=True, verbose_name="IP Address")
     pdu_name = tables.Column(verbose_name="Name", orderable=False)
     api_url = tables.Column(verbose_name="API URL")
     sync_enabled = tables.BooleanColumn(verbose_name="Sync")
@@ -48,6 +49,7 @@ class ManagedPDUTable(NetBoxTable):
             "id",
             "name",
             "device",
+            "ip_address",
             "pdu_name",
             "api_url",
             "pdu_model",

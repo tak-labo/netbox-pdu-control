@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Test Connection** button on the ManagedPDU Add/Edit form: verifies
+  vendor/API URL/credentials work before saving, without writing anything
+  to NetBox (mirrors the pattern used by netbox-bmc)
+- `ManagedPDU.ip_address`: optional FK to `ipam.IPAddress`, filtered to IPs
+  assigned to the selected Device. Selecting one auto-fills the API URL
+  field with `https://<ip>` via JS; the API URL field remains the value
+  actually used for connections
+
+---
+
 ## [0.4.0] - 2026-07-18
 
 ### **Breaking Changes**

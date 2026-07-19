@@ -105,6 +105,77 @@ class ManagedPDUViewTest(PluginViewTestCase):
         self.assertEqual(response.redirect_chain[0][0], self._get_url("list"))
 
 
+class ManagedPDUConnectionTestViewTest(PluginViewTestCase):
+    """Tests for the pre-save "Test Connection" endpoint used by the Add/Edit form."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse("plugins:netbox_pdu_control:managedpdu_test_connection")
+
+    def _post(self, data):
+        return self.client.post(self.url, data)
+
+    def test_without_permission_returns_403(self):
+        response = self._post({"vendor": VendorChoices.RARITAN, "api_url": "https://192.168.1.100"})
+        self.assertHttpStatus(response, 403)
+
+    def test_missing_vendor_returns_ok_false(self):
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+        response = self._post({"api_url": "https://192.168.1.100"})
+        self.assertHttpStatus(response, 200)
+        self.assertFalse(response.json()["ok"])
+
+    def test_missing_api_url_returns_ok_false(self):
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+        response = self._post({"vendor": VendorChoices.RARITAN})
+        self.assertHttpStatus(response, 200)
+        self.assertFalse(response.json()["ok"])
+
+    def test_unknown_vendor_returns_ok_false(self):
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+        response = self._post({"vendor": "fakevendor", "api_url": "https://192.168.1.100"})
+        self.assertHttpStatus(response, 200)
+        self.assertFalse(response.json()["ok"])
+
+    @patch("netbox_pdu_control.backends.raritan.requests.Session")
+    @patch("netbox_pdu_control.backends.raritan.RaritanPDUClient.get_pdu_info")
+    def test_success(self, mock_get_pdu_info, mock_session):
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+        mock_get_pdu_info.return_value = {"model": "PX3-TEST", "firmware_version": "4.3.1"}
+        response = self._post(
+            {
+                "vendor": VendorChoices.RARITAN,
+                "api_url": "https://192.168.1.100",
+                "api_username": "admin",
+                "api_password": "secret",
+                "verify_ssl": "false",
+            }
+        )
+        self.assertHttpStatus(response, 200)
+        body = response.json()
+        self.assertTrue(body["ok"])
+        self.assertIn("PX3-TEST", body["message"])
+
+    @patch("netbox_pdu_control.backends.raritan.requests.Session")
+    @patch("netbox_pdu_control.backends.raritan.RaritanPDUClient.get_pdu_info")
+    def test_pdu_client_error_returns_ok_false(self, mock_get_pdu_info, mock_session):
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+        mock_get_pdu_info.side_effect = PDUClientError("Connection refused")
+        response = self._post(
+            {
+                "vendor": VendorChoices.RARITAN,
+                "api_url": "https://192.168.1.100",
+                "api_username": "admin",
+                "api_password": "secret",
+                "verify_ssl": "false",
+            }
+        )
+        self.assertHttpStatus(response, 200)
+        body = response.json()
+        self.assertFalse(body["ok"])
+        self.assertIn("Connection refused", body["message"])
+
+
 class PDUOutletViewTest(PluginViewTestCase):
     """Tests for PDUOutlet views."""
 

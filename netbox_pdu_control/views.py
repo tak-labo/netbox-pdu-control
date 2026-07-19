@@ -6,6 +6,7 @@ import django_rq
 from dcim.models import PowerOutlet, PowerPort
 from django.contrib import messages
 from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -15,7 +16,7 @@ from netbox.views import generic
 from utilities.views import register_model_view
 
 from . import filtersets, forms, jobs, models, tables
-from .backends import get_pdu_client
+from .backends import _VENDOR_BACKENDS, get_pdu_client
 from .backends.base import PDUClientError
 from .choices import OutletStatusChoices, SyncStatusChoices
 from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
@@ -71,6 +72,53 @@ class ManagedPDUListView(generic.ObjectListView):
 class ManagedPDUEditView(generic.ObjectEditView):
     queryset = models.ManagedPDU.objects.all()
     form = forms.ManagedPDUForm
+    template_name = "netbox_pdu_control/managedpdu_edit.html"
+
+
+class ManagedPDUConnectionTestView(View):
+    """
+    POST: test PDU connectivity using the current (possibly unsaved) Add/Edit
+    form values, rather than whatever is already persisted. Returns JSON.
+    """
+
+    def post(self, request):
+        if not (
+            request.user.has_perm("netbox_pdu_control.add_managedpdu")
+            or request.user.has_perm("netbox_pdu_control.change_managedpdu")
+        ):
+            return JsonResponse({"ok": False, "message": _("Permission denied.")}, status=403)
+
+        vendor = request.POST.get("vendor")
+        backend_class = _VENDOR_BACKENDS.get(vendor)
+        if backend_class is None:
+            return JsonResponse({"ok": False, "message": _("Please select a vendor first.")})
+
+        api_url = request.POST.get("api_url") or ""
+        if not api_url:
+            return JsonResponse({"ok": False, "message": _("Please enter an API URL first.")})
+
+        client = backend_class(
+            base_url=api_url,
+            username=request.POST.get("api_username", ""),
+            password=request.POST.get("api_password", ""),
+            verify_ssl=request.POST.get("verify_ssl") == "true",
+        )
+
+        try:
+            pdu_info = client.get_pdu_info()
+        except PDUClientError as e:
+            return JsonResponse({"ok": False, "message": str(e)[:500]})
+        except Exception as e:
+            logger.error("Connection test failed unexpectedly: %s", e)
+            return JsonResponse({"ok": False, "message": str(e)[:500]})
+
+        parts = [f"vendor={vendor}"]
+        if pdu_info.get("model"):
+            parts.append(f"model={pdu_info['model']}")
+        if pdu_info.get("firmware_version"):
+            parts.append(f"firmware={pdu_info['firmware_version']}")
+        message = _("Connected (%(details)s)") % {"details": ", ".join(parts)}
+        return JsonResponse({"ok": True, "message": message})
 
 
 @register_model_view(models.ManagedPDU, name="delete")

@@ -1,6 +1,7 @@
 from dcim.models import Device, DeviceRole
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from ipam.models import IPAddress
 from netbox.forms import NetBoxModelFilterSetForm, NetBoxModelForm
 from utilities.forms.fields import (
     CommentField,
@@ -26,11 +27,20 @@ class ManagedPDUForm(NetBoxModelForm):
         help_text=_("Select the PDU device registered in NetBox"),
         query_params={"role_id": "$device_role"},
     )
+    ip_address = DynamicModelChoiceField(
+        queryset=IPAddress.objects.all(),
+        required=False,
+        label=_("IP Address"),
+        help_text=_("NetBox-registered IP assigned to the selected Device; auto-fills API URL"),
+        query_params={"device_id": "$device"},
+    )
     comments = CommentField()
 
     fieldsets = (
         FieldSet("device_role", "device", name="Device"),
-        FieldSet("vendor", "api_url", "api_username", "api_password", "verify_ssl", name="Connection"),
+        FieldSet(
+            "ip_address", "vendor", "api_url", "api_username", "api_password", "verify_ssl", name="Connection"
+        ),
         FieldSet("sync_enabled", "metrics_enabled", name="Polling"),
         FieldSet("grafana_panel_base_url", name="Grafana"),
         FieldSet("comments", "tags", name="Other"),
@@ -40,6 +50,7 @@ class ManagedPDUForm(NetBoxModelForm):
         model = ManagedPDU
         fields = (
             "device",
+            "ip_address",
             "vendor",
             "api_url",
             "api_username",

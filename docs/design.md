@@ -85,6 +85,7 @@ erDiagram
     ManagedPDU {
         int id PK
         int device_id FK "OneToOne, on_delete=CASCADE"
+        int ip_address_id FK "ipam.IPAddress, 任意, SET_NULL"
         string vendor "raritan / ubiquiti"
         string api_url
         string api_username
@@ -405,8 +406,20 @@ NetBox標準の `get_model_urls()` によるCRUD URL(一覧・詳細・作成・
 - `managed-pdus/<pk>/sync/` — フルシンク
 - `managed-pdus/<pk>/get-metrics/` — メトリクス取得
 - `managed-pdus/<pk>/bulk-power/` — 複数アウトレット一括電源制御
+- `managed-pdus/test-connection/`(pkなし)— Add/Edit フォームの入力値(未保存)で接続テスト
 - `outlets/<pk>/{sync,power-on,power-off,power-cycle,push-name}/`
 - `inlets/<pk>/{sync,push-name}/`
+
+**Add/Edit フォームの接続テスト・IP自動入力:** `ManagedPDUEditView` は `template_name` を
+`netbox_pdu_control/managedpdu_edit.html` に明示的に上書きしている(NetBoxの generic
+`ObjectEditView` は `<app>/<model>_edit.html` を自動探索しないため、`netbox-bmc` と同様に
+明示指定が必要)。このテンプレートで:
+- **Test Connection** ボタン: フォームの vendor/api_url/api_username/api_password/verify_ssl を
+  `ManagedPDUConnectionTestView` に fetch で POST し、保存前に接続確認する(DBには一切書き込まない)
+- **IP Address** ピッカー(`ip_address` フィールド、`query_params={"device_id": "$device"}` で
+  選択中の Device に紐づくIPのみ表示): 選択すると JS が `/api/ipam/ip-addresses/<id>/` を
+  fetch し、`api_url` フィールドに `https://<ip>` を自動入力する(`ip_address` 自体はDBに
+  保存されるが、実際の接続には `api_url` の値のみが使われる)
 
 ---
 
