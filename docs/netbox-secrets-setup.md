@@ -11,6 +11,13 @@
 ## 1. 前提: netbox-secrets のインストール・有効化
 
 netbox-secrets 自体のインストール手順は [公式リポジトリ](https://github.com/Onemind-Services-LLC/netbox-secrets) に従ってください。
+以下は本プラグインとの組み合わせで最低限必要な設定です。
+
+netbox-pdu-control 側は netbox-secrets を**ソフト依存**として扱うため(`pyproject.toml` に依存関係として追加していません)、
+netbox-secrets が未導入でも既存の平文フィールド(`API Username` / `API Password`)がそのまま動作します。
+以降の手順は netbox-secrets を実際に使う場合のみ必要です。
+
+### 通常環境(非Docker)
 
 ```bash
 pip install netbox-secrets
@@ -34,6 +41,51 @@ PLUGINS_CONFIG = {
 }
 ```
 
+マイグレーションと static ファイル収集:
+
+```bash
+python manage.py migrate
+python manage.py collectstatic --no-input
+```
+
+### Docker 環境(netbox-docker)
+
+参考: [Using NetBox Plugins](https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins)
+(netbox-pdu-control 自体の Docker セットアップ手順は [README](../README.md#docker-netbox-docker) を参照)
+
+**1. `plugin_requirements.txt` に追加**
+
+```
+netbox-pdu-control
+netbox-secrets
+```
+
+**2. `configuration/plugins.py` に追加**
+
+```python
+PLUGINS = ["netbox_pdu_control", "netbox_secrets"]
+
+PLUGINS_CONFIG = {
+    "netbox_secrets": {
+        "apps": [
+            "dcim.device",
+        ],
+    },
+    "netbox_pdu_control": {
+        # ...既存の設定...
+    },
+}
+```
+
+**3. ビルド・起動・マイグレーション**
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+docker compose exec netbox python manage.py migrate
+docker compose exec netbox python manage.py collectstatic --no-input
+```
+
 **`apps` について:** netbox-secrets がどの NetBox モデルに Secret を紐付け可能にするかを、
 `app_label.model` 形式で列挙する設定です。ここに列挙されていないモデルには Secret を
 紐付けることはできません。効果は2つあります:
@@ -45,17 +97,6 @@ PLUGINS_CONFIG = {
 本プラグインは PDU の認証情報を **Device** に紐付ける設計(§2〜§5 参照)なので、
 `"apps": ["dcim.device"]` が必須です。他のモデル(仮想マシンなど)にも netbox-secrets を
 使いたい場合は、そのモデルをこのリストに追記してください。
-
-マイグレーションと static ファイル収集:
-
-```bash
-python manage.py migrate
-python manage.py collectstatic --no-input
-```
-
-netbox-pdu-control 側は netbox-secrets を**ソフト依存**として扱うため(`pyproject.toml` に依存関係として追加していません)、
-netbox-secrets が未導入でも既存の平文フィールド(`API Username` / `API Password`)がそのまま動作します。
-以降の手順は netbox-secrets を実際に使う場合のみ必要です。
 
 ---
 
@@ -98,12 +139,14 @@ User Key が自動的にマスターキーを生成します。
 4. `pdu-sync` の**秘密鍵**をNetBoxサーバー上の安全な場所に配置する(例: `/opt/netbox/pdu-sync.pem`、
    パーミッションは `600`、所有者は NetBox 実行ユーザーのみ読み取り可能に)
 
+#### 通常環境(非Docker)
+
 ```bash
 chmod 600 /opt/netbox/pdu-sync.pem
 chown netbox:netbox /opt/netbox/pdu-sync.pem
 ```
 
-5. `configuration.py` に追記:
+`configuration.py` に追記:
 
 ```python
 PLUGINS_CONFIG = {
@@ -115,7 +158,58 @@ PLUGINS_CONFIG = {
 }
 ```
 
-6. NetBox を再起動してPLUGINS_CONFIGを反映する
+NetBox を再起動してPLUGINS_CONFIGを反映する。
+
+#### Docker 環境(netbox-docker)
+
+秘密鍵はコンテナ内のファイルシステムに存在しないため、**ホスト側からbind mountする**必要があります
+(イメージに焼き込まない — 秘密鍵をビルドコンテキストやリポジトリに含めないこと)。
+
+1. ホスト側に鍵の置き場所を用意し、パーミッションを絞る(リポジトリの外、`.gitignore` 対象にする):
+
+```bash
+mkdir -p ../netbox-docker/secrets
+mv pdu-sync.pem ../netbox-docker/secrets/
+chmod 600 ../netbox-docker/secrets/pdu-sync.pem
+```
+
+2. `docker-compose.override.yml` の `netbox` (と、定期実行させる場合は `netbox-worker`)サービスに
+   volumeを追加してコンテナ内へ読み取り専用でマウントする:
+
+```yaml
+services:
+  netbox:
+    volumes:
+      - ./secrets/pdu-sync.pem:/opt/netbox/pdu-sync.pem:ro,z
+  netbox-worker:
+    volumes:
+      - ./secrets/pdu-sync.pem:/opt/netbox/pdu-sync.pem:ro,z
+```
+
+3. `configuration/plugins.py` に追記(コンテナ内から見えるパスを指定):
+
+```python
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # ...既存の設定...
+        "service_account": "pdu-sync",
+        "service_private_key_path": "/opt/netbox/pdu-sync.pem",
+    },
+}
+```
+
+4. コンテナを再作成してマウント・設定を反映する:
+
+```bash
+docker compose up -d --force-recreate netbox netbox-worker
+```
+
+5. マウントできているか確認:
+
+```bash
+docker compose exec netbox cat /opt/netbox/pdu-sync.pem | head -1
+# -----BEGIN PRIVATE KEY----- 等が表示されればOK
+```
 
 ---
 
