@@ -25,10 +25,6 @@
             <td><code>{{ object.api_url }}</code></td>
           </tr>
           <tr>
-            <th scope="row">API Username</th>
-            <td>{{ object.api_username }}</td>
-          </tr>
-          <tr>
             <th scope="row">Verify SSL</th>
             <td>{% checkmark object.verify_ssl %}</td>
           </tr>
@@ -89,6 +85,47 @@
       </div>
       {% endif %}
       {% endwith %}
+      <div class="card mt-3">
+        <h5 class="card-header">Credentials</h5>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">Source</th>
+            <td>
+              {% if secrets_available %}
+                {% if secret_found %}
+                  <i class="mdi mdi-lock-check text-success"></i>
+                  netbox-secrets — Secret found (pdu-credentials role)
+                {% else %}
+                  <i class="mdi mdi-lock-alert text-warning"></i>
+                  netbox-secrets — No secret found for this device
+                  <div class="text-muted small mt-1">
+                    Add a Secret with role <code>pdu-credentials</code>
+                    assigned to <strong>{{ object.device }}</strong>.<br>
+                    Set <em>Name</em> = PDU username,
+                    <em>Plaintext</em> = PDU password.
+                    {% if object.api_username %}
+                      Falling back to plaintext fields.
+                    {% endif %}
+                  </div>
+                {% endif %}
+              {% else %}
+                <i class="mdi mdi-file-document-outline text-muted"></i>
+                Plaintext (netbox-secrets not installed)
+              {% endif %}
+            </td>
+          </tr>
+          {% if object.api_username and not secret_found %}
+            <tr>
+              <th scope="row">Username</th>
+              <td><code>{{ object.api_username }}</code></td>
+            </tr>
+            <tr>
+              <th scope="row">Password</th>
+              <td><em class="text-muted">stored (plaintext)</em></td>
+            </tr>
+          {% endif %}
+        </table>
+      </div>
       {% include 'inc/panels/custom_fields.html' %}
     </div>
     <div class="col col-md-6">
