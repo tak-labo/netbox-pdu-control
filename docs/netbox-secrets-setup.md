@@ -129,9 +129,32 @@ User Key が自動的にマスターキーを生成します。
 ログインユーザーのセッションキーではなく、専用のサービスアカウントの秘密鍵でマスターキーを復号します。
 
 1. NetBox に新規ユーザーを作成する(例: `pdu-sync`)。ログイン用途ではないので強力なランダムパスワードを設定し、
-   グループ/パーミッションは Secret の読み取りに必要な最小限に絞る
+   `is_superuser` は付けず、Permission (ObjectPermission) で以下のように最小権限を付与する:
+   - **定常運用時(推奨)**: `netbox_secrets.secret` / `secretrole` / `userkey` に対する **`view`** のみ。
+     `credentials.py` はこれら3モデルを読むだけで、`sessionkey` は参照しない(セッションキー経由の
+     復号はログインユーザー本人の場合のみ使われる別経路のため)。
+   - **User Key の新規作成時のみ一時的に**: `netbox_secrets.userkey` への **`add`** も必要
+     (`view` だけでは Secrets → User Keys → Add でオブジェクトを作成できない)。作成完了後は
+     `view` のみに戻してよい。
+   - **鍵ローテーション時のみ一時的に**: 既存 User Key の `public_key` を更新する場合は `add` ではなく
+     **`change`** が必要。これも作業後は `view` のみに戻す。
+
+   **設定例(Admin → Permissions → Add、URL: `/users/permissions/add/`)**:
+
+   | 項目 | 値 |
+   |---|---|
+   | Name | `secret-access`(用途が分かる名前ならなんでも良い) |
+   | Object types | `netbox_secrets \| Secret` / `netbox_secrets \| Secret Role` / `netbox_secrets \| User Key` の3つ(`Session Key` は含めない) |
+   | Actions | `View` のみ(User Key 作成直後は一時的に `Add` を追加 → 作成後に外す) |
+   | Users | `pdu-sync` |
+   | Groups | (空のまま) |
+   | Constraints | (空のまま、全インスタンス対象) |
+
+   実際にこの設定で運用できることを確認済み(`view` のみで `credentials.py` のサービスアカウント
+   経路が正常に動作し、`add` は User Key 作成時にのみ一時的に必要だった)。
 2. このユーザーで(または管理権限を持つユーザーが代理で)RSA鍵ペアを生成する
-3. **Secrets → User Keys → Add** で `pdu-sync` ユーザーの User Key を作成
+3. **Secrets → User Keys → Add** で `pdu-sync` ユーザーの User Key を作成(この操作には上記の一時的な
+   `add` 権限が必要)
    - 手順3で最初のUser Keyが既に存在する場合、この新しいUser Keyは非アクティブな状態で作成される
    - **Secrets → User Keys → Activate User Keys** を開き、既にアクティブな鍵を持つ管理者が
      自分の秘密鍵を使って `pdu-sync` の User Key を有効化する(マスターキーが `pdu-sync` の公開鍵でも
@@ -170,8 +193,14 @@ NetBox を再起動してPLUGINS_CONFIGを反映する。
 ```bash
 mkdir -p ../netbox-docker/secrets
 mv pdu-sync.pem ../netbox-docker/secrets/
-chmod 600 ../netbox-docker/secrets/pdu-sync.pem
+chmod 640 ../netbox-docker/secrets/pdu-sync.pem
 ```
+
+**パーミッションについて:** netbox-docker の `netbox`/`netbox-worker` コンテナは `uid=999`
+(`netbox` ユーザー)・`gid=0`(`root` グループ)で動作します。ファイル所有者を `root:root` の
+ままにする場合、`600`(所有者のみ読み取り可)ではコンテナ内の `netbox` ユーザーが読み取れず
+`Permission denied` になります。**`640`**(所有者rw・グループr)にして、グループ経由で
+読み取れるようにしてください。
 
 2. `docker-compose.override.yml` の `netbox` (と、定期実行させる場合は `netbox-worker`)サービスに
    volumeを追加してコンテナ内へ読み取り専用でマウントする:
@@ -257,6 +286,7 @@ docker compose logs netbox | grep netbox_pdu_control.credentials
 | バックグラウンドジョブ実行時にフォールバックする | `service_account` / `service_private_key_path` が未設定、またはそのユーザーの User Key が非アクティブ |
 | エラーログに "No UserKey found" | 該当ユーザー(ログインユーザーまたはサービスアカウント)の User Key が作成されていない |
 | エラーログに "No active session key" | ブラウザ側でセッションキーが未取得(netbox-secrets 側のUI操作を一度行う) |
+| `docker compose exec netbox cat <pem>` で `Permission denied`(Docker環境) | 秘密鍵ファイルのパーミッションが `600` かつ所有者が `root` のまま。コンテナ内の `netbox` ユーザーは `uid=999`/`gid=0(root)` で動作するため、`chmod 640` でグループ読み取りを許可する必要がある |
 
 ---
 
