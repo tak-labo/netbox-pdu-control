@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   field with `https://<ip>` via JS; the API URL field remains the value
   actually used for connections
 
+### Changed
+- The **Test Connection** button now prefers a netbox-secrets `Secret` on
+  the selected Device over the typed API Username/Password fields, matching
+  `get_pdu_client()`'s own credential priority
+
 ---
 
 ## [0.4.0] - 2026-07-18

@@ -415,7 +415,10 @@ NetBox標準の `get_model_urls()` によるCRUD URL(一覧・詳細・作成・
 `ObjectEditView` は `<app>/<model>_edit.html` を自動探索しないため、`netbox-bmc` と同様に
 明示指定が必要)。このテンプレートで:
 - **Test Connection** ボタン: フォームの vendor/api_url/api_username/api_password/verify_ssl を
-  `ManagedPDUConnectionTestView` に fetch で POST し、保存前に接続確認する(DBには一切書き込まない)
+  `ManagedPDUConnectionTestView` に fetch で POST し、保存前に接続確認する(DBには一切書き込まない)。
+  選択中の Device に netbox-secrets の Secret(role `pdu-credentials`)が存在する場合はそちらを
+  優先し、なければフォーム入力値を使う(`get_pdu_client()` と同じ優先順位、`credentials.get_credential()`
+  を未保存の `ManagedPDU` インスタンスに対して呼び出すことで実現)
 - **IP Address** ピッカー(`ip_address` フィールド、`query_params={"device_id": "$device"}` で
   選択中の Device に紐づくIPのみ表示): 選択すると JS が `/api/ipam/ip-addresses/<id>/` を
   fetch し、`api_url` フィールドに `https://<ip>` を自動入力する(`ip_address` 自体はDBに

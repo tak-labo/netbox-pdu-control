@@ -3,7 +3,7 @@ import re
 from datetime import timedelta
 
 import django_rq
-from dcim.models import PowerOutlet, PowerPort
+from dcim.models import Device, PowerOutlet, PowerPort
 from django.contrib import messages
 from django.db.models import Count
 from django.http import JsonResponse
@@ -19,6 +19,7 @@ from . import filtersets, forms, jobs, models, tables
 from .backends import _VENDOR_BACKENDS, get_pdu_client
 from .backends.base import PDUClientError
 from .choices import OutletStatusChoices, SyncStatusChoices
+from .credentials import get_credential
 from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
 
 logger = logging.getLogger(__name__)
@@ -97,10 +98,23 @@ class ManagedPDUConnectionTestView(View):
         if not api_url:
             return JsonResponse({"ok": False, "message": _("Please enter an API URL first.")})
 
+        api_username = request.POST.get("api_username", "")
+        api_password = request.POST.get("api_password", "")
+
+        # Prefer a netbox-secrets Secret on the selected Device, if any; otherwise
+        # fall back to whatever is currently typed into the form. This mirrors
+        # get_pdu_client()'s own credential priority (see credentials.py).
+        device = Device.objects.filter(pk=request.POST.get("device")).first()
+        if device is not None:
+            unsaved_pdu = models.ManagedPDU(device=device, api_username=api_username, api_password=api_password)
+            credential = get_credential(unsaved_pdu, request=request)
+            api_username = credential.username
+            api_password = credential.password
+
         client = backend_class(
             base_url=api_url,
-            username=request.POST.get("api_username", ""),
-            password=request.POST.get("api_password", ""),
+            username=api_username,
+            password=api_password,
             verify_ssl=request.POST.get("verify_ssl") == "true",
         )
 

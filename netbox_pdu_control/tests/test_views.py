@@ -111,6 +111,7 @@ class ManagedPDUConnectionTestViewTest(PluginViewTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.url = reverse("plugins:netbox_pdu_control:managedpdu_test_connection")
+        cls.device = create_test_device("PDU-CONNTEST-1")
 
     def _post(self, data):
         return self.client.post(self.url, data)
@@ -174,6 +175,70 @@ class ManagedPDUConnectionTestViewTest(PluginViewTestCase):
         body = response.json()
         self.assertFalse(body["ok"])
         self.assertIn("Connection refused", body["message"])
+
+    @patch("netbox_pdu_control.views.get_credential")
+    def test_uses_secret_credential_over_typed_form_values(self, mock_get_credential):
+        """When the selected Device has a netbox-secrets Secret, it takes priority over typed fields."""
+        from ..credentials import Credential
+
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+        mock_get_credential.return_value = Credential(
+            username="secret_user", password="secret_pass", source="netbox_secrets"
+        )
+
+        mock_client = MagicMock()
+        mock_client.get_pdu_info.return_value = {"model": "PX3-TEST"}
+        mock_backend_class = MagicMock(return_value=mock_client)
+
+        with patch.dict("netbox_pdu_control.views._VENDOR_BACKENDS", {VendorChoices.RARITAN: mock_backend_class}):
+            response = self._post(
+                {
+                    "device": self.device.pk,
+                    "vendor": VendorChoices.RARITAN,
+                    "api_url": "https://192.168.1.100",
+                    "api_username": "typed_user",
+                    "api_password": "typed_pass",
+                    "verify_ssl": "false",
+                }
+            )
+
+        self.assertHttpStatus(response, 200)
+        self.assertTrue(response.json()["ok"])
+        mock_backend_class.assert_called_once_with(
+            base_url="https://192.168.1.100",
+            username="secret_user",
+            password="secret_pass",
+            verify_ssl=False,
+        )
+
+    def test_uses_typed_form_values_when_device_has_no_secret(self):
+        """No mocking of get_credential(): with no matching Secret, the typed fields are used as-is."""
+        self.add_permissions("netbox_pdu_control.add_managedpdu")
+
+        mock_client = MagicMock()
+        mock_client.get_pdu_info.return_value = {"model": "PX3-TEST"}
+        mock_backend_class = MagicMock(return_value=mock_client)
+
+        with patch.dict("netbox_pdu_control.views._VENDOR_BACKENDS", {VendorChoices.RARITAN: mock_backend_class}):
+            response = self._post(
+                {
+                    "device": self.device.pk,
+                    "vendor": VendorChoices.RARITAN,
+                    "api_url": "https://192.168.1.100",
+                    "api_username": "typed_user",
+                    "api_password": "typed_pass",
+                    "verify_ssl": "false",
+                }
+            )
+
+        self.assertHttpStatus(response, 200)
+        self.assertTrue(response.json()["ok"])
+        mock_backend_class.assert_called_once_with(
+            base_url="https://192.168.1.100",
+            username="typed_user",
+            password="typed_pass",
+            verify_ssl=False,
+        )
 
 
 class PDUOutletViewTest(PluginViewTestCase):
