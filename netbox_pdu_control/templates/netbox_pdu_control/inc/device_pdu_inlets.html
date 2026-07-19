@@ -1,0 +1,43 @@
+{% load humanize %}
+<div class="card">
+  <h2 class="card-header">PDU Inlets</h2>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Inlet</th>
+        <th class="text-end">W</th>
+        <th class="text-end">A</th>
+        <th class="text-end">V</th>
+        <th class="text-end">PF</th>
+        <th class="text-end">Wh</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inlet in pdu_inlets %}
+      <tr>
+        <td><a href="{{ inlet.get_absolute_url }}">Inlet {{ inlet.inlet_number }}{% if inlet.inlet_name %} — {{ inlet.inlet_name }}{% endif %}</a></td>
+        <td class="text-end">{% if inlet.power_w is not None %}{{ inlet.power_w|floatformat:1|intcomma }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if inlet.current_a is not None %}{{ inlet.current_a|floatformat:2 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if inlet.voltage_v is not None %}{{ inlet.voltage_v|floatformat:1 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if inlet.power_factor is not None %}{{ inlet.power_factor|floatformat:2 }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if inlet.energy_wh is not None %}{{ inlet.energy_wh|floatformat:0|intcomma }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% if pdu_inlets|length > 1 %}
+    <tfoot>
+      <tr class="table-secondary fw-bold">
+        <td>Total</td>
+        <td class="text-end">{% if total_power_w is not None %}{{ total_power_w|floatformat:1|intcomma }}{% else %}—{% endif %}</td>
+        <td class="text-end">{% if total_current_a is not None %}{{ total_current_a|floatformat:2 }}{% else %}—{% endif %}</td>
+        <td class="text-end">—</td>
+        <td class="text-end">—</td>
+        <td class="text-end">{% if total_energy_wh is not None %}{{ total_energy_wh|floatformat:0|intcomma }}{% else %}—{% endif %}</td>
+      </tr>
+    </tfoot>
+    {% endif %}
+  </table>
+  {% if last_updated %}
+  <div class="card-footer text-muted small">Last updated: {{ last_updated }}</div>
+  {% endif %}
+</div>

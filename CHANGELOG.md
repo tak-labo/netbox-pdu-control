@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   netbox-bmc's Credentials card. The redundant "API Username" row was
   removed from the main info card (now shown here instead, only when
   falling back to plaintext)
+- Device detail page: new "PDU Inlets" card (right-column plugin panel)
+  shown on the PDU's own Device page, displaying actual input power draw
+  per inlet (W/A/V/PF/Wh), with a Total row when the PDU has multiple
+  inlets. Complements the existing "PDU Outlets" card, which only appears
+  on devices connected *to* a PDU's outlets
 
 ### Changed
 - ManagedPDU detail page: consolidated the "PDU WebGUI" link (previously in
