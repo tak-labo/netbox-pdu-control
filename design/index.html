@@ -1,0 +1,1382 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://tak-labo.github.io/netbox-pdu-control/design/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../netbox-secrets-setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Design - NetBox PDU Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#詳細設計書" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NetBox PDU Control" class="md-header__button md-logo" aria-label="NetBox PDU Control" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NetBox PDU Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tak-labo/netbox-pdu-control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tak-labo/netbox-pdu-control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NetBox PDU Control" class="md-nav__button md-logo" aria-label="NetBox PDU Control" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NetBox PDU Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tak-labo/netbox-pdu-control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tak-labo/netbox-pdu-control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#詳細設計書" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        詳細設計書
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="詳細設計書">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-概要" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-全体アーキテクチャ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 全体アーキテクチャ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-データモデルER-図" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. データモデル(ER 図)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-ベンダーバックエンド抽象化" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. ベンダーバックエンド抽象化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-主要シーケンス" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 主要シーケンス
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 主要シーケンス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-PDU-フルシンクManagedPDUSyncView" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 PDU フルシンク(ManagedPDUSyncView)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-アウトレット電源制御ONOFF-は同期Cycle-は非同期" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 アウトレット電源制御(ON/OFF は同期、Cycle は非同期)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-名前プッシュNetBox--PDU双方向ラベル同期" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 名前プッシュ(NetBox → PDU、双方向ラベル同期)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-メトリクス取得Prometheus-対応ベンダーのみ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 メトリクス取得(Prometheus 対応ベンダーのみ)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-バックグラウンド処理定期実行" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. バックグラウンド処理・定期実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-REST-API--GraphQL" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. REST API / GraphQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-URL構成urlspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. URL構成(urls.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-セキュリティ上の考慮事項" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. セキュリティ上の考慮事項
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-関連ドキュメント" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. 関連ドキュメント
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../netbox-secrets-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    netbox-secrets Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#詳細設計書" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        詳細設計書
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="詳細設計書">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-概要" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-全体アーキテクチャ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 全体アーキテクチャ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-データモデルER-図" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. データモデル(ER 図)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-ベンダーバックエンド抽象化" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. ベンダーバックエンド抽象化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-主要シーケンス" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 主要シーケンス
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 主要シーケンス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-PDU-フルシンクManagedPDUSyncView" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 PDU フルシンク(ManagedPDUSyncView)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-アウトレット電源制御ONOFF-は同期Cycle-は非同期" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 アウトレット電源制御(ON/OFF は同期、Cycle は非同期)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-名前プッシュNetBox--PDU双方向ラベル同期" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 名前プッシュ(NetBox → PDU、双方向ラベル同期)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-メトリクス取得Prometheus-対応ベンダーのみ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 メトリクス取得(Prometheus 対応ベンダーのみ)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-バックグラウンド処理定期実行" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. バックグラウンド処理・定期実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-REST-API--GraphQL" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. REST API / GraphQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-URL構成urlspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. URL構成(urls.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-セキュリティ上の考慮事項" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. セキュリティ上の考慮事項
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-関連ドキュメント" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. 関連ドキュメント
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Design</h1>
+
+<h2 id="詳細設計書">詳細設計書<a class="headerlink" href="#詳細設計書" title="Permanent link">&para;</a></h2>
+<p>本ドキュメントは NetBox PDU Control プラグインの内部設計をまとめたものです。コード変更時の参照用として、アーキテクチャ・データモデル・主要な処理フローを図とともに解説します。</p>
+<p>対象読者: 本プラグインの開発・保守を行うエンジニア。</p>
+<hr />
+<h3 id="1-概要">1. 概要<a class="headerlink" href="#1-概要" title="Permanent link">&para;</a></h3>
+<p>NetBox PDU Control は、NetBox に登録された <code>Device</code>(PDU 本体)に対して、ベンダー各社の管理 API 経由でアウトレット/インレットの状態取得・電源制御・名前同期を行う NetBox プラグインです。</p>
+<ul>
+<li>対応ベンダー: Raritan(JSON-RPC 2.0)、Ubiquiti UniFi USP-PDU-Pro(REST API)</li>
+<li>ベンダー差異は <code>backends/</code> 配下の抽象化レイヤーに閉じ込め、View 層・同期ロジックはベンダー非依存</li>
+<li>NetBox 標準の generic view / DRF / GraphQL(strawberry-django)パターンに準拠</li>
+</ul>
+<hr />
+<h3 id="2-全体アーキテクチャ">2. 全体アーキテクチャ<a class="headerlink" href="#2-全体アーキテクチャ" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TB
+    subgraph NetBox
+        UI["Web UI&lt;br/&gt;(managedpdu.html ほか)"]
+        API["REST API&lt;br/&gt;(api/views.py, api/serializers.py)"]
+        GQL["GraphQL&lt;br/&gt;(graphql/schema.py, types.py)"]
+        DB[("PostgreSQL&lt;br/&gt;ManagedPDU / PDUOutlet / PDUInlet 等")]
+        RQ["django-rq Worker&lt;br/&gt;(jobs.py)"]
+        SJ["NetBox System Job&lt;br/&gt;(JobRunner, system_job)"]
+    end
+
+    subgraph Plugin["netbox_pdu_control"]
+        Views["views.py&lt;br/&gt;(ObjectView / power / sync / push-name)"]
+        Jobs["jobs.py&lt;br/&gt;sync_managed_pdu()&lt;br/&gt;fetch_pdu_metrics()"]
+        Factory["backends/__init__.py&lt;br/&gt;get_pdu_client()"]
+        Base["backends/base.py&lt;br/&gt;BasePDUClient (ABC)"]
+        Raritan["backends/raritan.py&lt;br/&gt;RaritanPDUClient"]
+        UniFi["backends/unifi.py&lt;br/&gt;UniFiPDUClient"]
+    end
+
+    subgraph External["外部 PDU"]
+        RaritanHW["Raritan PX3/PX4&lt;br/&gt;(Xerus, JSON-RPC 2.0)"]
+        UniFiHW["Ubiquiti USP-PDU-Pro&lt;br/&gt;(UniFi Network Controller API)"]
+    end
+
+    UI --&gt; Views
+    API --&gt; DB
+    GQL --&gt; DB
+    Views --&gt; DB
+    Views --&gt; Jobs
+    Views -. "power cycle は非同期" .-&gt; RQ
+    RQ --&gt; Jobs
+    SJ --&gt; Jobs
+    Jobs --&gt; Factory
+    Factory --&gt; Base
+    Base -.implements.- Raritan
+    Base -.implements.- UniFi
+    Raritan --&gt;|HTTPS Basic認証&lt;br/&gt;JSON-RPC| RaritanHW
+    UniFi --&gt;|HTTPSセッション/APIキー&lt;br/&gt;REST| UniFiHW
+    Jobs --&gt; DB</code></pre>
+<p><strong>ポイント</strong></p>
+<ul>
+<li><code>views.py</code> は <code>get_pdu_client()</code> 経由でのみベンダー API にアクセスし、ベンダー固有コードを持たない(<a href="../CLAUDE.md">CLAUDE.md</a> の規約通り)。</li>
+<li>電源サイクル(Power Cycle)のみ <code>django_rq</code> でバックグラウンドジョブ化し、5 秒後に状態を再取得する(PDU 側の反映ラグを吸収)。</li>
+<li>定期実行(<code>PDUSyncJob</code> / <code>PDUGetMetricsJob</code>)は NetBox 標準の <code>system_job</code> デコレータで登録され、<code>PLUGINS_CONFIG</code> の <code>sync_poll_interval</code> / <code>metrics_poll_interval</code> が 0 より大きい場合のみ有効化される。</li>
+<li><code>get_pdu_client()</code> は認証情報を直接 <code>ManagedPDU</code> から読まず、<code>credentials.get_credential()</code> 経由で解決する(netbox-secrets 優先・平文フォールバック、詳細は<a href="#9-セキュリティ上の考慮事項">§9</a>)。</li>
+</ul>
+<hr />
+<h3 id="3-データモデルER-図">3. データモデル(ER 図)<a class="headerlink" href="#3-データモデルER-図" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>erDiagram
+    Device ||--o| ManagedPDU : "1:1 (PDU本体)"
+    Device ||--o{ PDUOutlet : "0..N (接続先デバイス)"
+    ManagedPDU ||--o{ PDUOutlet : outlets
+    ManagedPDU ||--o{ PDUInlet : inlets
+    ManagedPDU ||--o{ PDUInletLinePair : inlet_linepairs
+    ManagedPDU ||--o{ PDUOverCurrentProtector : ocps
+    ManagedPDU ||--o{ PDUNetworkInterface : network_interfaces
+    PDUInlet ||--o{ PDUInletLinePair : "inlet_number で対応付け"
+
+    ManagedPDU {
+        int id PK
+        int device_id FK "OneToOne, on_delete=CASCADE"
+        int ip_address_id FK "ipam.IPAddress, 任意, SET_NULL"
+        string vendor "raritan / ubiquiti"
+        string api_url
+        string api_username
+        string api_password "平文保存・APIでは非公開"
+        bool verify_ssl
+        string sync_status
+        string metrics_status
+        bool sync_enabled
+        bool metrics_enabled
+        datetime last_synced
+        datetime last_metrics_fetched
+        string pdu_model
+        string serial_number
+        string firmware_version
+        string grafana_panel_base_url
+    }
+
+    PDUOutlet {
+        int id PK
+        int managed_pdu_id FK
+        int outlet_number "PDU上の番号(1-indexed)"
+        string outlet_name
+        int connected_device_id FK "SET_NULL, 自動同期(ケーブル接続から)"
+        string status "on/off/unknown"
+        float current_a
+        float power_w
+        float voltage_v
+        float power_factor
+        float energy_wh
+        datetime last_updated_from_pdu
+    }
+
+    PDUInlet {
+        int id PK
+        int managed_pdu_id FK
+        int inlet_number
+        string inlet_name
+        float current_a
+        float power_w
+        float apparent_power_va
+        float voltage_v
+        float frequency_hz
+        float poleline_l1_current_a "3相PDUのみ"
+        float unbalanced_current_pct "3相PDUのみ"
+    }
+
+    PDUInletLinePair {
+        int id PK
+        int managed_pdu_id FK
+        int inlet_number
+        string line_pair "L1L2/L2L3/L3L1"
+        float voltage_v
+        float power_w
+    }
+
+    PDUOverCurrentProtector {
+        int id PK
+        int managed_pdu_id FK
+        string ocp_id "C1,C2,C3等"
+        float rating_current_a
+        bool tripped
+    }
+
+    PDUNetworkInterface {
+        int id PK
+        int managed_pdu_id FK
+        string interface_name "ETH1,ETH2等"
+        string mac_address
+        string ip_address
+    }</code></pre>
+<p><strong>モデルごとの更新方針</strong>(<code>CLAUDE.md</code> にも明記されている重要な差異):</p>
+<table>
+<thead>
+<tr>
+<th>モデル</th>
+<th>更新方針</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PDUOutlet</code> / <code>PDUInlet</code></td>
+<td><code>update_or_create</code>(存在すれば更新、なければ作成)</td>
+<td>outlet/inlet 番号は基本的に不変</td>
+</tr>
+<tr>
+<td><code>PDUInletLinePair</code> / <code>PDUNetworkInterface</code></td>
+<td>全削除→再作成</td>
+<td>3相/NIC構成が変わりうるため差分管理せず単純化</td>
+</tr>
+<tr>
+<td><code>PDUOverCurrentProtector</code></td>
+<td><code>update_or_create</code></td>
+<td>OCP 数は固定だが取得元がメトリクスAPIのみ</td>
+</tr>
+<tr>
+<td><code>PDUOutlet.connected_device</code></td>
+<td>NetBox の <code>PowerOutlet</code> ケーブル接続から自動導出</td>
+<td>手動フィールドだが sync 時に上書きされる(下記シーケンス参照)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="4-ベンダーバックエンド抽象化">4. ベンダーバックエンド抽象化<a class="headerlink" href="#4-ベンダーバックエンド抽象化" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>classDiagram
+    class BasePDUClient {
+        &lt;&lt;abstract&gt;&gt;
+        +bool supports_prometheus_metrics
+        +get_pdu_info() dict
+        +get_all_outlet_data() list~dict~
+        +get_single_outlet_data(index) dict
+        +get_all_inlet_data() list~dict~
+        +get_single_inlet_data(index) dict
+        +set_outlet_power_state(index, state)
+        +get_outlet_power_state_by_index(index) str
+        +set_outlet_name(index, name)
+        +set_inlet_name(index, name)
+        +get_outlet_thresholds(index) list~dict~
+        +get_inlet_thresholds(index) list~dict~
+    }
+
+    class RaritanPDUClient {
+        +supports_prometheus_metrics = True
+        HTTP Basic認証
+        JSON-RPC 2.0 (/model/pdu/0 ほか)
+        +get_all_metrics_prometheus() dict
+    }
+
+    class UniFiPDUClient {
+        +supports_prometheus_metrics = False
+        セッション/APIキー認証
+        UDM・スタンドアロン両対応の自動判定
+        time.sleep(3) を含む電源サイクル実装
+    }
+
+    class PDUClientError {
+        &lt;&lt;Exception&gt;&gt;
+    }
+
+    BasePDUClient &lt;|-- RaritanPDUClient
+    BasePDUClient &lt;|-- UniFiPDUClient
+    RaritanPDUClient ..&gt; PDUClientError : raises
+    UniFiPDUClient ..&gt; PDUClientError : raises
+
+    class get_pdu_client {
+        &lt;&lt;factory function&gt;&gt;
+        +get_pdu_client(managed_pdu) BasePDUClient
+    }
+    get_pdu_client ..&gt; BasePDUClient : creates</code></pre>
+<p>新しいベンダーを追加する手順(<code>backends/base.py</code> docstring より):</p>
+<ol>
+<li><code>backends/&lt;vendor&gt;.py</code> に <code>BasePDUClient</code> を実装したクラスを作成</li>
+<li><code>backends/__init__.py</code> の <code>_VENDOR_BACKENDS</code> に登録</li>
+<li><code>choices.VendorChoices</code> にベンダーを追加</li>
+<li>マイグレーション作成</li>
+</ol>
+<hr />
+<h3 id="5-主要シーケンス">5. 主要シーケンス<a class="headerlink" href="#5-主要シーケンス" title="Permanent link">&para;</a></h3>
+<h4 id="51-PDU-フルシンクManagedPDUSyncView">5.1 PDU フルシンク(<code>ManagedPDUSyncView</code>)<a class="headerlink" href="#51-PDU-フルシンクManagedPDUSyncView" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant View as ManagedPDUSyncView
+    participant Sync as sync_managed_pdu()
+    participant Factory as get_pdu_client()
+    participant Vendor as RaritanPDUClient / UniFiPDUClient
+    participant PDU as 実機PDU
+    participant DB as PostgreSQL
+
+    User-&gt;&gt;View: POST /managed-pdus/&lt;pk&gt;/sync/
+    View-&gt;&gt;View: パーミッションチェック(change_managedpdu)
+    View-&gt;&gt;Sync: sync_managed_pdu(managed_pdu)
+    activate Sync
+    Sync-&gt;&gt;Factory: get_pdu_client(managed_pdu)
+    Factory--&gt;&gt;Sync: Vendorクライアント
+    Sync-&gt;&gt;Vendor: get_pdu_info()
+    Vendor-&gt;&gt;PDU: HTTPリクエスト
+    PDU--&gt;&gt;Vendor: モデル/シリアル/NIC情報
+    Vendor--&gt;&gt;Sync: dict
+    Sync-&gt;&gt;DB: transaction.atomic() 開始
+    Sync-&gt;&gt;DB: ManagedPDU 更新(pdu_model等)
+    Sync-&gt;&gt;DB: Device.serial 同期
+    Sync-&gt;&gt;DB: PDUNetworkInterface 全削除→再作成
+    Sync-&gt;&gt;Vendor: get_all_outlet_data()
+    Vendor-&gt;&gt;PDU: HTTPリクエスト
+    PDU--&gt;&gt;Vendor: outlet一覧
+    Sync-&gt;&gt;DB: PDUOutlet.update_or_create (ループ)
+    Sync-&gt;&gt;DB: NetBox PowerOutlet のケーブル接続から&lt;br/&gt;connected_device を再計算
+    Sync-&gt;&gt;Vendor: get_all_inlet_data()
+    Vendor-&gt;&gt;PDU: HTTPリクエスト
+    PDU--&gt;&gt;Vendor: inlet一覧
+    Sync-&gt;&gt;DB: PDUInlet.update_or_create (ループ)
+    Sync-&gt;&gt;DB: sync_status=success, last_synced=now
+    Sync-&gt;&gt;DB: transaction.atomic() コミット
+    deactivate Sync
+    Sync--&gt;&gt;View: (作成数, 更新数)
+    View--&gt;&gt;User: メッセージ表示 + リダイレクト
+
+    Note over Sync,DB: 例外発生時は transaction 全体がロールバックされ、&lt;br/&gt;sync_status=failed のみ update_fields で保存(View側)</code></pre>
+<h4 id="52-アウトレット電源制御ONOFF-は同期Cycle-は非同期">5.2 アウトレット電源制御(ON/OFF は同期、Cycle は非同期)<a class="headerlink" href="#52-アウトレット電源制御ONOFF-は同期Cycle-は非同期" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant View as PDUOutletPowerView
+    participant Vendor as VendorClient
+    participant PDU as 実機PDU
+    participant RQ as django_rq Queue
+    participant Job as update_outlet_status()
+    participant DB as PostgreSQL
+
+    User-&gt;&gt;View: POST /outlets/&lt;pk&gt;/power-{on|off|cycle}/
+    View-&gt;&gt;Vendor: set_outlet_power_state(index, state)
+    Vendor-&gt;&gt;PDU: 電源状態変更コマンド
+
+    alt state = on / off
+        View-&gt;&gt;Vendor: get_outlet_power_state_by_index(index)
+        Vendor-&gt;&gt;PDU: 状態取得
+        PDU--&gt;&gt;Vendor: on/off
+        View-&gt;&gt;DB: PDUOutlet.status を即時保存
+    else state = cycle
+        View-&gt;&gt;RQ: enqueue_in(5秒後, update_outlet_status, ...)
+        Note right of RQ: PDU側の再起動反映を待つため&lt;br/&gt;5秒ディレイで非同期実行
+        RQ--&gt;&gt;Job: 5秒後に実行
+        Job-&gt;&gt;Vendor: get_outlet_power_state_by_index(index)
+        Vendor-&gt;&gt;PDU: 状態取得
+        Job-&gt;&gt;DB: PDUOutlet.status を保存
+    end
+
+    View--&gt;&gt;User: メッセージ表示 + リダイレクト</code></pre>
+<h4 id="53-名前プッシュNetBox--PDU双方向ラベル同期">5.3 名前プッシュ(NetBox → PDU、双方向ラベル同期)<a class="headerlink" href="#53-名前プッシュNetBox--PDU双方向ラベル同期" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant View as PDUOutletPushNameView
+    participant Vendor as VendorClient
+    participant PDU as 実機PDU
+    participant DB as PostgreSQL
+
+    User-&gt;&gt;View: POST /outlets/&lt;pk&gt;/push-name/
+    View-&gt;&gt;Vendor: set_outlet_name(index, outlet.outlet_name)
+    Vendor-&gt;&gt;PDU: 名前書き込み
+    alt 成功
+        View-&gt;&gt;DB: outlet_number に一致する&lt;br/&gt;NetBox PowerOutlet を正規表現で検索
+        View-&gt;&gt;DB: PowerOutlet.label = outlet_name として保存
+        View--&gt;&gt;User: 成功メッセージ(PDU側 + NetBox側の両方)
+    else 失敗(PDUClientError)
+        View--&gt;&gt;User: エラーメッセージのみ(NetBox側は更新しない)
+    end</code></pre>
+<h4 id="54-メトリクス取得Prometheus-対応ベンダーのみ">5.4 メトリクス取得(Prometheus 対応ベンダーのみ)<a class="headerlink" href="#54-メトリクス取得Prometheus-対応ベンダーのみ" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>sequenceDiagram
+    actor User
+    participant View as ManagedPDUGetMetricsView
+    participant Fetch as fetch_pdu_metrics()
+    participant Vendor as RaritanPDUClient
+    participant PDU as 実機PDU
+    participant DB as PostgreSQL
+
+    User-&gt;&gt;View: POST /managed-pdus/&lt;pk&gt;/get-metrics/
+    View-&gt;&gt;Fetch: fetch_pdu_metrics(managed_pdu)
+    Fetch-&gt;&gt;Vendor: supports_prometheus_metrics チェック
+    alt 非対応ベンダー
+        Fetch--&gt;&gt;View: PDUClientError
+        View-&gt;&gt;DB: metrics_status=failed
+        View--&gt;&gt;User: エラーメッセージ
+    else 対応ベンダー(Raritan)
+        Fetch-&gt;&gt;Vendor: get_all_metrics_prometheus()
+        Vendor-&gt;&gt;PDU: GET /metrics (Prometheus exposition format)
+        PDU--&gt;&gt;Vendor: メトリクステキスト
+        Vendor--&gt;&gt;Fetch: outlets/inlets/ocps の dict
+        Fetch-&gt;&gt;DB: transaction.atomic()
+        Fetch-&gt;&gt;DB: PDUOutlet.filter(...).update(**metrics) ループ
+        Fetch-&gt;&gt;DB: PDUInletLinePair 全削除→再作成(inlet毎)
+        Fetch-&gt;&gt;DB: PDUOverCurrentProtector.update_or_create ループ
+        Fetch-&gt;&gt;DB: metrics_status=success, last_metrics_fetched=now
+        Fetch--&gt;&gt;View: (更新件数)
+        View--&gt;&gt;User: 成功メッセージ
+    end</code></pre>
+<hr />
+<h3 id="6-バックグラウンド処理定期実行">6. バックグラウンド処理・定期実行<a class="headerlink" href="#6-バックグラウンド処理定期実行" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>種別</th>
+<th>起動元</th>
+<th>実装</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RQワーカー(即時 enqueue)</td>
+<td><code>PDUOutletPowerView</code>(cycle時のみ)</td>
+<td><code>jobs.update_outlet_status()</code></td>
+<td>電源サイクル5秒後の状態再取得</td>
+</tr>
+<tr>
+<td>NetBox System Job</td>
+<td><code>settings.PLUGINS_CONFIG["netbox_pdu_control"]["sync_poll_interval"]</code> &gt; 0</td>
+<td><code>jobs.PDUSyncJob</code>(<code>system_job(interval=...)</code>)</td>
+<td><code>sync_enabled=True</code> の全PDUを定期フルシンク</td>
+</tr>
+<tr>
+<td>NetBox System Job</td>
+<td>同上 <code>metrics_poll_interval</code></td>
+<td><code>jobs.PDUGetMetricsJob</code></td>
+<td><code>metrics_enabled=True</code> の全PDUを定期メトリクス取得</td>
+</tr>
+</tbody>
+</table>
+<p>いずれも1台の失敗が全体を止めないよう <code>try/except</code> でPDUごとに独立して処理し、失敗PDUのみ <code>sync_status</code>/<code>metrics_status</code> を <code>failed</code> に更新する。</p>
+<hr />
+<h3 id="7-REST-API--GraphQL">7. REST API / GraphQL<a class="headerlink" href="#7-REST-API--GraphQL" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph LR
+    subgraph "REST API (api/)"
+        SV["serializers.py&lt;br/&gt;ManagedPDUSerializer&lt;br/&gt;PDUOutletSerializer&lt;br/&gt;PDUInletSerializer"]
+        VS["views.py&lt;br/&gt;NetBoxModelViewSet × 3"]
+    end
+    subgraph "GraphQL (graphql/)"
+        TY["types.py&lt;br/&gt;strawberry_django.type"]
+        FL["filters.py"]
+        SC["schema.py&lt;br/&gt;NetBoxMgmtPDUQuery"]
+    end
+    VS --&gt; SV
+    SC --&gt; TY
+    TY --&gt; FL</code></pre>
+<ul>
+<li>REST API: NetBox標準の <code>NetBoxModelViewSet</code> + <code>NetBoxModelSerializer</code> パターン。<code>ManagedPDUSerializer.api_password</code> は <code>write_only=True</code> — <strong>書き込みは可能だがレスポンスには一切出力されない</strong>(平文保存フィールドの漏洩防止)。</li>
+<li>GraphQL: strawberry-django ベース。<code>enums.py</code> が <code>choices.py</code> の選択肢をGraphQL Enumとしてミラーリング。</li>
+</ul>
+<hr />
+<h3 id="8-URL構成urlspy">8. URL構成(<code>urls.py</code>)<a class="headerlink" href="#8-URL構成urlspy" title="Permanent link">&para;</a></h3>
+<p>NetBox標準の <code>get_model_urls()</code> によるCRUD URL(一覧・詳細・作成・編集・削除)に加え、以下の非CRUDエンドポイントを個別定義:</p>
+<ul>
+<li><code>managed-pdus/&lt;pk&gt;/sync/</code> — フルシンク</li>
+<li><code>managed-pdus/&lt;pk&gt;/get-metrics/</code> — メトリクス取得</li>
+<li><code>managed-pdus/&lt;pk&gt;/bulk-power/</code> — 複数アウトレット一括電源制御</li>
+<li><code>managed-pdus/test-connection/</code>(pkなし)— Add/Edit フォームの入力値(未保存)で接続テスト</li>
+<li><code>outlets/&lt;pk&gt;/{sync,power-on,power-off,power-cycle,push-name}/</code></li>
+<li><code>inlets/&lt;pk&gt;/{sync,push-name}/</code></li>
+</ul>
+<p><strong>Add/Edit フォームの接続テスト・IP自動入力:</strong> <code>ManagedPDUEditView</code> は <code>template_name</code> を
+<code>netbox_pdu_control/managedpdu_edit.html</code> に明示的に上書きしている(NetBoxの generic
+<code>ObjectEditView</code> は <code>&lt;app&gt;/&lt;model&gt;_edit.html</code> を自動探索しないため、<code>netbox-bmc</code> と同様に
+明示指定が必要)。このテンプレートで:
+- <strong>Test Connection</strong> ボタン: フォームの vendor/api_url/api_username/api_password/verify_ssl を
+  <code>ManagedPDUConnectionTestView</code> に fetch で POST し、保存前に接続確認する(DBには一切書き込まない)。
+  選択中の Device に netbox-secrets の Secret(role <code>pdu-credentials</code>)が存在する場合はそちらを
+  優先し、なければフォーム入力値を使う(<code>get_pdu_client()</code> と同じ優先順位、<code>credentials.get_credential()</code>
+  を未保存の <code>ManagedPDU</code> インスタンスに対して呼び出すことで実現)
+- <strong>IP Address</strong> ピッカー(<code>ip_address</code> フィールド、<code>query_params={"device_id": "$device"}</code> で
+  選択中の Device に紐づくIPのみ表示): 選択すると JS が <code>/api/ipam/ip-addresses/&lt;id&gt;/</code> を
+  fetch し、<code>api_url</code> フィールドに <code>https://&lt;ip&gt;</code> を自動入力する(<code>ip_address</code> 自体はDBに
+  保存されるが、実際の接続には <code>api_url</code> の値のみが使われる)</p>
+<hr />
+<h3 id="9-セキュリティ上の考慮事項">9. セキュリティ上の考慮事項<a class="headerlink" href="#9-セキュリティ上の考慮事項" title="Permanent link">&para;</a></h3>
+<ul>
+<li>認証情報は <code>credentials.py</code> の <code>get_credential()</code> が解決する。優先順位は次の通り(<code>netbox-bmc</code> プラグインの方式を踏襲):</li>
+<li><strong>netbox-secrets</strong>(導入済みの場合)— role <code>pdu-credentials</code> を持ち Device に紐づけられた <code>Secret</code>。<code>Secret.name</code>=ユーザー名、<code>Secret.plaintext</code>=パスワード(RSA暗号化)。Web View 経由ならリクエストのセッションキーで、バックグラウンドジョブ(system job / RQ)なら <code>PLUGINS_CONFIG["netbox_pdu_control"]["service_account"]</code> のサービスアカウント秘密鍵で復号する。</li>
+<li><strong>平文フォールバック</strong> — netbox-secrets 未導入・該当Secretなし・復号失敗時は <code>ManagedPDU.api_username</code>/<code>api_password</code> にフォールバックする。
+  復号に失敗した場合はエラーログを残した上でフォールバックする(無音でのフォールバックは運用上気付きにくいため)。</li>
+<li><code>get_pdu_client(managed_pdu, request=None)</code> は <code>request</code> を <code>get_credential()</code> に転送する。View 層からは常に <code>request</code> を渡し、System Job/RQ ジョブからは <code>request=None</code>(サービスアカウント経路)で呼び出す。</li>
+<li><code>ManagedPDU.api_password</code>(フォールバックフィールド)は <strong>平文で DB に保存</strong>される(NetBox標準の暗号化フィールドは未使用)。</li>
+<li>REST APIシリアライザ・ログ出力のいずれにも <code>api_password</code> を含めないこと(<code>CLAUDE.md</code> にも明記された規約)。</li>
+<li>電源サイクル用のRQジョブ(<code>jobs.update_outlet_status</code>)は、以前は <code>managed_pdu.api_password</code> を平文でジョブ引数としてRedisに渡していたが、実装はその引数を使わず <code>outlet.managed_pdu</code> から再取得していたため、この不要な平文受け渡しは削除済み。</li>
+<li>全ての制御系View(sync / power / push-name)は <code>request.user.has_perm("netbox_pdu_control.change_managedpdu")</code> を個別にチェックしてから処理する。</li>
+<li><code>verify_ssl=False</code> の場合、両バックエンドで <code>urllib3.disable_warnings(InsecureRequestWarning)</code> を呼び出し、自己署名証明書運用時の警告ログ氾濫を抑止(意図的な設計)。</li>
+</ul>
+<hr />
+<h3 id="10-関連ドキュメント">10. 関連ドキュメント<a class="headerlink" href="#10-関連ドキュメント" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../README.md">README</a> — インストール手順、対応ハードウェア、設定例</li>
+<li><a href="../CONTRIBUTING.md">CONTRIBUTING</a> — 開発フロー、リリース手順</li>
+<li><a href="../COMPATIBILITY.md">COMPATIBILITY</a> — NetBoxバージョン互換表</li>
+<li><a href="../CHANGELOG.md">CHANGELOG</a> — バージョンごとの変更履歴</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/netbox-community/cookiecutter-netbox-plugin" target="_blank" rel="noopener" title="Tweet" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/netbox-community/cookiecutter-netbox-plugin" target="_blank" rel="noopener" title="Facebook" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/tak-labo/netbox-pdu-control" target="_blank" rel="noopener" title="Github" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:8895617+tak-55@users.noreply.github.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20 8-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.instant", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
