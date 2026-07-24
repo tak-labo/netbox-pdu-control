@@ -51,6 +51,14 @@ class ManagedPDUViewTest(PluginViewTestCase):
         self.assertHttpStatus(response, 200)
         self.assertEqual(response.context["object"], self.pdu)
 
+    def test_detail_view_shows_save_config_button(self):
+        self.add_permissions("netbox_pdu_control.view_managedpdu", "netbox_pdu_control.change_managedpdu")
+        url = self._get_url("detail", self.pdu)
+        response = self.client.get(url)
+        save_config_url = reverse("plugins:netbox_pdu_control:managedpdu_save_config", kwargs={"pk": self.pdu.pk})
+        self.assertContains(response, save_config_url)
+        self.assertContains(response, "Save Config")
+
     def test_detail_view_credentials_card_plaintext_fallback_when_secrets_unavailable(self):
         """netbox-secrets not installed -> plaintext source message, no secret_found lookup performed."""
         self.add_permissions("netbox_pdu_control.view_managedpdu")

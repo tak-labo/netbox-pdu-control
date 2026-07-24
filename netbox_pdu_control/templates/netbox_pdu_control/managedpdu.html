@@ -159,6 +159,12 @@
                 <i class="mdi mdi-chart-line"></i> Get Metrics
               </button>
             </form>
+            <form method="post" action="{% url 'plugins:netbox_pdu_control:managedpdu_save_config' pk=object.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="mdi mdi-content-save"></i> Save Config
+              </button>
+            </form>
           {% endif %}
         </div>
       </div>
@@ -172,6 +178,10 @@
           <tr>
             <th scope="row">Last Synced</th>
             <td>{{ object.last_synced|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Last Config Saved</th>
+            <td>{{ object.last_config_saved|placeholder }}</td>
           </tr>
           <tr>
             <th scope="row">Metrics Status</th>
