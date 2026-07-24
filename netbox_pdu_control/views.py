@@ -19,8 +19,8 @@ from . import filtersets, forms, jobs, models, tables
 from .backends import _VENDOR_BACKENDS, get_pdu_client
 from .backends.base import PDUClientError
 from .choices import OutletStatusChoices, SyncStatusChoices
-from .credentials import SECRET_ROLE_SLUG, get_credential
 from .config_backup import save_config_backup
+from .credentials import SECRET_ROLE_SLUG, get_credential
 from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
 
 logger = logging.getLogger(__name__)
