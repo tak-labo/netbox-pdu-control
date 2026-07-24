@@ -7,6 +7,7 @@ Run inside Docker:
 
 from unittest.mock import MagicMock, patch
 
+from django.contrib.messages import constants as message_constants
 from django.urls import reverse
 
 from ..backends.base import PDUClientError
@@ -680,8 +681,10 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
 
         self.assertHttpStatus(response, 200)
         mock_save.assert_called_once()
-        messages = [str(m) for m in response.context["messages"]]
-        self.assertTrue(any("saved to NetBox" in m for m in messages))
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.SUCCESS)
+        self.assertIn("saved to NetBox", str(messages_list[0]))
 
     @patch("netbox_pdu_control.views.save_config_backup")
     def test_git_committed_shows_git_in_message(self, mock_save):
@@ -692,8 +695,10 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
 
         response = self.client.post(self._url(), follow=True)
 
-        messages = [str(m) for m in response.context["messages"]]
-        self.assertTrue(any("git commit" in m for m in messages))
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.SUCCESS)
+        self.assertIn("git commit", str(messages_list[0]))
 
     @patch("netbox_pdu_control.views.save_config_backup")
     def test_git_error_shows_warning(self, mock_save):
@@ -704,8 +709,10 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
 
         response = self.client.post(self._url(), follow=True)
 
-        messages = [str(m) for m in response.context["messages"]]
-        self.assertTrue(any("git backup failed" in m for m in messages))
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.WARNING)
+        self.assertIn("git backup failed", str(messages_list[0]))
 
     @patch("netbox_pdu_control.views.save_config_backup")
     def test_fetch_error_shows_error_message(self, mock_save):
@@ -716,5 +723,7 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
 
         response = self.client.post(self._url(), follow=True)
 
-        messages = [str(m) for m in response.context["messages"]]
-        self.assertTrue(any("connection refused" in m for m in messages))
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.ERROR)
+        self.assertIn("connection refused", str(messages_list[0]))
