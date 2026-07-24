@@ -80,7 +80,7 @@ def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
 
     result = ConfigBackupResult(git_committed=None)
     if repo_path:
-        filename = f"{slugify(managed_pdu.device.name)}.json"
+        filename = f"{slugify(managed_pdu.device.name)}-{managed_pdu.device.pk}.json"
         try:
             result.git_committed = _commit_to_git(repo_path, filename, config)
         except (RuntimeError, OSError, subprocess.TimeoutExpired) as e:

@@ -264,7 +264,7 @@ class ManagedPDUSaveConfigView(View):
             else:
                 messages.success(request, "Config saved to NetBox.")
             logger.info("Config save succeeded [%s]: git_committed=%s", managed_pdu, result.git_committed)
-        except PDUClientError as e:
+        except Exception as e:
             messages.error(request, f"Config save error: {e}")
             logger.error("Config save failed [%s]: %s", managed_pdu, e)
 
