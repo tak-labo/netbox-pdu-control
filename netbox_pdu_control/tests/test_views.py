@@ -735,3 +735,27 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
         self.assertEqual(len(messages_list), 1)
         self.assertEqual(messages_list[0].level, message_constants.ERROR)
         self.assertIn("connection refused", str(messages_list[0]))
+
+    def test_success_creates_object_change_for_device(self):
+        from core.models import ObjectChange
+        from django.contrib.contenttypes.models import ContentType
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+
+        with patch("netbox_pdu_control.config_backup.get_pdu_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.get_full_config.return_value = {"pdu": {"name": "test"}, "network": {}, "outlets": [], "inlets": []}
+            mock_get_client.return_value = mock_client
+
+            self.client.post(self._url())
+
+        self.pdu.device.refresh_from_db()
+        self.assertEqual(self.pdu.device.local_context_data, {"pdu": {"name": "test"}, "network": {}, "outlets": [], "inlets": []})
+
+        ct = ContentType.objects.get_for_model(self.pdu.device.__class__)
+        change = ObjectChange.objects.filter(
+            changed_object_type=ct, changed_object_id=self.pdu.device.pk
+        ).order_by("-time").first()
+        self.assertIsNotNone(change, "expected an ObjectChange to be recorded for the Device after Save Config")
+        self.assertIsNotNone(change.prechange_data, "expected prechange_data to be populated (requires device.snapshot() before save)")
+

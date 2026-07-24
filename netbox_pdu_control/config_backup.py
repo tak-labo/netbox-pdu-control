@@ -71,6 +71,7 @@ def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
     client = get_pdu_client(managed_pdu, request=request)
     config = client.get_full_config()
 
+    managed_pdu.device.snapshot()
     managed_pdu.device.local_context_data = config
     managed_pdu.device.save(update_fields=["local_context_data"])
 
