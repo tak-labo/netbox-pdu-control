@@ -29,6 +29,11 @@ urlpatterns = (
         name="managedpdu_get_metrics",
     ),
     path(
+        "managed-pdus/<int:pk>/save-config/",
+        views.ManagedPDUSaveConfigView.as_view(),
+        name="managedpdu_save_config",
+    ),
+    path(
         "managed-pdus/<int:pk>/bulk-power/",
         views.PDUOutletBulkPowerView.as_view(),
         name="pduoutlet_bulk_power",

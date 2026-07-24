@@ -648,3 +648,73 @@ class PDUOutletBulkPowerViewTest(PluginViewTestCase):
         self.assertEqual(mock_client.set_outlet_power_state.call_count, 2)
         self.outlet2.refresh_from_db()
         self.assertEqual(self.outlet2.status, OutletStatusChoices.ON)
+
+
+class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
+    """Tests for ManagedPDUSaveConfigView."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.pdu = create_test_pdu()
+
+    def _url(self):
+        return reverse("plugins:netbox_pdu_control:managedpdu_save_config", kwargs={"pk": self.pdu.pk})
+
+    def test_without_permission_redirects(self):
+        response = self.client.post(self._url())
+        self.assertHttpStatus(response, 302)
+
+    def test_without_permission_does_not_call_backend(self):
+        with patch("netbox_pdu_control.views.save_config_backup") as mock_save:
+            self.client.post(self._url())
+            mock_save.assert_not_called()
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_success_saves_and_redirects(self, mock_save):
+        from netbox_pdu_control.config_backup import ConfigBackupResult
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu", "netbox_pdu_control.view_managedpdu")
+        mock_save.return_value = ConfigBackupResult(git_committed=None)
+
+        response = self.client.post(self._url(), follow=True)
+
+        self.assertHttpStatus(response, 200)
+        mock_save.assert_called_once()
+        messages = [str(m) for m in response.context["messages"]]
+        self.assertTrue(any("saved to NetBox" in m for m in messages))
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_git_committed_shows_git_in_message(self, mock_save):
+        from netbox_pdu_control.config_backup import ConfigBackupResult
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.return_value = ConfigBackupResult(git_committed=True)
+
+        response = self.client.post(self._url(), follow=True)
+
+        messages = [str(m) for m in response.context["messages"]]
+        self.assertTrue(any("git commit" in m for m in messages))
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_git_error_shows_warning(self, mock_save):
+        from netbox_pdu_control.config_backup import ConfigBackupResult
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.return_value = ConfigBackupResult(git_committed=False, git_error="git commit failed: boom")
+
+        response = self.client.post(self._url(), follow=True)
+
+        messages = [str(m) for m in response.context["messages"]]
+        self.assertTrue(any("git backup failed" in m for m in messages))
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_fetch_error_shows_error_message(self, mock_save):
+        from netbox_pdu_control.backends.base import PDUClientError
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.side_effect = PDUClientError("connection refused")
+
+        response = self.client.post(self._url(), follow=True)
+
+        messages = [str(m) for m in response.context["messages"]]
+        self.assertTrue(any("connection refused" in m for m in messages))

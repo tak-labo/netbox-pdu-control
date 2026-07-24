@@ -20,6 +20,7 @@ from .backends import _VENDOR_BACKENDS, get_pdu_client
 from .backends.base import PDUClientError
 from .choices import OutletStatusChoices, SyncStatusChoices
 from .credentials import SECRET_ROLE_SLUG, get_credential
+from .config_backup import save_config_backup
 from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
 
 logger = logging.getLogger(__name__)
@@ -236,6 +237,36 @@ class ManagedPDUGetMetricsView(View):
             managed_pdu.save(update_fields=["metrics_status"])
             messages.error(request, f"Metrics fetch error: {e}")
             logger.error("Metrics fetch failed [%s]: %s", managed_pdu, e)
+
+        return redirect(managed_pdu.get_absolute_url())
+
+
+@register_model_view(models.ManagedPDU, name="save_config")
+class ManagedPDUSaveConfigView(View):
+    """
+    View that saves the PDU's on-device config to NetBox (Device.local_context_data)
+    and, if configured, a local git backup repo. Accepts POST requests only.
+    """
+
+    def post(self, request, pk):
+        managed_pdu = get_object_or_404(models.ManagedPDU, pk=pk)
+
+        if not request.user.has_perm("netbox_pdu_control.change_managedpdu"):
+            messages.error(request, _("You do not have permission to save config for this PDU."))
+            return redirect(managed_pdu.get_absolute_url())
+
+        try:
+            result = save_config_backup(managed_pdu, request=request)
+            if result.git_error:
+                messages.warning(request, f"Config saved to NetBox, but git backup failed: {result.git_error}")
+            elif result.git_committed:
+                messages.success(request, "Config saved (NetBox + git commit).")
+            else:
+                messages.success(request, "Config saved to NetBox.")
+            logger.info("Config save succeeded [%s]: git_committed=%s", managed_pdu, result.git_committed)
+        except PDUClientError as e:
+            messages.error(request, f"Config save error: {e}")
+            logger.error("Config save failed [%s]: %s", managed_pdu, e)
 
         return redirect(managed_pdu.get_absolute_url())
 
