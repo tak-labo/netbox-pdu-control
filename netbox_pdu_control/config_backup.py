@@ -82,7 +82,7 @@ def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
         filename = f"{slugify(managed_pdu.device.name)}.json"
         try:
             result.git_committed = _commit_to_git(repo_path, filename, config)
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError, subprocess.TimeoutExpired) as e:
             result.git_committed = False
             result.git_error = str(e)
             logger.error("Git config backup failed [%s]: %s", managed_pdu, e)

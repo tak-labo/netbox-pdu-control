@@ -58,7 +58,7 @@ class SaveConfigBackupTest(TestCase):
         self.assertIsNone(result.git_committed)
 
     @patch("netbox_pdu_control.config_backup.get_pdu_client")
-    def test_with_config_backup_path_commits_to_git(self, mock_get_client, tmp_path=None):
+    def test_with_config_backup_path_commits_to_git(self, mock_get_client):
         import tempfile
 
         mock_client = MagicMock()
@@ -113,3 +113,40 @@ class SaveConfigBackupTest(TestCase):
         self.assertEqual(self.pdu.device.local_context_data, SAMPLE_CONFIG)
         self.assertFalse(result.git_committed)
         self.assertIn("no permission", result.git_error)
+
+    @patch("netbox_pdu_control.config_backup._commit_to_git")
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_git_timeout_does_not_raise_and_still_saves_context(self, mock_get_client, mock_commit):
+        import subprocess as sp
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+        mock_commit.side_effect = sp.TimeoutExpired(cmd=["git", "commit"], timeout=30)
+
+        with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": "/some/path"}}):
+            result = save_config_backup(self.pdu)
+
+        self.pdu.device.refresh_from_db()
+        self.assertEqual(self.pdu.device.local_context_data, SAMPLE_CONFIG)
+        self.assertFalse(result.git_committed)
+        self.assertIsNotNone(result.git_error)
+
+    @patch("netbox_pdu_control.config_backup.subprocess.run")
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_missing_git_binary_does_not_raise(self, mock_get_client, mock_run):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+        mock_run.side_effect = FileNotFoundError("git: command not found")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                result = save_config_backup(self.pdu)
+
+        self.pdu.device.refresh_from_db()
+        self.assertEqual(self.pdu.device.local_context_data, SAMPLE_CONFIG)
+        self.assertFalse(result.git_committed)
+        self.assertIn("command not found", result.git_error)
