@@ -580,6 +580,24 @@ class RaritanPDUClient(BasePDUClient):
             "network_interfaces": interfaces,
         }
 
+    def get_full_config(self) -> dict:
+        pdu_settings = self._rpc("/model/pdu/0", "getSettings") or {}
+
+        info = self.get_pdu_info()
+        network = {k: v for k, v in info.items() if k != "device_time_epoch"}
+
+        outlets = []
+        for i, rid in enumerate(self._get_outlet_rids()):
+            settings = self._rpc(rid, "getSettings") or {}
+            outlets.append({"outlet_number": i + 1, "settings": settings})
+
+        inlets = []
+        for i, rid in enumerate(self._get_inlet_rids()):
+            settings = self._rpc(rid, "getSettings") or {}
+            inlets.append({"inlet_number": i + 1, "settings": settings})
+
+        return {"pdu": pdu_settings, "network": network, "outlets": outlets, "inlets": inlets}
+
     def get_all_outlet_data(self) -> list[dict]:
         rids = self._get_outlet_rids()
         if not rids:

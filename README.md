@@ -48,6 +48,7 @@ Other Raritan PDUs running Xerus firmware (PX2, PX3, PX4, BCM families) should w
 - **Name push** — write outlet/inlet names from NetBox back to the PDU; syncs `PowerOutlet.label` / `PowerPort.label` on the connected device automatically
 - **Threshold display** — warning and critical thresholds per sensor (Raritan only)
 - **Background jobs** — post-cycle status refresh via RQ worker
+- **Config backup** — save the PDU's on-device configuration to NetBox (Device Config Context) and, optionally, a local git repo, via a manual button or periodic job (Raritan only)
 - **REST API & GraphQL** — full NetBox-native API for all models
 - **Multi-vendor architecture** — add new vendors by implementing a single base class
 
@@ -79,6 +80,16 @@ PLUGINS_CONFIG = {
         # Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).
         # Set to 0 or remove to disable periodic syncing.
         "sync_poll_interval": 60,
+        # Optional: directory for an additional local git-backed PDU config backup,
+        # for unlimited-retention history beyond NetBox's own Change Log (which
+        # defaults to 90 days via the CHANGELOG_RETENTION admin setting). The plugin
+        # runs `git init` here automatically on first use. Config is always saved to
+        # the PDU's Device > Config Context regardless of this setting.
+        # Requires the `git` CLI to be installed in the NetBox web and worker
+        # environments for the optional git-backup path to work.
+        # "config_backup_path": "/opt/netbox/pdu-config-backups",
+        # Interval in minutes for automatic config backup. Set to 0 or remove to disable.
+        "config_backup_poll_interval": 0,
         # Only needed if netbox-secrets is installed and used for PDU credentials —
         # lets background/system jobs decrypt secrets without an HTTP session.
         # "service_account": "pdu-sync",
@@ -153,6 +164,16 @@ PLUGINS_CONFIG = {
         # Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).
         # Set to 0 or remove to disable periodic syncing.
         "sync_poll_interval": 60,
+        # Optional: directory for an additional local git-backed PDU config backup,
+        # for unlimited-retention history beyond NetBox's own Change Log (which
+        # defaults to 90 days via the CHANGELOG_RETENTION admin setting). The plugin
+        # runs `git init` here automatically on first use. Config is always saved to
+        # the PDU's Device > Config Context regardless of this setting.
+        # Requires the `git` CLI to be installed in the NetBox web and worker
+        # environments for the optional git-backup path to work.
+        # "config_backup_path": "/opt/netbox/pdu-config-backups",
+        # Interval in minutes for automatic config backup. Set to 0 or remove to disable.
+        "config_backup_poll_interval": 0,
         # Only needed if netbox-secrets is installed and used for PDU credentials —
         # lets background/system jobs decrypt secrets without an HTTP session.
         # "service_account": "pdu-sync",
@@ -232,7 +253,7 @@ On an outlet or inlet detail page, click **Push Name to PDU** to write the name 
 
 | Plugin version | NetBox version |
 |---------------|----------------|
-| 0.4.0 – 0.4.1 | 4.6.0+ (NetBox 4.5.x support dropped) |
+| 0.4.0 – 0.5.0 | 4.6.0+ (NetBox 4.5.x support dropped) |
 | 0.3.0 – 0.3.6 | 4.5.0 – 4.6.xx |
 | 0.1.0 – 0.2.0 | 4.5.0 – 4.5.xx |
 
@@ -526,7 +547,7 @@ ManagedPDU 詳細ページで **Sync** をクリックすると、ハードウ�
 
 | プラグインバージョン | NetBox バージョン |
 |-------------------|-----------------|
-| 0.4.0 – 0.4.1 | 4.6.0 以降(NetBox 4.5.x サポートは終了) |
+| 0.4.0 – 0.5.0 | 4.6.0 以降(NetBox 4.5.x サポートは終了) |
 | 0.3.0 – 0.3.6 | 4.5.0 – 4.6.xx |
 | 0.1.0 – 0.2.0 | 4.5.0 – 4.5.xx |
 

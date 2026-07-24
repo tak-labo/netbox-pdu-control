@@ -83,6 +83,12 @@ class ManagedPDUModelTest(TestCase):
     def test_sync_status_default(self):
         self.assertEqual(self.pdu.sync_status, SyncStatusChoices.NEVER)
 
+    def test_config_backup_defaults(self):
+        """New ManagedPDU has config_backup_enabled=True and last_config_saved=None."""
+        pdu = create_test_pdu()
+        self.assertTrue(pdu.config_backup_enabled)
+        self.assertIsNone(pdu.last_config_saved)
+
     def test_web_gui_url_dns_none_without_ip_address(self):
         self.assertIsNone(self.pdu.web_gui_url_dns)
 

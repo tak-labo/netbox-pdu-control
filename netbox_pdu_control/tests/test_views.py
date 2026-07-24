@@ -7,6 +7,7 @@ Run inside Docker:
 
 from unittest.mock import MagicMock, patch
 
+from django.contrib.messages import constants as message_constants
 from django.urls import reverse
 
 from ..backends.base import PDUClientError
@@ -49,6 +50,14 @@ class ManagedPDUViewTest(PluginViewTestCase):
         response = self.client.get(url)
         self.assertHttpStatus(response, 200)
         self.assertEqual(response.context["object"], self.pdu)
+
+    def test_detail_view_shows_save_config_button(self):
+        self.add_permissions("netbox_pdu_control.view_managedpdu", "netbox_pdu_control.change_managedpdu")
+        url = self._get_url("detail", self.pdu)
+        response = self.client.get(url)
+        save_config_url = reverse("plugins:netbox_pdu_control:managedpdu_save_config", kwargs={"pk": self.pdu.pk})
+        self.assertContains(response, save_config_url)
+        self.assertContains(response, "Save Config")
 
     def test_detail_view_credentials_card_plaintext_fallback_when_secrets_unavailable(self):
         """netbox-secrets not installed -> plaintext source message, no secret_found lookup performed."""
@@ -648,3 +657,105 @@ class PDUOutletBulkPowerViewTest(PluginViewTestCase):
         self.assertEqual(mock_client.set_outlet_power_state.call_count, 2)
         self.outlet2.refresh_from_db()
         self.assertEqual(self.outlet2.status, OutletStatusChoices.ON)
+
+
+class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
+    """Tests for ManagedPDUSaveConfigView."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.pdu = create_test_pdu()
+
+    def _url(self):
+        return reverse("plugins:netbox_pdu_control:managedpdu_save_config", kwargs={"pk": self.pdu.pk})
+
+    def test_without_permission_redirects(self):
+        response = self.client.post(self._url())
+        self.assertHttpStatus(response, 302)
+
+    def test_without_permission_does_not_call_backend(self):
+        with patch("netbox_pdu_control.views.save_config_backup") as mock_save:
+            self.client.post(self._url())
+            mock_save.assert_not_called()
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_success_saves_and_redirects(self, mock_save):
+        from netbox_pdu_control.config_backup import ConfigBackupResult
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu", "netbox_pdu_control.view_managedpdu")
+        mock_save.return_value = ConfigBackupResult(git_committed=None)
+
+        response = self.client.post(self._url(), follow=True)
+
+        self.assertHttpStatus(response, 200)
+        mock_save.assert_called_once()
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.SUCCESS)
+        self.assertIn("saved to NetBox", str(messages_list[0]))
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_git_committed_shows_git_in_message(self, mock_save):
+        from netbox_pdu_control.config_backup import ConfigBackupResult
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.return_value = ConfigBackupResult(git_committed=True)
+
+        response = self.client.post(self._url(), follow=True)
+
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.SUCCESS)
+        self.assertIn("git commit", str(messages_list[0]))
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_git_error_shows_warning(self, mock_save):
+        from netbox_pdu_control.config_backup import ConfigBackupResult
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.return_value = ConfigBackupResult(git_committed=False, git_error="git commit failed: boom")
+
+        response = self.client.post(self._url(), follow=True)
+
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.WARNING)
+        self.assertIn("git backup failed", str(messages_list[0]))
+
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_fetch_error_shows_error_message(self, mock_save):
+        from netbox_pdu_control.backends.base import PDUClientError
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.side_effect = PDUClientError("connection refused")
+
+        response = self.client.post(self._url(), follow=True)
+
+        messages_list = list(response.context["messages"])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].level, message_constants.ERROR)
+        self.assertIn("connection refused", str(messages_list[0]))
+
+    def test_success_creates_object_change_for_device(self):
+        from core.models import ObjectChange
+        from django.contrib.contenttypes.models import ContentType
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+
+        with patch("netbox_pdu_control.config_backup.get_pdu_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.get_full_config.return_value = {"pdu": {"name": "test"}, "network": {}, "outlets": [], "inlets": []}
+            mock_get_client.return_value = mock_client
+
+            self.client.post(self._url())
+
+        self.pdu.device.refresh_from_db()
+        self.assertEqual(self.pdu.device.local_context_data, {"pdu": {"name": "test"}, "network": {}, "outlets": [], "inlets": []})
+
+        ct = ContentType.objects.get_for_model(self.pdu.device.__class__)
+        change = ObjectChange.objects.filter(
+            changed_object_type=ct, changed_object_id=self.pdu.device.pk
+        ).order_by("-time").first()
+        self.assertIsNotNone(change, "expected an ObjectChange to be recorded for the Device after Save Config")
+        self.assertIsNotNone(change.prechange_data, "expected prechange_data to be populated (requires device.snapshot() before save)")
+

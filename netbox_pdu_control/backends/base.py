@@ -141,3 +141,13 @@ class BasePDUClient(ABC):
         Default implementation returns [].
         """
         return []
+
+    def get_full_config(self) -> dict:
+        """
+        Return the PDU's on-device configuration as a JSON-serializable dict, for
+        backup/history purposes. Shape is vendor-specific (raw settings passthrough).
+
+        Default implementation raises PDUClientError (vendor not supported).
+        Override in backends that support it.
+        """
+        raise PDUClientError("This backend does not support config backup")
