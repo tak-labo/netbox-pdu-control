@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   per inlet (W/A/V/PF/Wh), with a Total row when the PDU has multiple
   inlets. Complements the existing "PDU Outlets" card, which only appears
   on devices connected *to* a PDU's outlets
+- PDU config backup (Raritan only): save the PDU's on-device configuration
+  (outlet/inlet/PDU-unit settings, fetched live via the vendor API) into
+  NetBox's Device Config Context (`local_context_data`), recorded via
+  NetBox's own Change Log. Optionally also commits the same snapshot to a
+  local git repository for unlimited-retention history, when
+  `config_backup_path` is configured in `PLUGINS_CONFIG`. Triggered via a
+  new "Save Config" button on the PDU detail page, or automatically via the
+  new `config_backup_poll_interval` periodic job
 
 ### Changed
 - ManagedPDU detail page: consolidated the "PDU WebGUI" link (previously in
