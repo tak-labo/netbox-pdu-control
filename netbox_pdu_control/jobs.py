@@ -312,8 +312,9 @@ def fetch_pdu_metrics(managed_pdu, request=None):
 _plugin_config = settings.PLUGINS_CONFIG.get("netbox_pdu_control", {})
 _metrics_interval = _plugin_config.get("metrics_poll_interval", 0)
 _sync_interval = _plugin_config.get("sync_poll_interval", 0)
+_config_backup_interval = _plugin_config.get("config_backup_poll_interval", 0)
 
-if _metrics_interval > 0 or _sync_interval > 0:
+if _metrics_interval > 0 or _sync_interval > 0 or _config_backup_interval > 0:
     from netbox.jobs import JobFailed, JobRunner, system_job
 
 if _metrics_interval > 0:
@@ -377,3 +378,31 @@ if _sync_interval > 0:
                 raise JobFailed(f"All {failed} PDU(s) failed to sync")
             elif failed > 0:
                 raise Exception(f"{failed} PDU(s) failed to sync ({success} succeeded)")
+
+
+if _config_backup_interval > 0:
+
+    @system_job(interval=_config_backup_interval)
+    class PDUConfigBackupJob(JobRunner):
+        class Meta:
+            name = "PDU Config Backup"
+
+        def run(self, *args, **kwargs):
+            from . import models
+            from .config_backup import save_config_backup
+
+            pdus = models.ManagedPDU.objects.filter(config_backup_enabled=True)
+            success, failed = 0, 0
+            for pdu in pdus:
+                try:
+                    result = save_config_backup(pdu)
+                    self.logger.info(f"Config backup [{pdu}]: git_committed={result.git_committed}")
+                    success += 1
+                except Exception as e:
+                    self.logger.error(f"Config backup failed [{pdu}]: {e}")
+                    failed += 1
+            self.logger.info(f"Periodic config backup complete: {success} OK, {failed} failed")
+            if failed > 0 and success == 0:
+                raise JobFailed(f"All {failed} PDU(s) failed config backup")
+            elif failed > 0:
+                raise Exception(f"{failed} PDU(s) failed config backup ({success} succeeded)")

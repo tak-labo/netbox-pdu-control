@@ -23,6 +23,7 @@ class ManagedPDU(NetBoxModel):
         "verify_ssl",
         "sync_enabled",
         "metrics_enabled",
+        "config_backup_enabled",
         "comments",
     ]
 
@@ -102,6 +103,16 @@ class ManagedPDU(NetBoxModel):
         default=True,
         verbose_name=_("Metrics Enabled"),
         help_text=_("Include this PDU in periodic metrics polling jobs"),
+    )
+    last_config_saved = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Last Config Saved"),
+    )
+    config_backup_enabled = models.BooleanField(
+        default=True,
+        verbose_name=_("Config Backup Enabled"),
+        help_text=_("Include this PDU in periodic config backup jobs"),
     )
     pdu_model = models.CharField(
         max_length=100,

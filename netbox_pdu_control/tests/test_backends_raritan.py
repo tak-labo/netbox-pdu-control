@@ -1117,5 +1117,52 @@ class TestGetAllMetricsPrometheus(unittest.TestCase):
         self.assertTrue(self.client.supports_prometheus_metrics)
 
 
+class TestGetFullConfig(unittest.TestCase):
+    """Tests for get_full_config()."""
+
+    def setUp(self):
+        self.client = _make_client()
+
+    def test_combines_pdu_outlet_inlet_settings(self):
+        """get_full_config() aggregates PDU/outlet/inlet settings into one dict."""
+
+        def fake_rpc(path, method, params=None):
+            if path == "/model/pdu/0" and method == "getSettings":
+                return {"name": "pdu01", "cycleDelay": 10}
+            if path == "/model/pdu/0" and method == "getOutlets":
+                return [{"rid": "/outlet/1"}]
+            if path == "/model/pdu/0" and method == "getInlets":
+                return [{"rid": "/inlet/1"}]
+            if path == "/outlet/1" and method == "getSettings":
+                return {"name": "server-a", "startupState": 3}
+            if path == "/inlet/1" and method == "getSettings":
+                return {"name": "feed-1"}
+            raise AssertionError(f"unexpected rpc call: {path} {method}")
+
+        with patch.object(self.client, "_rpc", side_effect=fake_rpc), patch.object(
+            self.client, "get_pdu_info"
+        ) as mock_info:
+            mock_info.return_value = {
+                "model": "PX3-5138JR",
+                "serial_number": "ABC123",
+                "device_time_epoch": 1784930535,
+            }
+            config = self.client.get_full_config()
+
+        self.assertEqual(config["pdu"], {"name": "pdu01", "cycleDelay": 10})
+        self.assertEqual(config["network"], {"model": "PX3-5138JR", "serial_number": "ABC123"})
+        self.assertEqual(config["outlets"], [{"outlet_number": 1, "settings": {"name": "server-a", "startupState": 3}}])
+        self.assertEqual(config["inlets"], [{"inlet_number": 1, "settings": {"name": "feed-1"}}])
+
+    def test_excludes_device_time_epoch_from_network(self):
+        """device_time_epoch is dropped since it changes on every call."""
+        with patch.object(self.client, "_rpc", return_value={}), patch.object(
+            self.client, "get_pdu_info", return_value={"model": "X", "device_time_epoch": 123}
+        ):
+            config = self.client.get_full_config()
+
+        self.assertNotIn("device_time_epoch", config["network"])
+
+
 if __name__ == "__main__":
     unittest.main()
