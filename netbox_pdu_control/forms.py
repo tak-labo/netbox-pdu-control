@@ -41,7 +41,7 @@ class ManagedPDUForm(NetBoxModelForm):
         FieldSet(
             "ip_address", "vendor", "api_url", "api_username", "api_password", "verify_ssl", name="Connection"
         ),
-        FieldSet("sync_enabled", "metrics_enabled", name="Polling"),
+        FieldSet("sync_enabled", "metrics_enabled", "config_backup_enabled", name="Polling"),
         FieldSet("grafana_panel_base_url", name="Grafana"),
         FieldSet("comments", "tags", name="Other"),
     )
@@ -58,6 +58,7 @@ class ManagedPDUForm(NetBoxModelForm):
             "verify_ssl",
             "sync_enabled",
             "metrics_enabled",
+            "config_backup_enabled",
             "grafana_panel_base_url",
             "comments",
             "tags",
