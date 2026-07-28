@@ -1,0 +1,323 @@
+# NetBox PDU Control
+
+NetBox の PDU 管理プラグイン。
+
+![NetBox](https://img.shields.io/badge/NetBox-4.5%20%7C%204.6-blue)
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
+![PyPI](https://img.shields.io/pypi/v/netbox-pdu-control)
+![License](https://img.shields.io/badge/License-Apache%202.0-green)
+
+> **[English](README.md)**
+
+---
+
+[NetBox](https://github.com/netbox-community/netbox) 用プラグイン。Managed PDUを NetBox の Device レコードに紐付け、Vendor API 経由でアウトレット・インレットの監視と電源制御を行います。
+
+---
+
+## 対応ベンダー
+
+| ベンダー | 製品 | プロトコル | 認証方式 |
+|---------|------|-----------|---------|
+| Raritan | Xerus シリーズ | JSON-RPC 2.0 over HTTPS | HTTP Basic 認証 |
+| Ubiquiti | USP-PDU-Pro | UniFi Network Controller REST API | API キーまたはセッション |
+
+---
+
+## テスト済みハードウェア
+
+以下のハードウェアで動作確認済みです：
+
+| ベンダー | モデル | バージョン | 備考 |
+|---------|--------|-----------|------|
+| Raritan | PX3-5138JR | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX3-5201JR | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX3-5496JV | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX3-5497JV | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX3-5702JV | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX4-534AJ-E7 | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Raritan | PX4-5884J-E7 | ファームウェア 4.3.x（Xerus） | アウトレット・インレット・電源制御・しきい値すべて対応 |
+| Ubiquiti | USP-PDU-Pro | UniFi OS 5.0.16 / Network 10.1.89 | アウトレット制御・監視に対応；インレットは合計消費電力で代替表示；しきい値は非対応 |
+
+Xerus ファームウェアが動作する他の Raritan PDU（PX2、PX3、PX4、BCM 系）も動作すると考えられますが、直接のテストは行っていません。
+
+---
+
+## 機能
+
+- **同期** — ハードウェア情報（型番・シリアル・ファームウェア・定格電力/電圧/電流）、ネットワーク設定（IP・MAC・NTP・DNS）を PDU から取得
+- **アウトレット監視** — 各アウトレットの電圧・電流・有効電力・力率・累積電力量
+- **インレット監視** — 入力全体の電流・電圧・電力・皮相電力・周波数
+- **電源制御** — アウトレットごとに ON / OFF / Power Cycle をワンクリックで実行
+- **名前プッシュ** — NetBox 上のアウトレット名・インレット名を PDU に書き込み、接続デバイスの `PowerOutlet.label` / `PowerPort.label` も自動更新
+- **しきい値表示** — センサーごとの警告・クリティカルしきい値を表示（Raritan のみ）
+- **バックグラウンドジョブ** — Power Cycle 後のステータス更新を RQ ワーカーで実行
+- **設定バックアップ** — PDUのオンデバイス設定をNetBox（Device Config Context）に保存。任意でローカルgitリポジトリにも保存可能。手動ボタンまたは定期ジョブで実行（Raritanのみ）
+- **REST API & GraphQL** — 全モデルに対応した NetBox ネイティブ API
+- **マルチベンダー設計** — ベースクラスを実装するだけで新ベンダーを追加可能
+
+---
+
+## インストール
+
+### 通常環境（非Docker）
+
+**1. パッケージをインストール**
+
+```bash
+source /opt/netbox/venv/bin/activate
+pip install netbox-pdu-control
+```
+
+**2. プラグインを有効化**
+
+`/opt/netbox/netbox/netbox/configuration.py` に追加:
+
+```python
+PLUGINS = ["netbox_pdu_control"]
+
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # Prometheus メトリクスを自動取得する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "metrics_poll_interval": 5,
+        # PDU 全体（ハードウェア情報・アウトレット・インレット）を自動同期する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "sync_poll_interval": 60,
+        # 任意: ローカルgitで管理する追加のPDU設定バックアップ用ディレクトリ。
+        # NetBox標準のChange Log（デフォルトはCHANGELOG_RETENTION管理設定により90日）を
+        # 超えて無期限に履歴を保持したい場合に使用。初回利用時にプラグインが自動で
+        # `git init` を実行します。この設定の有無に関わらず、設定は常にPDUの
+        # Device > Config Context にも保存されます。
+        # このgitバックアップ機能を使うには、NetBoxのweb/workerの両環境に
+        # `git` CLIがインストールされている必要があります。
+        # "config_backup_path": "/opt/netbox/pdu-config-backups",
+        # 設定バックアップを自動実行する間隔（分）。0 を設定するか削除すると無効になります。
+        "config_backup_poll_interval": 0,
+        # netbox-secrets を導入してPDU認証情報を管理する場合のみ必要 —
+        # バックグラウンド/システムジョブがHTTPセッションなしでSecretを復号できるようにする。
+        # "service_account": "pdu-sync",
+        # "service_private_key_path": "/opt/netbox/pdu-sync.pem",
+    }
+}
+```
+
+**3. マイグレーション実行と再起動**
+
+```bash
+cd /opt/netbox/netbox
+python manage.py migrate
+sudo systemctl restart netbox netbox-rq
+```
+
+---
+
+### Docker 環境（netbox-docker）
+
+参考: [Using NetBox Plugins](https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins)
+
+**1. `plugin_requirements.txt` を作成**
+
+```
+netbox-pdu-control
+```
+
+**2. `Dockerfile-Plugins` を作成**
+
+```dockerfile
+FROM netboxcommunity/netbox:latest
+
+COPY ./plugin_requirements.txt /opt/netbox/
+RUN /usr/local/bin/uv pip install -r /opt/netbox/plugin_requirements.txt
+
+COPY configuration/configuration.py /etc/netbox/config/configuration.py
+COPY configuration/plugins.py /etc/netbox/config/plugins.py
+RUN DEBUG="true" SECRET_KEY="dummydummydummydummydummydummydummydummydummydummy" \
+    /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
+```
+
+**3. `docker-compose.override.yml` を設定**
+
+```yaml
+services:
+  netbox:
+    image: netbox:latest-plugins
+    pull_policy: never
+    ports:
+      - 8000:8080
+    build:
+      context: .
+      dockerfile: Dockerfile-Plugins
+  netbox-worker:
+    image: netbox:latest-plugins
+    pull_policy: never
+```
+
+**4. プラグインを有効化**
+
+`configuration/plugins.py` に追加:
+
+```python
+PLUGINS = ["netbox_pdu_control"]
+
+PLUGINS_CONFIG = {
+    "netbox_pdu_control": {
+        # Prometheus メトリクスを自動取得する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "metrics_poll_interval": 5,
+        # PDU 全体（ハードウェア情報・アウトレット・インレット）を自動同期する間隔（分）。
+        # 0 を設定するか削除すると無効になります。
+        "sync_poll_interval": 60,
+        # 任意: ローカルgitで管理する追加のPDU設定バックアップ用ディレクトリ。
+        # NetBox標準のChange Log（デフォルトはCHANGELOG_RETENTION管理設定により90日）を
+        # 超えて無期限に履歴を保持したい場合に使用。初回利用時にプラグインが自動で
+        # `git init` を実行します。この設定の有無に関わらず、設定は常にPDUの
+        # Device > Config Context にも保存されます。
+        # このgitバックアップ機能を使うには、NetBoxのweb/workerの両環境に
+        # `git` CLIがインストールされている必要があります。
+        # "config_backup_path": "/opt/netbox/pdu-config-backups",
+        # 設定バックアップを自動実行する間隔（分）。0 を設定するか削除すると無効になります。
+        "config_backup_poll_interval": 0,
+        # netbox-secrets を導入してPDU認証情報を管理する場合のみ必要 —
+        # バックグラウンド/システムジョブがHTTPセッションなしでSecretを復号できるようにする。
+        # "service_account": "pdu-sync",
+        # "service_private_key_path": "/opt/netbox/pdu-sync.pem",
+    }
+}
+```
+
+**5. ビルド・起動・マイグレーション**
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+docker compose exec netbox python manage.py migrate
+```
+
+---
+
+## 設定
+
+### ManagedPDU の作成
+
+**Plugins → PDU Management → Add** から接続情報を入力します。
+
+| フィールド | 説明 |
+|-----------|------|
+| Device | NetBox に登録済みの PDU デバイス |
+| IP Address | 任意: 選択した Device に紐づく登録済みIPから選択すると、API URL に `https://<ip>` を自動入力 |
+| Vendor | `Raritan` または `Ubiquiti (USP-PDU-Pro)` |
+| API URL | PDU または UniFi コントローラーの URL（例: `https://192.168.1.1`） |
+| API Username | 認証ユーザー名。Ubiquiti で API キーモードを使う場合は空欄 |
+| API Password | パスワードまたは API キー |
+| Verify SSL | 自己署名証明書の場合はオフにする |
+
+Add/Edit 画面の **Test Connection** ボタンで、保存前に vendor/API URL/認証情報の疎通確認ができます
+(NetBoxへの書き込みは一切行わず、接続確認のみ)。
+
+### Ubiquiti 固有の設定
+
+- **API キーモード**: `API Username` を空欄にし、`API Password` に API キーを設定（セッション認証不要）
+- **コントローラー種別**: UDM/UCG とスタンドアロンコントローラーを自動判別
+- **サイト指定**: デフォルト以外のサイトを指定する場合は API URL に `/s/<site>` を付加（例: `https://192.168.1.1/s/mysite`）
+
+---
+
+## 認証情報
+
+netbox-pdu-control は以下の優先順位で PDU の認証情報を解決します:
+
+1. **netbox-secrets（優先）** — role `pdu-credentials` を持ち、対象 Device に紐づけられた `Secret`。
+   `Secret.name` = API ユーザー名、`Secret.plaintext` = API パスワード（RSA暗号化）。
+2. **平文フォールバック** — `ManagedPDU` の `API Username` / `API Password` フィールド。netbox-secrets
+   が未導入、または該当する Secret が見つからない場合に使用されます。
+
+バックグラウンドジョブ（定期同期・メトリクス取得）でSecretを復号するには、`PLUGINS_CONFIG` に
+`service_account` と `service_private_key_path` を設定してください（HTTPセッションなしで復号するため）。
+
+---
+
+## 使い方
+
+### PDU の同期
+
+ManagedPDU 詳細ページで **Sync** をクリックすると、ハードウェア情報を取得し、全アウトレット・インレットのレコードを更新します。同期状態とタイムスタンプが詳細ページに表示されます。
+
+### 電源制御
+
+アウトレット詳細ページの **Actions** カードから ON / OFF / Power Cycle を実行できます。Power Cycle 後はバックグラウンドジョブでステータスが自動更新されます。
+
+### PDU への名前プッシュ
+
+アウトレットまたはインレットの詳細ページで **Push Name to PDU** をクリックすると、NetBox に保存されている名前をPDUに書き込みます。接続先デバイスの `PowerOutlet.label` / `PowerPort.label` も同時に更新されます。
+
+---
+
+## バージョン対応表
+
+| プラグインバージョン | NetBox バージョン |
+|-------------------|-----------------|
+| 0.4.0 – 0.5.0 | 4.6.0 以降(NetBox 4.5.x サポートは終了) |
+| 0.3.0 – 0.3.6 | 4.5.0 – 4.6.xx |
+| 0.1.0 – 0.2.0 | 4.5.0 – 4.5.xx |
+
+---
+
+## ベンダー別の注意事項
+
+### Raritan
+
+- JSON-RPC 2.0 を使用（標準 REST ではない）— リソースパスごとに個別のエンドポイント
+- アウトレット電源制御は 0-based index（`/model/pdu/0/outlet/{N}`）
+- アウトレット・インレットデータは `getOutlets` / `getInlets` が返す opaque RID 経由でアクセス
+
+### Ubiquiti
+
+- `outlet_overrides` は全アウトレット分をまとめて PUT する必要あり（一部のみ送ると未指定分がリセットされる）
+- インレット API は非対応 — `outlet_ac_power_consumption`（合計消費電力）を Inlet 1 として代替表示
+- センサーしきい値は UniFi API 非対応
+
+---
+
+## 開発
+
+```bash
+# CIと同じチェックを実行（lint + Docker統合テスト）
+make ci
+
+# lintのみ
+make lint
+
+# Docker経由で統合テストを実行
+docker compose exec netbox python manage.py test netbox_pdu_control.tests -v 2
+
+# コード変更後の再起動
+docker compose restart netbox netbox-worker
+
+# マイグレーション適用
+docker compose exec netbox python manage.py migrate
+
+# マイグレーション自動生成（DEVELOPER=True 必須）
+docker compose exec -e DEVELOPER=True netbox python manage.py makemigrations netbox_pdu_control
+```
+
+pre-pushフックがpre-commitによって自動インストールされます。`git push` 前に自動でlintとDockerテストが実行されます。
+
+```bash
+# pre-pushフックのインストール（clone後に1度だけ実行）
+uvx pre-commit install --hook-type pre-push
+```
+
+### 新ベンダーの追加方法
+
+1. `netbox_pdu_control/backends/<vendor>.py` に `BasePDUClient` を実装
+2. `netbox_pdu_control/backends/__init__.py` の `_VENDOR_BACKENDS` に登録
+3. `netbox_pdu_control/choices.py` の `VendorChoices` に追加
+4. マイグレーションを生成・適用
+
+---
+
+## ライセンス
+
+このプロジェクトは [Apache License 2.0](LICENSE) のもとで公開しています。
+帰属表示の詳細は [NOTICE](NOTICE) を参照してください。
