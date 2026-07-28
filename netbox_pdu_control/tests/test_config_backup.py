@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
 
-from ..config_backup import save_config_backup
+from ..config_backup import get_config_diff, save_config_backup
 from .test_models import create_test_pdu
 
 SAMPLE_CONFIG = {"pdu": {"name": "pdu01"}, "network": {}, "outlets": [], "inlets": []}
@@ -150,3 +150,52 @@ class SaveConfigBackupTest(TestCase):
         self.assertEqual(self.pdu.device.local_context_data, SAMPLE_CONFIG)
         self.assertFalse(result.git_committed)
         self.assertIn("command not found", result.git_error)
+
+
+class GetConfigDiffTest(TestCase):
+    def setUp(self):
+        self.pdu = create_test_pdu()
+
+    def test_returns_none_without_config_backup_path(self):
+        with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {}}):
+            self.assertIsNone(get_config_diff(self.pdu))
+
+    def test_returns_none_without_git_repo(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                self.assertIsNone(get_config_diff(self.pdu))
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_returns_none_after_single_snapshot(self, mock_get_client):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu)
+                self.assertIsNone(get_config_diff(self.pdu))
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_returns_diff_after_second_snapshot(self, mock_get_client):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu)
+                mock_client.get_full_config.return_value = {**SAMPLE_CONFIG, "pdu": {"name": "pdu02"}}
+                save_config_backup(self.pdu)
+
+                diff = get_config_diff(self.pdu)
+
+        self.assertIsNotNone(diff)
+        self.assertIn("pdu01", diff)
+        self.assertIn("pdu02", diff)

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- ManagedPDU detail page: "Config Diff" card showing the unified git diff
+  between the last two saved config backup snapshots, when
+  `config_backup_path` is configured and at least two snapshots exist.
+  NetBox's own Change Log diffs the raw JSON blob, which is hard to read
+  for deeply nested PDU configs; git's text diff of the same content is
+  much clearer.
+
 ### Fixed
 - `ManagedPDUForm`: expose `config_backup_enabled` (add/edit form and
   "Polling" fieldset, alongside `sync_enabled`/`metrics_enabled`) — it was

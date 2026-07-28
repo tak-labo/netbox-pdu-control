@@ -56,6 +56,35 @@ def _commit_to_git(repo_path: str, filename: str, config: dict) -> bool:
     return True
 
 
+def _config_filename(managed_pdu) -> str:
+    return f"{slugify(managed_pdu.device.name)}-{managed_pdu.device.pk}.json"
+
+
+def get_config_diff(managed_pdu) -> str | None:
+    """
+    Return the git diff between the last two saved config snapshots for this PDU,
+    as a unified diff string. Returns None if config_backup_path is not configured,
+    the git repo doesn't exist yet, or fewer than two snapshots have been committed.
+    """
+    plugin_config = settings.PLUGINS_CONFIG.get("netbox_pdu_control", {})
+    repo_path = plugin_config.get("config_backup_path")
+    if not repo_path:
+        return None
+
+    repo_path = Path(repo_path)
+    if not (repo_path / ".git").exists():
+        return None
+
+    filename = _config_filename(managed_pdu)
+    log = _run_git(repo_path, "log", "--format=%H", "--", filename)
+    commits = log.stdout.split()
+    if len(commits) < 2:
+        return None
+
+    diff = _run_git(repo_path, "diff", commits[1], commits[0], "--", filename)
+    return diff.stdout
+
+
 def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
     """
     Fetch the PDU's full config and save it.
@@ -80,7 +109,7 @@ def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
 
     result = ConfigBackupResult(git_committed=None)
     if repo_path:
-        filename = f"{slugify(managed_pdu.device.name)}-{managed_pdu.device.pk}.json"
+        filename = _config_filename(managed_pdu)
         try:
             result.git_committed = _commit_to_git(repo_path, filename, config)
         except (RuntimeError, OSError, subprocess.TimeoutExpired) as e:
