@@ -126,6 +126,14 @@
           {% endif %}
         </table>
       </div>
+      {% if config_diff %}
+      <div class="card mt-3">
+        <h5 class="card-header">Config Diff (latest git commit)</h5>
+        <div class="card-body">
+          <pre class="mb-0"><code>{{ config_diff }}</code></pre>
+        </div>
+      </div>
+      {% endif %}
       {% include 'inc/panels/custom_fields.html' %}
     </div>
     <div class="col col-md-6">
@@ -169,38 +177,52 @@
         </div>
       </div>
       <div class="card">
-        <h2 class="card-header">Sync Status</h2>
+        <h2 class="card-header">Status</h2>
         <table class="table table-hover attr-table">
           <tr>
-            <th scope="row">Status</th>
-            <td>{% badge object.get_sync_status_display bg_color=object.get_sync_status_color %}</td>
+            <th scope="col"></th>
+            <th scope="col">Status</th>
+            <th scope="col">Enabled</th>
+            <th scope="col">Last Updated</th>
           </tr>
           <tr>
-            <th scope="row">Last Synced</th>
+            <th scope="row">Sync</th>
+            <td>{% badge object.get_sync_status_display bg_color=object.get_sync_status_color %}</td>
+            <td>
+              {% if object.sync_enabled %}
+                {% badge "Enabled" bg_color="green" %}
+              {% else %}
+                {% badge "Disabled" bg_color="grey" %}
+              {% endif %}
+            </td>
             <td>{{ object.last_synced|placeholder }}</td>
           </tr>
           <tr>
-            <th scope="row">Last Config Saved</th>
+            <th scope="row">Config Backup</th>
+            <td>{% badge object.get_config_backup_status_display bg_color=object.get_config_backup_status_color %}</td>
+            <td>
+              {% if object.config_backup_enabled %}
+                {% badge "Enabled" bg_color="green" %}
+              {% else %}
+                {% badge "Disabled" bg_color="grey" %}
+              {% endif %}
+            </td>
             <td>{{ object.last_config_saved|placeholder }}</td>
           </tr>
           <tr>
-            <th scope="row">Metrics Status</th>
+            <th scope="row">Metrics</th>
             <td>{% badge object.get_metrics_status_display bg_color=object.get_metrics_status_color %}</td>
-          </tr>
-          <tr>
-            <th scope="row">Last Metrics Fetched</th>
+            <td>
+              {% if object.metrics_enabled %}
+                {% badge "Enabled" bg_color="green" %}
+              {% else %}
+                {% badge "Disabled" bg_color="grey" %}
+              {% endif %}
+            </td>
             <td>{{ object.last_metrics_fetched|placeholder }}</td>
           </tr>
         </table>
       </div>
-      {% if config_diff %}
-      <div class="card">
-        <h2 class="card-header">Config Diff (latest git commit)</h2>
-        <div class="card-body">
-          <pre class="mb-0"><code>{{ config_diff }}</code></pre>
-        </div>
-      </div>
-      {% endif %}
       {% if object.pdu_model or object.serial_number or object.firmware_version or object.rated_voltage or object.rated_current or object.phase_type %}
       <div class="card">
         <h2 class="card-header">Hardware Info</h2>

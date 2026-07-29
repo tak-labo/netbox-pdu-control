@@ -395,11 +395,13 @@ if _config_backup_interval > 0:
             success, failed = 0, 0
             for pdu in pdus:
                 try:
-                    result = save_config_backup(pdu)
+                    result = save_config_backup(pdu, source="auto")
                     self.logger.info(f"Config backup [{pdu}]: git_committed={result.git_committed}")
                     success += 1
                 except Exception as e:
                     self.logger.error(f"Config backup failed [{pdu}]: {e}")
+                    pdu.config_backup_status = SyncStatusChoices.FAILED
+                    pdu.save(update_fields=["config_backup_status"])
                     failed += 1
             self.logger.info(f"Periodic config backup complete: {success} OK, {failed} failed")
             if failed > 0 and success == 0:

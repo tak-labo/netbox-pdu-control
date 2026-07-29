@@ -10,7 +10,8 @@ from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
 
-from ..config_backup import get_config_diff, save_config_backup
+from ..choices import SyncStatusChoices
+from ..config_backup import get_config_diff, get_config_snapshot_pair, save_config_backup
 from .test_models import create_test_pdu
 
 SAMPLE_CONFIG = {"pdu": {"name": "pdu01"}, "network": {}, "outlets": [], "inlets": []}
@@ -43,6 +44,17 @@ class SaveConfigBackupTest(TestCase):
         save_config_backup(self.pdu)
         self.pdu.refresh_from_db()
         self.assertIsNotNone(self.pdu.last_config_saved)
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_updates_config_backup_status_to_success(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        self.assertEqual(self.pdu.config_backup_status, SyncStatusChoices.NEVER)
+        save_config_backup(self.pdu)
+        self.pdu.refresh_from_db()
+        self.assertEqual(self.pdu.config_backup_status, SyncStatusChoices.SUCCESS)
 
     @patch("netbox_pdu_control.config_backup.get_pdu_client")
     def test_without_config_backup_path_skips_git(self, mock_get_client):
@@ -151,6 +163,21 @@ class SaveConfigBackupTest(TestCase):
         self.assertFalse(result.git_committed)
         self.assertIn("command not found", result.git_error)
 
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_commit_message_records_source(self, mock_get_client):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu, source="auto")
+
+            log = subprocess.run(["git", "-C", tmpdir, "log", "-1", "--format=%s"], capture_output=True, text=True)
+            self.assertIn("(auto)", log.stdout)
+
 
 class GetConfigDiffTest(TestCase):
     def setUp(self):
@@ -199,3 +226,54 @@ class GetConfigDiffTest(TestCase):
         self.assertIsNotNone(diff)
         self.assertIn("pdu01", diff)
         self.assertIn("pdu02", diff)
+
+
+class GetConfigSnapshotPairTest(TestCase):
+    def setUp(self):
+        self.pdu = create_test_pdu()
+
+    def test_returns_none_without_config_backup_path(self):
+        with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {}}):
+            self.assertIsNone(get_config_snapshot_pair(self.pdu))
+
+    def test_returns_none_without_git_repo(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                self.assertIsNone(get_config_snapshot_pair(self.pdu))
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_returns_none_after_single_snapshot(self, mock_get_client):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu)
+                self.assertIsNone(get_config_snapshot_pair(self.pdu))
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_returns_full_previous_and_current_text(self, mock_get_client):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu)
+                mock_client.get_full_config.return_value = {**SAMPLE_CONFIG, "pdu": {"name": "pdu02"}}
+                save_config_backup(self.pdu)
+
+                pair = get_config_snapshot_pair(self.pdu)
+
+        self.assertIsNotNone(pair)
+        previous_text, current_text = pair
+        self.assertIn("pdu01", previous_text)
+        self.assertNotIn("pdu02", previous_text)
+        self.assertIn("pdu02", current_text)

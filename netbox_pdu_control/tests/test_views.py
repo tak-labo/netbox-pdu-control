@@ -736,6 +736,19 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
         self.assertEqual(messages_list[0].level, message_constants.ERROR)
         self.assertIn("connection refused", str(messages_list[0]))
 
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_fetch_error_sets_config_backup_status_failed(self, mock_save):
+        from netbox_pdu_control.backends.base import PDUClientError
+        from netbox_pdu_control.choices import SyncStatusChoices
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.side_effect = PDUClientError("connection refused")
+
+        self.client.post(self._url(), follow=True)
+
+        self.pdu.refresh_from_db()
+        self.assertEqual(self.pdu.config_backup_status, SyncStatusChoices.FAILED)
+
     def test_success_creates_object_change_for_device(self):
         from core.models import ObjectChange
         from django.contrib.contenttypes.models import ContentType
@@ -758,4 +771,44 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
         ).order_by("-time").first()
         self.assertIsNotNone(change, "expected an ObjectChange to be recorded for the Device after Save Config")
         self.assertIsNotNone(change.prechange_data, "expected prechange_data to be populated (requires device.snapshot() before save)")
+
+
+class DevicePDUConfigViewTest(PluginViewTestCase):
+    """Tests for DevicePDUConfigView (a tab on the core Device page)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.pdu = create_test_pdu()
+        cls.plain_device = create_test_device("Plain Device")
+
+    def _url(self, device):
+        return reverse("dcim:device_pdu_config", kwargs={"pk": device.pk})
+
+    def test_without_permission_returns_404(self):
+        response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 404)
+
+    def test_404_for_device_without_managed_pdu(self):
+        self.add_permissions("dcim.view_device")
+        response = self.client.get(self._url(self.plain_device))
+        self.assertHttpStatus(response, 404)
+
+    def test_shows_placeholder_without_two_snapshots(self):
+        self.add_permissions("dcim.view_device")
+        with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=None):
+            response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 200)
+        self.assertContains(response, "Not enough config backup history")
+
+    def test_shows_diff_table_with_two_snapshots(self):
+        self.add_permissions("dcim.view_device")
+        pair = ('{"pdu": {"name": "pdu-old"}}', '{"pdu": {"name": "pdu-new"}}')
+        with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=pair):
+            response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 200)
+        # Whole-line highlighting (class="replace" on the <tr>), not difflib.HtmlDiff's
+        # default intraline character-level spans.
+        self.assertContains(response, 'class="replace"')
+        self.assertContains(response, "pdu-old")
+        self.assertContains(response, "pdu-new")
 

@@ -1,0 +1,57 @@
+{% extends 'generic/object.html' %}
+
+{% block content %}
+  <style>
+    table.diff {font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; border:medium; width:100%; border-collapse: collapse;}
+    table.diff th {background-color:#e0e0e0; text-align:left; padding: 2px 6px;}
+    table.diff td.diff-linenum {text-align:right; color:#888; padding: 0 6px; vertical-align: top; user-select: none;}
+    table.diff td.diff-text {white-space: pre-wrap; overflow-wrap: break-word; vertical-align: top; width: 50%; padding: 0 6px;}
+    table.diff tr.replace td.diff-text {background-color:#ffff77}
+    table.diff tr.delete td.diff-text:nth-of-type(2) {background-color:#ffaaaa}
+    table.diff tr.insert td.diff-text:nth-of-type(4) {background-color:palegreen}
+
+    @media (prefers-color-scheme: dark) {
+      table.diff th {background-color:#666}
+      table.diff tr.replace td.diff-text {background-color:#847415}
+      table.diff tr.delete td.diff-text:nth-of-type(2) {background-color:darkred}
+      table.diff tr.insert td.diff-text:nth-of-type(4) {background-color:darkgreen}
+    }
+  </style>
+  <div class="row">
+    <div class="col col-md-12">
+      <div class="card">
+        <h2 class="card-header">PDU Config: last two saved snapshots</h2>
+        <div class="card-body">
+          {% if diff_rows %}
+            <div style="overflow-x: auto;">
+              <table class="diff">
+                <thead>
+                  <tr>
+                    <th colspan="2">Previous</th>
+                    <th colspan="2">Current</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in diff_rows %}
+                    <tr class="{{ row.tag }}">
+                      <td class="diff-linenum">{{ row.left_num|default:"" }}</td>
+                      <td class="diff-text">{{ row.left_text }}</td>
+                      <td class="diff-linenum">{{ row.right_num|default:"" }}</td>
+                      <td class="diff-text">{{ row.right_text }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">
+              Not enough config backup history yet — need at least two saved snapshots.
+              Use the <strong>Save Config</strong> button on the
+              <a href="{{ managed_pdu.get_absolute_url }}">Managed PDU</a> page.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

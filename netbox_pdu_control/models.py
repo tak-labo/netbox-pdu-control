@@ -114,6 +114,12 @@ class ManagedPDU(NetBoxModel):
         verbose_name=_("Config Backup Enabled"),
         help_text=_("Include this PDU in periodic config backup jobs"),
     )
+    config_backup_status = models.CharField(
+        max_length=30,
+        choices=SyncStatusChoices,
+        default=SyncStatusChoices.NEVER,
+        verbose_name=_("Config Backup Status"),
+    )
     pdu_model = models.CharField(
         max_length=100,
         blank=True,
@@ -216,6 +222,9 @@ class ManagedPDU(NetBoxModel):
 
     def get_metrics_status_color(self):
         return SyncStatusChoices.colors.get(self.metrics_status)
+
+    def get_config_backup_status_color(self):
+        return SyncStatusChoices.colors.get(self.config_backup_status)
 
     @property
     def phase_type(self):
