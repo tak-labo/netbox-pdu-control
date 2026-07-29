@@ -14,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   NetBox's own Change Log diffs the raw JSON blob, which is hard to read
   for deeply nested PDU configs; git's text diff of the same content is
   much clearer.
+- `ManagedPDU.config_backup_status` (Success/Failed/Never synced, mirroring
+  `sync_status`/`metrics_status`), shown in a new "Status" card that
+  consolidates Sync/Config Backup/Metrics status, enabled state, and last
+  update time into one table.
+- Config backup git commit messages now record whether the snapshot was
+  saved manually (Save Config button) or by the periodic backup job, e.g.
+  "Update config for device3-pdu03.json (auto)".
+
+### Changed
+- Config backup git filenames are now `device{pk}-{slug}.json` (e.g.
+  `device3-pdu03.json`) instead of `{slug}-{pk}.json`, so the leading
+  number is unambiguous. Existing snapshot files under the previous
+  naming scheme are orphaned; the next save starts fresh history under
+  the new name.
 
 ### Fixed
 - `ManagedPDUForm`: expose `config_backup_enabled` (add/edit form and

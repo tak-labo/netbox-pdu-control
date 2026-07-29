@@ -736,6 +736,19 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
         self.assertEqual(messages_list[0].level, message_constants.ERROR)
         self.assertIn("connection refused", str(messages_list[0]))
 
+    @patch("netbox_pdu_control.views.save_config_backup")
+    def test_fetch_error_sets_config_backup_status_failed(self, mock_save):
+        from netbox_pdu_control.backends.base import PDUClientError
+        from netbox_pdu_control.choices import SyncStatusChoices
+
+        self.add_permissions("netbox_pdu_control.change_managedpdu")
+        mock_save.side_effect = PDUClientError("connection refused")
+
+        self.client.post(self._url(), follow=True)
+
+        self.pdu.refresh_from_db()
+        self.assertEqual(self.pdu.config_backup_status, SyncStatusChoices.FAILED)
+
     def test_success_creates_object_change_for_device(self):
         from core.models import ObjectChange
         from django.contrib.contenttypes.models import ContentType

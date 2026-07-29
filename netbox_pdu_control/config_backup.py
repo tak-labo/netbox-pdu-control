@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from .backends import get_pdu_client
+from .choices import SyncStatusChoices
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ def _run_git(repo_path: Path, *args: str) -> subprocess.CompletedProcess:
     )
 
 
-def _commit_to_git(repo_path: str, filename: str, config: dict) -> bool:
+def _commit_to_git(repo_path: str, filename: str, config: dict, source: str) -> bool:
     """Write the snapshot into a local git repo and commit if changed. Returns True if committed."""
     repo_path = Path(repo_path)
     repo_path.mkdir(parents=True, exist_ok=True)
@@ -50,14 +51,16 @@ def _commit_to_git(repo_path: str, filename: str, config: dict) -> bool:
     if not status.stdout.strip():
         return False
 
-    commit = _run_git(repo_path, "commit", "-m", f"Update config for {filename}")
+    commit = _run_git(repo_path, "commit", "-m", f"Update config for {filename} ({source})")
     if commit.returncode != 0:
         raise RuntimeError(f"git commit failed: {commit.stderr}")
     return True
 
 
 def _config_filename(managed_pdu) -> str:
-    return f"{slugify(managed_pdu.device.name)}-{managed_pdu.device.pk}.json"
+    # "device" prefix makes the leading number self-explanatory (a bare
+    # "3-pdu03.json" doesn't say what "3" is; "device3-pdu03.json" does).
+    return f"device{managed_pdu.device.pk}-{slugify(managed_pdu.device.name)}.json"
 
 
 def get_config_diff(managed_pdu) -> str | None:
@@ -85,13 +88,16 @@ def get_config_diff(managed_pdu) -> str | None:
     return diff.stdout
 
 
-def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
+def save_config_backup(managed_pdu, request=None, source: str = "manual") -> ConfigBackupResult:
     """
     Fetch the PDU's full config and save it.
 
     Always writes to `managed_pdu.device.local_context_data` (visible in NetBox's
     Config Context tab; history via NetBox's own Change Log). Additionally commits
     to a local git repo if `config_backup_path` is set in PLUGINS_CONFIG.
+
+    `source` ("manual" or "auto") is recorded in the git commit message to
+    distinguish button-triggered saves from the periodic backup job.
 
     Raises PDUClientError on fetch failure (backend not supported, connection error).
     Git failures are captured in the returned result rather than raised, since the
@@ -111,13 +117,14 @@ def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
     if repo_path:
         filename = _config_filename(managed_pdu)
         try:
-            result.git_committed = _commit_to_git(repo_path, filename, config)
+            result.git_committed = _commit_to_git(repo_path, filename, config, source)
         except (RuntimeError, OSError, subprocess.TimeoutExpired) as e:
             result.git_committed = False
             result.git_error = str(e)
             logger.error("Git config backup failed [%s]: %s", managed_pdu, e)
 
     managed_pdu.last_config_saved = timezone.now()
-    managed_pdu.save(update_fields=["last_config_saved"])
+    managed_pdu.config_backup_status = SyncStatusChoices.SUCCESS
+    managed_pdu.save(update_fields=["last_config_saved", "config_backup_status"])
 
     return result

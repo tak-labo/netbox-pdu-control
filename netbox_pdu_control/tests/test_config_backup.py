@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
 
+from ..choices import SyncStatusChoices
 from ..config_backup import get_config_diff, save_config_backup
 from .test_models import create_test_pdu
 
@@ -43,6 +44,17 @@ class SaveConfigBackupTest(TestCase):
         save_config_backup(self.pdu)
         self.pdu.refresh_from_db()
         self.assertIsNotNone(self.pdu.last_config_saved)
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_updates_config_backup_status_to_success(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        self.assertEqual(self.pdu.config_backup_status, SyncStatusChoices.NEVER)
+        save_config_backup(self.pdu)
+        self.pdu.refresh_from_db()
+        self.assertEqual(self.pdu.config_backup_status, SyncStatusChoices.SUCCESS)
 
     @patch("netbox_pdu_control.config_backup.get_pdu_client")
     def test_without_config_backup_path_skips_git(self, mock_get_client):
@@ -150,6 +162,21 @@ class SaveConfigBackupTest(TestCase):
         self.assertEqual(self.pdu.device.local_context_data, SAMPLE_CONFIG)
         self.assertFalse(result.git_committed)
         self.assertIn("command not found", result.git_error)
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_commit_message_records_source(self, mock_get_client):
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu, source="auto")
+
+            log = subprocess.run(["git", "-C", tmpdir, "log", "-1", "--format=%s"], capture_output=True, text=True)
+            self.assertIn("(auto)", log.stdout)
 
 
 class GetConfigDiffTest(TestCase):
