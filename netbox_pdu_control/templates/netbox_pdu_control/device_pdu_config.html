@@ -1,0 +1,41 @@
+{% extends 'generic/object.html' %}
+
+{% block content %}
+  <style>
+    table.diff {font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; border:medium}
+    .diff_header {background-color:#e0e0e0}
+    td.diff_header {text-align:right}
+    .diff_next {background-color:#c0c0c0}
+    .diff_add {background-color:palegreen}
+    .diff_chg {background-color:#ffff77}
+    .diff_sub {background-color:#ffaaaa}
+
+    @media (prefers-color-scheme: dark) {
+      .diff_header {background-color:#666}
+      .diff_next {background-color:#393939}
+      .diff_add {background-color:darkgreen}
+      .diff_chg {background-color:#847415}
+      .diff_sub {background-color:darkred}
+    }
+  </style>
+  <div class="row">
+    <div class="col col-md-12">
+      <div class="card">
+        <h2 class="card-header">PDU Config: last two saved snapshots</h2>
+        <div class="card-body">
+          {% if diff_table %}
+            <div style="overflow-x: auto;">
+              {{ diff_table }}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">
+              Not enough config backup history yet — need at least two saved snapshots.
+              Use the <strong>Save Config</strong> button on the
+              <a href="{{ managed_pdu.get_absolute_url }}">Managed PDU</a> page.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

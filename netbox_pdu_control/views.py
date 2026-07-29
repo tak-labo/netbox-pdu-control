@@ -1,3 +1,4 @@
+import difflib
 import logging
 import re
 from datetime import timedelta
@@ -6,20 +7,21 @@ import django_rq
 from dcim.models import Device, PowerOutlet, PowerPort
 from django.contrib import messages
 from django.db.models import Count
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from netbox.views import generic
-from utilities.views import register_model_view
+from utilities.views import ViewTab, register_model_view
 
 from . import filtersets, forms, jobs, models, tables
 from .backends import _VENDOR_BACKENDS, get_pdu_client
 from .backends.base import PDUClientError
 from .choices import OutletStatusChoices, SyncStatusChoices
-from .config_backup import get_config_diff, save_config_backup
+from .config_backup import get_config_diff, get_config_snapshot_pair, save_config_backup
 from .credentials import SECRET_ROLE_SLUG, get_credential
 from .jobs import epoch_to_dt, fetch_pdu_metrics, sync_managed_pdu
 
@@ -272,6 +274,53 @@ class ManagedPDUSaveConfigView(View):
             logger.error("Config save failed [%s]: %s", managed_pdu, e)
 
         return redirect(managed_pdu.get_absolute_url())
+
+
+@register_model_view(Device, name="pdu_config", path="pdu-config")
+class DevicePDUConfigView(View):
+    """
+    Tab on the core Device page showing a full side-by-side comparison of the
+    last two saved config backup snapshots (git-backed). Complements the
+    unified diff card on the ManagedPDU page with more detail; replaces
+    reliance on NetBox's generic Config Context tab, which shows the same
+    local_context_data twice (as "Local" and "Rendered") with no real diff.
+    """
+
+    tab = ViewTab(label="PDU Config", visible=lambda obj: hasattr(obj, "managed_pdu"))
+
+    def get(self, request, pk):
+        if not request.user.has_perm("dcim.view_device"):
+            raise Http404
+        device = get_object_or_404(Device, pk=pk)
+        managed_pdu = getattr(device, "managed_pdu", None)
+        if managed_pdu is None:
+            raise Http404
+
+        diff_table = None
+        pair = get_config_snapshot_pair(managed_pdu)
+        if pair:
+            previous_text, current_text = pair
+            diff_table = mark_safe(
+                difflib.HtmlDiff(wrapcolumn=80).make_table(
+                    previous_text.splitlines(),
+                    current_text.splitlines(),
+                    fromdesc="Previous",
+                    todesc="Current",
+                    context=True,
+                    numlines=3,
+                )
+            )
+
+        return render(
+            request,
+            "netbox_pdu_control/device_pdu_config.html",
+            {
+                "object": device,
+                "managed_pdu": managed_pdu,
+                "diff_table": diff_table,
+                "tab": self.tab,
+            },
+        )
 
 
 #

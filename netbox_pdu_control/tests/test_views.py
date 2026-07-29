@@ -772,3 +772,43 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
         self.assertIsNotNone(change, "expected an ObjectChange to be recorded for the Device after Save Config")
         self.assertIsNotNone(change.prechange_data, "expected prechange_data to be populated (requires device.snapshot() before save)")
 
+
+class DevicePDUConfigViewTest(PluginViewTestCase):
+    """Tests for DevicePDUConfigView (a tab on the core Device page)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.pdu = create_test_pdu()
+        cls.plain_device = create_test_device("Plain Device")
+
+    def _url(self, device):
+        return reverse("dcim:device_pdu_config", kwargs={"pk": device.pk})
+
+    def test_without_permission_returns_404(self):
+        response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 404)
+
+    def test_404_for_device_without_managed_pdu(self):
+        self.add_permissions("dcim.view_device")
+        response = self.client.get(self._url(self.plain_device))
+        self.assertHttpStatus(response, 404)
+
+    def test_shows_placeholder_without_two_snapshots(self):
+        self.add_permissions("dcim.view_device")
+        with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=None):
+            response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 200)
+        self.assertContains(response, "Not enough config backup history")
+
+    def test_shows_diff_table_with_two_snapshots(self):
+        self.add_permissions("dcim.view_device")
+        pair = ('{"pdu": {"name": "pdu-old"}}', '{"pdu": {"name": "pdu-new"}}')
+        with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=pair):
+            response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 200)
+        # difflib.HtmlDiff splits changed words at the character level (e.g.
+        # "pdu-<span>old</span>"), so assert on the class name it uses rather
+        # than the literal changed substrings.
+        self.assertContains(response, "diff_chg")
+        self.assertContains(response, "table.diff")
+

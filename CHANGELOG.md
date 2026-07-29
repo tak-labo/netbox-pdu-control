@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Config backup git commit messages now record whether the snapshot was
   saved manually (Save Config button) or by the periodic backup job, e.g.
   "Update config for device3-pdu03.json (auto)".
+- New "PDU Config" tab on the core Device detail page (for devices with a
+  ManagedPDU), showing a full side-by-side comparison of the last two saved
+  config backup snapshots via stdlib `difflib.HtmlDiff`. This replaces
+  reliance on NetBox's generic Config Context tab, which shows the same
+  `local_context_data` twice (as "Local" and "Rendered", identical here
+  since there's no other `ConfigContext` scoping) with no real diff.
 
 ### Changed
 - Config backup git filenames are now `device{pk}-{slug}.json` (e.g.
