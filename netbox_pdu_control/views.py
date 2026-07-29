@@ -11,7 +11,6 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from netbox.views import generic
@@ -276,6 +275,31 @@ class ManagedPDUSaveConfigView(View):
         return redirect(managed_pdu.get_absolute_url())
 
 
+def _line_diff_rows(previous_text: str, current_text: str) -> list[dict]:
+    """
+    Build side-by-side diff rows with whole-line highlighting (as opposed to
+    difflib.HtmlDiff's default intraline character highlighting, which reads
+    noisy for JSON).
+    """
+    previous_lines = previous_text.splitlines()
+    current_lines = current_text.splitlines()
+    rows = []
+    for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, previous_lines, current_lines).get_opcodes():
+        left = previous_lines[i1:i2]
+        right = current_lines[j1:j2]
+        for k in range(max(len(left), len(right))):
+            rows.append(
+                {
+                    "tag": tag,
+                    "left_num": i1 + k + 1 if k < len(left) else None,
+                    "left_text": left[k] if k < len(left) else "",
+                    "right_num": j1 + k + 1 if k < len(right) else None,
+                    "right_text": right[k] if k < len(right) else "",
+                }
+            )
+    return rows
+
+
 @register_model_view(Device, name="pdu_config", path="pdu-config")
 class DevicePDUConfigView(View):
     """
@@ -296,20 +320,11 @@ class DevicePDUConfigView(View):
         if managed_pdu is None:
             raise Http404
 
-        diff_table = None
+        diff_rows = None
         pair = get_config_snapshot_pair(managed_pdu)
         if pair:
             previous_text, current_text = pair
-            diff_table = mark_safe(
-                difflib.HtmlDiff(wrapcolumn=80).make_table(
-                    previous_text.splitlines(),
-                    current_text.splitlines(),
-                    fromdesc="Previous",
-                    todesc="Current",
-                    context=True,
-                    numlines=3,
-                )
-            )
+            diff_rows = _line_diff_rows(previous_text, current_text)
 
         return render(
             request,
@@ -317,7 +332,7 @@ class DevicePDUConfigView(View):
             {
                 "object": device,
                 "managed_pdu": managed_pdu,
-                "diff_table": diff_table,
+                "diff_rows": diff_rows,
                 "tab": self.tab,
             },
         )

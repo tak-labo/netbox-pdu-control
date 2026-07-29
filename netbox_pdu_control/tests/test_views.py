@@ -806,9 +806,9 @@ class DevicePDUConfigViewTest(PluginViewTestCase):
         with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=pair):
             response = self.client.get(self._url(self.pdu.device))
         self.assertHttpStatus(response, 200)
-        # difflib.HtmlDiff splits changed words at the character level (e.g.
-        # "pdu-<span>old</span>"), so assert on the class name it uses rather
-        # than the literal changed substrings.
-        self.assertContains(response, "diff_chg")
-        self.assertContains(response, "table.diff")
+        # Whole-line highlighting (class="replace" on the <tr>), not difflib.HtmlDiff's
+        # default intraline character-level spans.
+        self.assertContains(response, 'class="replace"')
+        self.assertContains(response, "pdu-old")
+        self.assertContains(response, "pdu-new")
 

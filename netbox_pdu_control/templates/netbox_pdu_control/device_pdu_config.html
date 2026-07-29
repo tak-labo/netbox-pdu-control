@@ -2,20 +2,19 @@
 
 {% block content %}
   <style>
-    table.diff {font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; border:medium}
-    .diff_header {background-color:#e0e0e0}
-    td.diff_header {text-align:right}
-    .diff_next {background-color:#c0c0c0}
-    .diff_add {background-color:palegreen}
-    .diff_chg {background-color:#ffff77}
-    .diff_sub {background-color:#ffaaaa}
+    table.diff {font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; border:medium; width:100%; border-collapse: collapse;}
+    table.diff th {background-color:#e0e0e0; text-align:left; padding: 2px 6px;}
+    table.diff td.diff-linenum {text-align:right; color:#888; padding: 0 6px; vertical-align: top; user-select: none;}
+    table.diff td.diff-text {white-space: pre-wrap; overflow-wrap: break-word; vertical-align: top; width: 50%; padding: 0 6px;}
+    table.diff tr.replace td.diff-text {background-color:#ffff77}
+    table.diff tr.delete td.diff-text:nth-of-type(2) {background-color:#ffaaaa}
+    table.diff tr.insert td.diff-text:nth-of-type(4) {background-color:palegreen}
 
     @media (prefers-color-scheme: dark) {
-      .diff_header {background-color:#666}
-      .diff_next {background-color:#393939}
-      .diff_add {background-color:darkgreen}
-      .diff_chg {background-color:#847415}
-      .diff_sub {background-color:darkred}
+      table.diff th {background-color:#666}
+      table.diff tr.replace td.diff-text {background-color:#847415}
+      table.diff tr.delete td.diff-text:nth-of-type(2) {background-color:darkred}
+      table.diff tr.insert td.diff-text:nth-of-type(4) {background-color:darkgreen}
     }
   </style>
   <div class="row">
@@ -23,9 +22,26 @@
       <div class="card">
         <h2 class="card-header">PDU Config: last two saved snapshots</h2>
         <div class="card-body">
-          {% if diff_table %}
+          {% if diff_rows %}
             <div style="overflow-x: auto;">
-              {{ diff_table }}
+              <table class="diff">
+                <thead>
+                  <tr>
+                    <th colspan="2">Previous</th>
+                    <th colspan="2">Current</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in diff_rows %}
+                    <tr class="{{ row.tag }}">
+                      <td class="diff-linenum">{{ row.left_num|default:"" }}</td>
+                      <td class="diff-text">{{ row.left_text }}</td>
+                      <td class="diff-linenum">{{ row.right_num|default:"" }}</td>
+                      <td class="diff-text">{{ row.right_text }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           {% else %}
             <p class="text-muted mb-0">
