@@ -2,6 +2,7 @@ import json
 import logging
 import subprocess
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 from django.conf import settings
@@ -77,39 +78,23 @@ def _config_repo_and_filename(managed_pdu) -> tuple[Path, str] | None:
     return repo_path, _config_filename(managed_pdu)
 
 
-def _last_two_commits(repo_path: Path, filename: str) -> list[str] | None:
-    """Return [newest, previous] commit hashes touching filename, or None if fewer than two exist."""
-    log = _run_git(repo_path, "log", "--format=%H", "--", filename)
-    commits = log.stdout.split()
-    if len(commits) < 2:
+def _last_two_commits(repo_path: Path, filename: str) -> list[tuple[str, datetime]] | None:
+    """Return [(newest_hash, newest_date), (previous_hash, previous_date)] touching
+    filename, or None if fewer than two commits exist. Date is the commit's author date."""
+    log = _run_git(repo_path, "log", "-n", "2", "--format=%H%x09%aI", "--", filename)
+    lines = log.stdout.splitlines()
+    if len(lines) < 2:
         return None
-    return commits
+    return [(h, datetime.fromisoformat(d)) for h, d in (line.split("\t") for line in lines)]
 
 
-def get_config_diff(managed_pdu) -> str | None:
+def get_config_diff(managed_pdu) -> tuple[str, datetime, str, datetime, str] | None:
     """
-    Return the git diff between the last two saved config snapshots for this PDU,
-    as a unified diff string. Returns None if config_backup_path is not configured,
-    the git repo doesn't exist yet, or fewer than two snapshots have been committed.
-    """
-    located = _config_repo_and_filename(managed_pdu)
-    if located is None:
-        return None
-    repo_path, filename = located
-
-    commits = _last_two_commits(repo_path, filename)
-    if commits is None:
-        return None
-
-    diff = _run_git(repo_path, "diff", commits[1], commits[0], "--", filename)
-    return diff.stdout
-
-
-def get_config_snapshot_pair(managed_pdu) -> tuple[str, str] | None:
-    """
-    Return (previous_text, current_text) — the full content of the last two saved
-    config snapshots for this PDU, for a side-by-side comparison. Returns None
-    under the same conditions as get_config_diff().
+    Return (diff, previous_date, previous_hash, current_date, current_hash) — the git
+    diff between the last two saved config snapshots for this PDU as a unified diff
+    string, plus the commit date and short hash of each snapshot. Returns None if
+    config_backup_path is not configured, the git repo doesn't exist yet, or fewer
+    than two snapshots have been committed.
     """
     located = _config_repo_and_filename(managed_pdu)
     if located is None:
@@ -119,10 +104,32 @@ def get_config_snapshot_pair(managed_pdu) -> tuple[str, str] | None:
     commits = _last_two_commits(repo_path, filename)
     if commits is None:
         return None
+    (current_hash, current_date), (previous_hash, previous_date) = commits
 
-    previous = _run_git(repo_path, "show", f"{commits[1]}:{filename}")
-    current = _run_git(repo_path, "show", f"{commits[0]}:{filename}")
-    return previous.stdout, current.stdout
+    diff = _run_git(repo_path, "diff", previous_hash, current_hash, "--", filename)
+    return diff.stdout, previous_date, previous_hash[:7], current_date, current_hash[:7]
+
+
+def get_config_snapshot_pair(managed_pdu) -> tuple[str, datetime, str, str, datetime, str] | None:
+    """
+    Return (previous_text, previous_date, previous_hash, current_text, current_date,
+    current_hash) — the full content, commit date and short hash of the last two saved
+    config snapshots for this PDU, for a side-by-side comparison. Returns None under
+    the same conditions as get_config_diff().
+    """
+    located = _config_repo_and_filename(managed_pdu)
+    if located is None:
+        return None
+    repo_path, filename = located
+
+    commits = _last_two_commits(repo_path, filename)
+    if commits is None:
+        return None
+    (current_hash, current_date), (previous_hash, previous_date) = commits
+
+    previous = _run_git(repo_path, "show", f"{previous_hash}:{filename}")
+    current = _run_git(repo_path, "show", f"{current_hash}:{filename}")
+    return previous.stdout, previous_date, previous_hash[:7], current.stdout, current_date, current_hash[:7]
 
 
 def save_config_backup(managed_pdu, request=None, source: str = "manual") -> ConfigBackupResult:

@@ -128,7 +128,10 @@
       </div>
       {% if config_diff %}
       <div class="card mt-3">
-        <h5 class="card-header">Config Diff (latest git commit)</h5>
+        <h5 class="card-header">
+          Config Diff (<code>{{ config_diff_previous_hash|placeholder }}</code> {{ config_diff_previous_date|placeholder }}
+          &rarr; <code>{{ config_diff_current_hash|placeholder }}</code> {{ config_diff_current_date|placeholder }})
+        </h5>
         <div class="card-body">
           <pre class="mb-0"><code>{{ config_diff }}</code></pre>
         </div>

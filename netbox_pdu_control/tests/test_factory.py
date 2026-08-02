@@ -91,6 +91,18 @@ class TestGetPduClientFactory(unittest.TestCase):
         self.assertIsInstance(client, UniFiPDUClient)
         self.assertTrue(client._use_api_key)
 
+    def test_empty_password_raises_clear_error(self):
+        """
+        Empty password (e.g. netbox-secrets Secret couldn't be decrypted — session key
+        missing/expired — and no plaintext api_password is configured either) must fail
+        fast with an actionable message, rather than reaching the vendor API and surfacing
+        a generic 401 that gives no hint about the actual (credential-resolution) cause.
+        """
+        managed_pdu = _mock_managed_pdu("raritan", api_username="", api_password="")
+        with self.assertRaises(PDUClientError) as ctx:
+            get_pdu_client(managed_pdu)
+        self.assertIn("credentials", str(ctx.exception).lower())
+
 
 if __name__ == "__main__":
     unittest.main()

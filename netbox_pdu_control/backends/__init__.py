@@ -24,6 +24,12 @@ def get_pdu_client(managed_pdu, request=None) -> BasePDUClient:
     if not backend_class:
         raise PDUClientError(f"No backend registered for vendor: {managed_pdu.vendor!r}")
     credential = get_credential(managed_pdu, request=request)
+    if not credential.password:
+        raise PDUClientError(
+            "No usable PDU credentials: the netbox-secrets Secret could not be decrypted "
+            "(session key missing/expired — unlock netbox-secrets in this browser session) "
+            "and no plaintext api_password is set on this ManagedPDU as a fallback."
+        )
     return backend_class(
         base_url=managed_pdu.api_url,
         username=credential.username,
