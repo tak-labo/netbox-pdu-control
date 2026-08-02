@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Spec: `docs/superpowers/specs/2026-07-24-pdu-config-backup-design.md` (already committed on `release/0.5.0`)
-- All work happens on host `netbox-dev.test1` (ssh), repo at `/opt/netbox/netbox-pdu-control`, already on branch `release/0.5.0`
+- All work happens on host `<dev-host>` (ssh), repo at `/opt/netbox/netbox-pdu-control`, already on branch `release/0.5.0`
 - Backend-only tests (no Django): `cd /opt/netbox/netbox-pdu-control && python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py -v` (works outside Docker per `conftest.py` mock injection)
 - Model/view/job tests (need Django/DB): `cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.<module> -v2`
 - No new pip dependency — `git` CLI is already installed on the host; use stdlib `subprocess`
@@ -136,7 +136,7 @@ Expected: all PASS, including the two new tests
 - [ ] **Step 6: Commit**
 
 ```bash
-ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/backends/base.py netbox_pdu_control/backends/raritan.py netbox_pdu_control/tests/test_backends_raritan.py && git commit -m "Add get_full_config() to PDU backend interface and Raritan backend"'
+ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/backends/base.py netbox_pdu_control/backends/raritan.py netbox_pdu_control/tests/test_backends_raritan.py && git commit -m "Add get_full_config() to PDU backend interface and Raritan backend"'
 ```
 
 ---
@@ -165,7 +165,7 @@ Add to `netbox_pdu_control/tests/test_models.py`, inside `ManagedPDUModelTest` (
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest.test_config_backup_defaults -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest.test_config_backup_defaults -v2'`
 Expected: FAIL with `AttributeError` or `TypeError: ... unexpected keyword argument` style error (field doesn't exist yet — actually since the test doesn't pass the field explicitly, expect `AttributeError: 'ManagedPDU' object has no attribute 'config_backup_enabled'`)
 
 - [ ] **Step 3: Add the fields to the model**
@@ -208,7 +208,7 @@ Then add the two new fields directly after the existing `metrics_enabled` field 
 
 - [ ] **Step 4: Generate and inspect the migration**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py makemigrations netbox_pdu_control'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py makemigrations netbox_pdu_control'`
 
 This should create `netbox_pdu_control/migrations/0011_managedpdu_config_backup_and_more.py` (or similar auto-generated name). Rename it to `0011_managedpdu_config_backup.py` and verify its contents match:
 
@@ -243,19 +243,19 @@ If the auto-generated file differs cosmetically (field order, etc.) that's fine 
 
 - [ ] **Step 5: Apply the migration and run the test**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py migrate netbox_pdu_control'`
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest.test_config_backup_defaults -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py migrate netbox_pdu_control'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest.test_config_backup_defaults -v2'`
 Expected: PASS
 
 - [ ] **Step 6: Run the full model test suite to check nothing broke**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models -v2'`
 Expected: all PASS
 
 - [ ] **Step 7: Commit**
 
 ```bash
-ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/models.py netbox_pdu_control/migrations/0011_managedpdu_config_backup.py netbox_pdu_control/tests/test_models.py && git commit -m "Add last_config_saved and config_backup_enabled fields to ManagedPDU"'
+ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/models.py netbox_pdu_control/migrations/0011_managedpdu_config_backup.py netbox_pdu_control/tests/test_models.py && git commit -m "Add last_config_saved and config_backup_enabled fields to ManagedPDU"'
 ```
 
 ---
@@ -394,7 +394,7 @@ class SaveConfigBackupTest(TestCase):
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2'`
 Expected: FAIL with `ModuleNotFoundError: No module named 'netbox_pdu_control.config_backup'`
 
 - [ ] **Step 3: Implement `config_backup.py`**
@@ -499,13 +499,13 @@ def save_config_backup(managed_pdu, request=None) -> ConfigBackupResult:
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2'`
 Expected: all PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/config_backup.py netbox_pdu_control/tests/test_config_backup.py && git commit -m "Add save_config_backup(): local_context_data + optional git backup"'
+ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/config_backup.py netbox_pdu_control/tests/test_config_backup.py && git commit -m "Add save_config_backup(): local_context_data + optional git backup"'
 ```
 
 ---
@@ -598,7 +598,7 @@ class ManagedPDUSaveConfigViewTest(PluginViewTestCase):
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUSaveConfigViewTest -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUSaveConfigViewTest -v2'`
 Expected: FAIL — `NoReverseMatch` (URL name doesn't exist yet)
 
 - [ ] **Step 3: Add the view**
@@ -656,18 +656,18 @@ In `netbox_pdu_control/urls.py`, add after the `managedpdu_get_metrics` path:
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUSaveConfigViewTest -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUSaveConfigViewTest -v2'`
 Expected: all PASS
 
 - [ ] **Step 6: Run the full view test suite to check nothing broke**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views -v2'`
 Expected: all PASS
 
 - [ ] **Step 7: Commit**
 
 ```bash
-ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/views.py netbox_pdu_control/urls.py netbox_pdu_control/tests/test_views.py && git commit -m "Add ManagedPDUSaveConfigView and save-config URL route"'
+ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/views.py netbox_pdu_control/urls.py netbox_pdu_control/tests/test_views.py && git commit -m "Add ManagedPDUSaveConfigView and save-config URL route"'
 ```
 
 ---
@@ -697,7 +697,7 @@ In `netbox_pdu_control/tests/test_views.py`, find `ManagedPDUViewTest.test_detai
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUViewTest.test_detail_view_shows_save_config_button -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUViewTest.test_detail_view_shows_save_config_button -v2'`
 Expected: FAIL — response does not contain "Save Config"
 
 - [ ] **Step 3: Add the button to the template**
@@ -747,13 +747,13 @@ Add a new row immediately after it:
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUViewTest -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUViewTest -v2'`
 Expected: all PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/templates/netbox_pdu_control/managedpdu.html netbox_pdu_control/tests/test_views.py && git commit -m "Add Save Config button and Last Config Saved row to PDU detail page"'
+ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/templates/netbox_pdu_control/managedpdu.html netbox_pdu_control/tests/test_views.py && git commit -m "Add Save Config button and Last Config Saved row to PDU detail page"'
 ```
 
 ---
@@ -823,7 +823,7 @@ if _config_backup_interval > 0:
 
 - [ ] **Step 2: Verify the module still imports cleanly**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup netbox_pdu_control.tests.test_models netbox_pdu_control.tests.test_views -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup netbox_pdu_control.tests.test_models netbox_pdu_control.tests.test_views -v2'`
 Expected: all PASS (this indirectly confirms `jobs.py` still imports without error, since `apps.py`/plugin loading pulls it in)
 
 - [ ] **Step 3: Update README.md**
@@ -883,7 +883,7 @@ Also add a bullet to the `## Features` list (after the existing "Background jobs
 - [ ] **Step 4: Commit**
 
 ```bash
-ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/jobs.py README.md && git commit -m "Add PDUConfigBackupJob periodic job and document config_backup_path"'
+ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_control/jobs.py README.md && git commit -m "Add PDUConfigBackupJob periodic job and document config_backup_path"'
 ```
 
 ---
@@ -894,29 +894,29 @@ ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && git add netbox_pdu_co
 
 - [ ] **Step 1: Run the entire plugin test suite**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests -v2'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-docker && docker compose exec netbox python manage.py test netbox_pdu_control.tests -v2'`
 Expected: all PASS, zero failures/errors
 
 - [ ] **Step 2: Run the standalone (non-Django) backend tests**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py netbox_pdu_control/tests/test_factory.py -v'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py netbox_pdu_control/tests/test_factory.py -v'`
 Expected: all PASS
 
 - [ ] **Step 3: Run ruff**
 
-Run: `ssh netbox-dev.test1 'cd /opt/netbox/netbox-pdu-control && python3 -m ruff check netbox_pdu_control/config_backup.py netbox_pdu_control/backends/base.py netbox_pdu_control/backends/raritan.py netbox_pdu_control/models.py netbox_pdu_control/views.py netbox_pdu_control/urls.py netbox_pdu_control/jobs.py netbox_pdu_control/tests/test_config_backup.py'`
+Run: `ssh <dev-host> 'cd /opt/netbox/netbox-pdu-control && python3 -m ruff check netbox_pdu_control/config_backup.py netbox_pdu_control/backends/base.py netbox_pdu_control/backends/raritan.py netbox_pdu_control/models.py netbox_pdu_control/views.py netbox_pdu_control/urls.py netbox_pdu_control/jobs.py netbox_pdu_control/tests/test_config_backup.py'`
 Expected: `All checks passed!` — fix any reported issues and re-run before moving on
 
 - [ ] **Step 4: Manual smoke test via the real dev environment**
 
-This plugin is already installed against `netbox-dev.test1`'s Docker NetBox with real Raritan PDUs registered (`pdu01`, `pdu02`, `pdu03` — see Task 3 of the design spec's live-data confirmation). After migrating:
+This plugin is already installed against `<dev-host>`'s Docker NetBox with real Raritan PDUs registered (`pdu01`, `pdu02`, `pdu03` — see Task 3 of the design spec's live-data confirmation). After migrating:
 
 1. Log into the NetBox UI, navigate to a `ManagedPDU` detail page (e.g. `pdu01`)
 2. Click "Save Config" — expect a green "Config saved to NetBox." message
 3. Navigate to the underlying Device's page → "Config Context" tab → confirm the JSON snapshot (matching the shape confirmed in the design spec) is visible
 4. Navigate to the Device's "Change Log" tab → confirm a new change entry was recorded
 5. Click "Save Config" again with no PDU-side changes → still succeeds (message doesn't imply an error)
-6. (Optional, only if testing the git path) Set `config_backup_path` in `configuration.py`, restart, click "Save Config" again, then `ssh netbox-dev.test1 'git -C <path> log --oneline'` to confirm a commit was made
+6. (Optional, only if testing the git path) Set `config_backup_path` in `configuration.py`, restart, click "Save Config" again, then `ssh <dev-host> 'git -C <path> log --oneline'` to confirm a commit was made
 
 - [ ] **Step 5: Report status to the user**
 

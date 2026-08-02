@@ -40,7 +40,7 @@ supports_prometheus_metrics: bool = False
 - [ ] **Step 2: Verify lint passes**
 
 ```bash
-cd /Users/tak/project/personal/netbox/netbox-pdu-control
+cd ~/netbox-dev/netbox-pdu-control
 make lint
 ```
 
@@ -369,7 +369,7 @@ class TestGetAllMetricsPrometheus(unittest.TestCase):
 - [ ] **Step 2: Run tests to confirm they fail**
 
 ```bash
-cd /Users/tak/project/personal/netbox/netbox-pdu-control
+cd ~/netbox-dev/netbox-pdu-control
 uvx pytest netbox_pdu_control/tests/test_backends_raritan.py::TestParsePrometheusText \
            netbox_pdu_control/tests/test_backends_raritan.py::TestGetAllMetricsPrometheus -v
 ```
@@ -581,7 +581,7 @@ Replace with:
 - [ ] **Step 2: Start docker and verify the button appears**
 
 ```bash
-cd /Users/tak/project/personal/netbox/netbox-docker
+cd ~/netbox-dev/netbox-docker
 docker compose up -d
 ```
 
