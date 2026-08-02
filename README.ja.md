@@ -230,10 +230,19 @@ netbox-pdu-control は以下の優先順位で PDU の認証情報を解決し�
 1. **netbox-secrets（優先）** — role `pdu-credentials` を持ち、対象 Device に紐づけられた `Secret`。
    `Secret.name` = API ユーザー名、`Secret.plaintext` = API パスワード（RSA暗号化）。
 2. **平文フォールバック** — `ManagedPDU` の `API Username` / `API Password` フィールド。netbox-secrets
-   が未導入、または該当する Secret が見つからない場合に使用されます。
+   が未導入、該当する Secret が見つからない、または Secret の復号に失敗した場合（下記のセッションキーの
+   注意を参照）に使用されます。
 
 バックグラウンドジョブ（定期同期・メトリクス取得）でSecretを復号するには、`PLUGINS_CONFIG` に
 `service_account` と `service_private_key_path` を設定してください（HTTPセッションなしで復号するため）。
+
+> **netbox-secrets のセッションキー**: ブラウザ操作(Sync・Push Name to PDU・Save Config など)から
+> Secret を復号するには、NetBoxにログインしているだけでなく、netbox-secrets のブラウザセッションごとの
+> セッションキーが必要です。現在のブラウザセッションで netbox-secrets を Unlock していない（または
+> 期限切れの）場合、これらの操作は上記の平文フィールドへ黙ってフォールバックします。平文フィールドも
+> 空の場合は、PDU 側の分かりにくい 401 ではなく "No usable PDU credentials" という明確なエラーで
+> 失敗するようになっています。netbox-secrets を Unlock（RSA秘密鍵を入力してセッションキーを取得）して
+> から再実行してください。
 
 ---
 
@@ -250,6 +259,15 @@ ManagedPDU 詳細ページで **Sync** をクリックすると、ハードウ�
 ### PDU への名前プッシュ
 
 アウトレットまたはインレットの詳細ページで **Push Name to PDU** をクリックすると、NetBox に保存されている名前をPDUに書き込みます。接続先デバイスの `PowerOutlet.label` / `PowerPort.label` も同時に更新されます。
+
+### Config backup
+
+ManagedPDU 詳細ページで **Save Config** をクリックすると、PDU本体の設定を丸ごと取得します。取得結果は常に Device の Config Context（`local_context_data`）に保存され、`PLUGINS_CONFIG` に `config_backup_path` を設定している場合はローカルの git リポジトリにもコミットされます。`config_backup_poll_interval` と（PDUごとの）`config_backup_enabled` を設定すれば、定期ジョブで自動保存することもできます。
+
+2世代以上のスナップショットが保存されると（git連携時のみ）、以下の2つのビューでそれぞれの比較日時・コミットハッシュ(短縮形)付きで差分を確認できます。
+
+- ManagedPDU 詳細ページの **Config Diff** カード — unified diff形式
+- Device 詳細ページの **PDU Config** タブ — 全体の左右比較
 
 ---
 
