@@ -226,10 +226,18 @@ netbox-pdu-control resolves PDU credentials in the following order:
 1. **netbox-secrets** (preferred) — `Secret` with role `pdu-credentials` assigned to the Device.
    `Secret.name` = API username, `Secret.plaintext` = API password (RSA-encrypted).
 2. **Plaintext fallback** — the `API Username` / `API Password` fields on `ManagedPDU`, used when
-   netbox-secrets is not installed or no matching secret is found.
+   netbox-secrets is not installed, no matching secret is found, or the secret can't be decrypted
+   (see the session key note below).
 
 For background jobs (scheduled sync/metrics), set `service_account` and `service_private_key_path`
 in `PLUGINS_CONFIG` so the job can decrypt secrets without an HTTP session.
+
+> **netbox-secrets session key**: web-triggered actions (Sync, Push Name to PDU, Save Config, ...)
+> decrypt the Secret using netbox-secrets' per-browser-session key, not just being logged in to
+> NetBox. If you haven't unlocked netbox-secrets in the current browser session (or it expired),
+> these actions silently fall back to the plaintext fields above — if those are also empty, the
+> request fails with a clear "No usable PDU credentials" error rather than a confusing 401 from
+> the PDU. Unlock netbox-secrets (enter your RSA private key and request a session key) and retry.
 
 ---
 
@@ -247,13 +255,22 @@ On an outlet detail page, use the **Actions** card to turn the outlet ON, OFF, o
 
 On an outlet or inlet detail page, click **Push Name to PDU** to write the name stored in NetBox to the PDU. The corresponding `PowerOutlet.label` or `PowerPort.label` on the connected NetBox device is also updated.
 
+### Config backup
+
+On a ManagedPDU detail page, click **Save Config** to fetch the PDU's full on-device configuration. It's always written to the Device's Config Context (`local_context_data`), and additionally committed to a local git repo when `config_backup_path` is set in `PLUGINS_CONFIG`. A periodic job can do the same automatically — see `config_backup_poll_interval` and `config_backup_enabled` (per-PDU toggle).
+
+Once at least two snapshots have been saved (git-backed only), two views compare them, each showing the commit date and short hash of both sides:
+
+- The ManagedPDU detail page's **Config Diff** card — a unified diff.
+- The Device detail page's **PDU Config** tab — a full side-by-side comparison.
+
 ---
 
 ## Versions
 
 | Plugin version | NetBox version |
 |---------------|----------------|
-| 0.4.0 – 0.5.0 | 4.6.0+ (NetBox 4.5.x support dropped) |
+| 0.4.0 – 0.6.0 | 4.6.0+ (NetBox 4.5.x support dropped) |
 | 0.3.0 – 0.3.6 | 4.5.0 – 4.6.xx |
 | 0.1.0 – 0.2.0 | 4.5.0 – 4.5.xx |
 

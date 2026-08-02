@@ -218,7 +218,7 @@ Tests run automatically on:
 
 The CI workflow:
 1. Runs code quality checks (Ruff)
-2. Tests on Python 3.12, 3.13, 3.14
+2. Tests on Python 3.12, 3.13
 3. Uses PostgreSQL and Redis services
 4. Checks for missing migrations
 5. Runs full test suite with parallel execution
@@ -350,7 +350,7 @@ The `.github/workflows/ci.yaml` workflow runs tests automatically:
 ```yaml
 jobs:
   lint:    # Code quality checks
-  test:    # Tests on Python 3.12, 3.13, 3.14
+  test:    # Tests on Python 3.12, 3.13
 ```
 
 Tests must pass before PRs can be merged.
