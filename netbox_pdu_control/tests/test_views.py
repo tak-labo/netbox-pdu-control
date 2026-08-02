@@ -5,6 +5,7 @@ Run inside Docker:
   docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views -v2
 """
 
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 from django.contrib.messages import constants as message_constants
@@ -802,7 +803,16 @@ class DevicePDUConfigViewTest(PluginViewTestCase):
 
     def test_shows_diff_table_with_two_snapshots(self):
         self.add_permissions("dcim.view_device")
-        pair = ('{"pdu": {"name": "pdu-old"}}', '{"pdu": {"name": "pdu-new"}}')
+        previous_date = datetime(2026, 1, 1, tzinfo=UTC)
+        current_date = datetime(2026, 1, 2, tzinfo=UTC)
+        pair = (
+            '{"pdu": {"name": "pdu-old"}}',
+            previous_date,
+            "aaaaaaa",
+            '{"pdu": {"name": "pdu-new"}}',
+            current_date,
+            "bbbbbbb",
+        )
         with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=pair):
             response = self.client.get(self._url(self.pdu.device))
         self.assertHttpStatus(response, 200)
@@ -811,4 +821,23 @@ class DevicePDUConfigViewTest(PluginViewTestCase):
         self.assertContains(response, 'class="replace"')
         self.assertContains(response, "pdu-old")
         self.assertContains(response, "pdu-new")
+
+    def test_shows_previous_and_current_dates_and_hashes(self):
+        self.add_permissions("dcim.view_device")
+        previous_date = datetime(2026, 1, 1, tzinfo=UTC)
+        current_date = datetime(2026, 1, 2, tzinfo=UTC)
+        pair = (
+            '{"pdu": {"name": "pdu-old"}}',
+            previous_date,
+            "aaaaaaa",
+            '{"pdu": {"name": "pdu-new"}}',
+            current_date,
+            "bbbbbbb",
+        )
+        with patch("netbox_pdu_control.views.get_config_snapshot_pair", return_value=pair):
+            response = self.client.get(self._url(self.pdu.device))
+        self.assertHttpStatus(response, 200)
+        self.assertContains(response, "2026")
+        self.assertContains(response, "aaaaaaa")
+        self.assertContains(response, "bbbbbbb")
 

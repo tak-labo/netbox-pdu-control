@@ -69,6 +69,15 @@ class ManagedPDUView(generic.ObjectView):
         except ImportError:
             pass
 
+        config_diff_result = get_config_diff(instance)
+        (
+            config_diff,
+            config_diff_previous_date,
+            config_diff_previous_hash,
+            config_diff_current_date,
+            config_diff_current_hash,
+        ) = config_diff_result if config_diff_result else (None, None, None, None, None)
+
         return {
             "outlets_table": outlets_table,
             "outlet_count": outlets.count(),
@@ -77,7 +86,11 @@ class ManagedPDUView(generic.ObjectView):
             "ocps": ocps,
             "secrets_available": secrets_available,
             "secret_found": secret_found,
-            "config_diff": get_config_diff(instance),
+            "config_diff": config_diff,
+            "config_diff_previous_date": config_diff_previous_date,
+            "config_diff_previous_hash": config_diff_previous_hash,
+            "config_diff_current_date": config_diff_current_date,
+            "config_diff_current_hash": config_diff_current_hash,
         }
 
 
@@ -321,9 +334,13 @@ class DevicePDUConfigView(View):
             raise Http404
 
         diff_rows = None
+        previous_date = None
+        previous_hash = None
+        current_date = None
+        current_hash = None
         pair = get_config_snapshot_pair(managed_pdu)
         if pair:
-            previous_text, current_text = pair
+            previous_text, previous_date, previous_hash, current_text, current_date, current_hash = pair
             diff_rows = _line_diff_rows(previous_text, current_text)
 
         return render(
@@ -333,6 +350,10 @@ class DevicePDUConfigView(View):
                 "object": device,
                 "managed_pdu": managed_pdu,
                 "diff_rows": diff_rows,
+                "previous_date": previous_date,
+                "previous_hash": previous_hash,
+                "current_date": current_date,
+                "current_hash": current_hash,
                 "tab": self.tab,
             },
         )

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Config diff views (ManagedPDU "Config Diff" card and Device "PDU Config"
+  tab) now show the commit date and short hash of each compared snapshot,
+  so it's clear which point in time is being diffed.
+
+### Fixed
+- `get_pdu_client()` now fails fast with a clear error when no usable PDU
+  credentials could be resolved (netbox-secrets Secret not decrypted and
+  no plaintext fallback configured), instead of letting the request reach
+  the vendor API and surface an opaque 401 with no hint of the actual
+  cause.
+- Config diff views raised `ValueError` and returned an HTTP 500 once a
+  PDU had more than two saved config backup snapshots, because commit
+  history lookup returned the full log instead of just the last two
+  commits.
+
 ## [0.6.0] - 2026-07-29
 
 ### Added

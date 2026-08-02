@@ -221,11 +221,41 @@ class GetConfigDiffTest(TestCase):
                 mock_client.get_full_config.return_value = {**SAMPLE_CONFIG, "pdu": {"name": "pdu02"}}
                 save_config_backup(self.pdu)
 
-                diff = get_config_diff(self.pdu)
+                result = get_config_diff(self.pdu)
 
-        self.assertIsNotNone(diff)
+        self.assertIsNotNone(result)
+        diff, previous_date, previous_hash, current_date, current_hash = result
         self.assertIn("pdu01", diff)
         self.assertIn("pdu02", diff)
+        self.assertLessEqual(previous_date, current_date)
+        self.assertNotEqual(previous_hash, current_hash)
+        self.assertTrue(previous_hash)
+        self.assertTrue(current_hash)
+
+    @patch("netbox_pdu_control.config_backup.get_pdu_client")
+    def test_returns_diff_after_third_snapshot(self, mock_get_client):
+        """Regression: with 3+ commits, _last_two_commits() used to return the full
+        history, and unpacking it as exactly two (hash, date) pairs raised ValueError."""
+        import tempfile
+
+        mock_client = MagicMock()
+        mock_client.get_full_config.return_value = SAMPLE_CONFIG
+        mock_get_client.return_value = mock_client
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with override_settings(PLUGINS_CONFIG={"netbox_pdu_control": {"config_backup_path": tmpdir}}):
+                save_config_backup(self.pdu)
+                mock_client.get_full_config.return_value = {**SAMPLE_CONFIG, "pdu": {"name": "pdu02"}}
+                save_config_backup(self.pdu)
+                mock_client.get_full_config.return_value = {**SAMPLE_CONFIG, "pdu": {"name": "pdu03"}}
+                save_config_backup(self.pdu)
+
+                result = get_config_diff(self.pdu)
+
+        self.assertIsNotNone(result)
+        diff, previous_date, previous_hash, current_date, current_hash = result
+        self.assertIn("pdu02", diff)
+        self.assertIn("pdu03", diff)
 
 
 class GetConfigSnapshotPairTest(TestCase):
@@ -273,7 +303,9 @@ class GetConfigSnapshotPairTest(TestCase):
                 pair = get_config_snapshot_pair(self.pdu)
 
         self.assertIsNotNone(pair)
-        previous_text, current_text = pair
+        previous_text, previous_date, previous_hash, current_text, current_date, current_hash = pair
         self.assertIn("pdu01", previous_text)
         self.assertNotIn("pdu02", previous_text)
         self.assertIn("pdu02", current_text)
+        self.assertLessEqual(previous_date, current_date)
+        self.assertNotEqual(previous_hash, current_hash)
