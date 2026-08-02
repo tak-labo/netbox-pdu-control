@@ -1,0 +1,1473 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://tak-labo.github.io/netbox-pdu-control/superpowers/plans/2026-07-24-pdu-config-backup/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>2026 07 24 pdu config backup - NetBox PDU Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#PDU-Config-Backup-Implementation-Plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NetBox PDU Control" class="md-header__button md-logo" aria-label="NetBox PDU Control" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NetBox PDU Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2026 07 24 pdu config backup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tak-labo/netbox-pdu-control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tak-labo/netbox-pdu-control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NetBox PDU Control" class="md-nav__button md-logo" aria-label="NetBox PDU Control" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NetBox PDU Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tak-labo/netbox-pdu-control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tak-labo/netbox-pdu-control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../netbox-secrets-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    netbox-secrets Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#PDU-Config-Backup-Implementation-Plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PDU Config Backup Implementation Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PDU Config Backup Implementation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#Global-Constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Global Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#Task-1-get_full_config-on-the-Raritan-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: get_full_config() on the Raritan backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Task-2-ManagedPDU-model-fields-for-config-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: ManagedPDU model fields for config backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Task-3-config_backuppy--the-save-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: config_backup.py — the save logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Task-4-ManagedPDUSaveConfigView--URL-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: ManagedPDUSaveConfigView + URL route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Task-5-Save-Config-button-and-Last-Config-Saved-row-in-the-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: "Save Config" button and "Last Config Saved" row in the template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Task-6-Periodic-PDUConfigBackupJob--README-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Periodic PDUConfigBackupJob + README documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Task-7-Full-test-suite--ruff-and-final-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Full test suite + ruff, and final review
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>2026 07 24 pdu config backup</h1>
+
+<h2 id="PDU-Config-Backup-Implementation-Plan">PDU Config Backup Implementation Plan<a class="headerlink" href="#PDU-Config-Backup-Implementation-Plan" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Let users save a snapshot of a Raritan PDU's actual on-device configuration into NetBox (<code>Device.local_context_data</code>) and, optionally, a local git repo, via a manual button and a periodic job.</p>
+<p><strong>Architecture:</strong> <code>RaritanPDUClient.get_full_config()</code> fetches raw vendor JSON (PDU/outlet/inlet settings) over the existing JSON-RPC backend. <code>config_backup.py</code> writes it to <code>Device.local_context_data</code> (always) and to a git repo (only if <code>config_backup_path</code> is configured in <code>PLUGINS_CONFIG</code>). A view and a <code>system_job</code>-based periodic job both call the same <code>save_config_backup()</code> function, mirroring the existing <code>sync_managed_pdu()</code> / <code>ManagedPDUSyncView</code> / <code>PDUSyncJob</code> pattern already in this codebase.</p>
+<p><strong>Tech Stack:</strong> Django 5 (via NetBox 4.6), Python 3.12+, <code>requests</code> (existing dep only — no new dependencies), stdlib <code>subprocess</code> for git, <code>pytest</code> for backend-only unit tests, Django <code>TestCase</code> (via <code>manage.py test</code>) for model/view tests.</p>
+<h3 id="Global-Constraints">Global Constraints<a class="headerlink" href="#Global-Constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Spec: <code>docs/superpowers/specs/2026-07-24-pdu-config-backup-design.md</code> (already committed on <code>release/0.5.0</code>)</li>
+<li>All work happens on host <code>&lt;dev-host&gt;</code> (ssh), repo at <code>/opt/netbox/netbox-pdu-control</code>, already on branch <code>release/0.5.0</code></li>
+<li>Backend-only tests (no Django): <code>cd /opt/netbox/netbox-pdu-control &amp;&amp; python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py -v</code> (works outside Docker per <code>conftest.py</code> mock injection)</li>
+<li>Model/view/job tests (need Django/DB): <code>cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.&lt;module&gt; -v2</code></li>
+<li>No new pip dependency — <code>git</code> CLI is already installed on the host; use stdlib <code>subprocess</code></li>
+<li>UniFi backend is explicitly <strong>out of scope</strong> — do not touch <code>backends/unifi.py</code></li>
+<li>Every commit is local only (<code>git commit</code>, no <code>git push</code>) — this repo tracks <code>origin/release/0.5.0</code> and pushing is a separate, explicit decision for the user</li>
+<li>Follow existing code style: <code>ruff</code> line-length 120, target py312. Run <code>ruff check .</code> before each commit if convenient (existing CI will catch it either way)</li>
+</ul>
+<hr />
+<h4 id="Task-1-get_full_config-on-the-Raritan-backend">Task 1: <code>get_full_config()</code> on the Raritan backend<a class="headerlink" href="#Task-1-get_full_config-on-the-Raritan-backend" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong>
+- Modify: <code>netbox_pdu_control/backends/base.py</code> (add method to <code>BasePDUClient</code>, after <code>get_inlet_thresholds</code>, i.e. at end of class)
+- Modify: <code>netbox_pdu_control/backends/raritan.py</code> (add method to <code>RaritanPDUClient</code>, near <code>get_pdu_info</code>)
+- Test: <code>netbox_pdu_control/tests/test_backends_raritan.py</code></p>
+<p><strong>Interfaces:</strong>
+- Produces: <code>BasePDUClient.get_full_config(self) -&gt; dict</code> (default raises <code>PDUClientError</code>), overridden in <code>RaritanPDUClient.get_full_config(self) -&gt; dict</code> returning <code>{"pdu": dict, "network": dict, "outlets": list[dict], "inlets": list[dict]}</code>. Later tasks call this via <code>client.get_full_config()</code>.</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing tests</strong></li>
+</ul>
+<p>Append to <code>netbox_pdu_control/tests/test_backends_raritan.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TestGetFullConfig</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests for get_full_config().&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">_make_client</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_combines_pdu_outlet_inlet_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get_full_config() aggregates PDU/outlet/inlet settings into one dict.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">fake_rpc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;/model/pdu/0&quot;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;getSettings&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pdu01&quot;</span><span class="p">,</span> <span class="s2">&quot;cycleDelay&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;/model/pdu/0&quot;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;getOutlets&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;rid&quot;</span><span class="p">:</span> <span class="s2">&quot;/outlet/1&quot;</span><span class="p">}]</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;/model/pdu/0&quot;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;getInlets&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;rid&quot;</span><span class="p">:</span> <span class="s2">&quot;/inlet/1&quot;</span><span class="p">}]</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;/outlet/1&quot;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;getSettings&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;server-a&quot;</span><span class="p">,</span> <span class="s2">&quot;startupState&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;/inlet/1&quot;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;getSettings&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;feed-1&quot;</span><span class="p">}</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unexpected rpc call: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;_rpc&quot;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="n">fake_rpc</span><span class="p">),</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;get_pdu_info&quot;</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mock_info</span><span class="p">:</span>
+            <span class="n">mock_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;PX3-5138JR&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;serial_number&quot;</span><span class="p">:</span> <span class="s2">&quot;ABC123&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;device_time_epoch&quot;</span><span class="p">:</span> <span class="mi">1784930535</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get_full_config</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;pdu&quot;</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pdu01&quot;</span><span class="p">,</span> <span class="s2">&quot;cycleDelay&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;PX3-5138JR&quot;</span><span class="p">,</span> <span class="s2">&quot;serial_number&quot;</span><span class="p">:</span> <span class="s2">&quot;ABC123&quot;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;outlets&quot;</span><span class="p">],</span> <span class="p">[{</span><span class="s2">&quot;outlet_number&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;server-a&quot;</span><span class="p">,</span> <span class="s2">&quot;startupState&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}}])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;inlets&quot;</span><span class="p">],</span> <span class="p">[{</span><span class="s2">&quot;inlet_number&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;feed-1&quot;</span><span class="p">}}])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_excludes_device_time_epoch_from_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;device_time_epoch is dropped since it changes on every call.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;_rpc&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="p">{}),</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;get_pdu_info&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;device_time_epoch&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
+        <span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get_full_config</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">(</span><span class="s2">&quot;device_time_epoch&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">])</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run tests to verify they fail</strong></li>
+</ul>
+<p>Run: <code>cd /opt/netbox/netbox-pdu-control &amp;&amp; python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py::TestGetFullConfig -v</code>
+Expected: FAIL with <code>AttributeError: 'RaritanPDUClient' object has no attribute 'get_full_config'</code></p>
+<ul>
+<li>[ ] <strong>Step 3: Add the default method to <code>BasePDUClient</code></strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/backends/base.py</code>, add after the <code>get_inlet_thresholds</code> method (end of class body):</p>
+<div class="highlight"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">get_full_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the PDU&#39;s on-device configuration as a JSON-serializable dict, for</span>
+<span class="sd">        backup/history purposes. Shape is vendor-specific (raw settings passthrough).</span>
+
+<span class="sd">        Default implementation raises PDUClientError (vendor not supported).</span>
+<span class="sd">        Override in backends that support it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">PDUClientError</span><span class="p">(</span><span class="s2">&quot;This backend does not support config backup&quot;</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Implement it in <code>RaritanPDUClient</code></strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/backends/raritan.py</code>, add near <code>get_pdu_info</code> (e.g. directly after it):</p>
+<div class="highlight"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">get_full_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">pdu_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpc</span><span class="p">(</span><span class="s2">&quot;/model/pdu/0&quot;</span><span class="p">,</span> <span class="s2">&quot;getSettings&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pdu_info</span><span class="p">()</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;device_time_epoch&quot;</span><span class="p">}</span>
+
+        <span class="n">outlets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_outlet_rids</span><span class="p">()):</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpc</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="s2">&quot;getSettings&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">outlets</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;outlet_number&quot;</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="p">})</span>
+
+        <span class="n">inlets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_inlet_rids</span><span class="p">()):</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rpc</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="s2">&quot;getSettings&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">inlets</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;inlet_number&quot;</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pdu&quot;</span><span class="p">:</span> <span class="n">pdu_settings</span><span class="p">,</span> <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="n">network</span><span class="p">,</span> <span class="s2">&quot;outlets&quot;</span><span class="p">:</span> <span class="n">outlets</span><span class="p">,</span> <span class="s2">&quot;inlets&quot;</span><span class="p">:</span> <span class="n">inlets</span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Run tests to verify they pass</strong></li>
+</ul>
+<p>Run: <code>cd /opt/netbox/netbox-pdu-control &amp;&amp; python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py -v</code>
+Expected: all PASS, including the two new tests</p>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>&lt;dev-host&gt;<span class="w"> </span><span class="s1">&#39;cd /opt/netbox/netbox-pdu-control &amp;&amp; git add netbox_pdu_control/backends/base.py netbox_pdu_control/backends/raritan.py netbox_pdu_control/tests/test_backends_raritan.py &amp;&amp; git commit -m &quot;Add get_full_config() to PDU backend interface and Raritan backend&quot;&#39;</span>
+</code></pre></div>
+<hr />
+<h4 id="Task-2-ManagedPDU-model-fields-for-config-backup">Task 2: <code>ManagedPDU</code> model fields for config backup<a class="headerlink" href="#Task-2-ManagedPDU-model-fields-for-config-backup" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong>
+- Modify: <code>netbox_pdu_control/models.py:18-27</code> (<code>clone_fields</code>), <code>netbox_pdu_control/models.py:96-104</code> (after <code>metrics_enabled</code> field)
+- Create: <code>netbox_pdu_control/migrations/0011_managedpdu_config_backup.py</code>
+- Test: <code>netbox_pdu_control/tests/test_models.py</code></p>
+<p><strong>Interfaces:</strong>
+- Produces: <code>ManagedPDU.last_config_saved</code> (<code>DateTimeField</code>, null/blank), <code>ManagedPDU.config_backup_enabled</code> (<code>BooleanField</code>, default <code>True</code>). Task 3/4/6 read and write these.</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing test</strong></li>
+</ul>
+<p>Add to <code>netbox_pdu_control/tests/test_models.py</code>, inside <code>ManagedPDUModelTest</code> (or as a new small test appended near other field-default tests — check the file for the existing <code>ManagedPDUModelTest</code> class and add there):</p>
+<div class="highlight"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">test_config_backup_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;New ManagedPDU has config_backup_enabled=True and last_config_saved=None.&quot;&quot;&quot;</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">create_test_pdu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">pdu</span><span class="o">.</span><span class="n">config_backup_enabled</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">pdu</span><span class="o">.</span><span class="n">last_config_saved</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run test to verify it fails</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest.test_config_backup_defaults -v2'</code>
+Expected: FAIL with <code>AttributeError</code> or <code>TypeError: ... unexpected keyword argument</code> style error (field doesn't exist yet — actually since the test doesn't pass the field explicitly, expect <code>AttributeError: 'ManagedPDU' object has no attribute 'config_backup_enabled'</code>)</p>
+<ul>
+<li>[ ] <strong>Step 3: Add the fields to the model</strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/models.py</code>, add <code>"config_backup_enabled"</code> to <code>clone_fields</code> (after <code>"metrics_enabled"</code>):</p>
+<div class="highlight"><pre><span></span><code>    <span class="n">clone_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;vendor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;api_url&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;api_username&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;api_password&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;verify_ssl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sync_enabled&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;metrics_enabled&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config_backup_enabled&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;comments&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+</code></pre></div>
+<p>Then add the two new fields directly after the existing <code>metrics_enabled</code> field block:</p>
+<div class="highlight"><pre><span></span><code>    <span class="n">metrics_enabled</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Metrics Enabled&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Include this PDU in periodic metrics polling jobs&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">last_config_saved</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Last Config Saved&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">config_backup_enabled</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Config Backup Enabled&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Include this PDU in periodic config backup jobs&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Generate and inspect the migration</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py makemigrations netbox_pdu_control'</code></p>
+<p>This should create <code>netbox_pdu_control/migrations/0011_managedpdu_config_backup_and_more.py</code> (or similar auto-generated name). Rename it to <code>0011_managedpdu_config_backup.py</code> and verify its contents match:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">migrations</span><span class="p">,</span> <span class="n">models</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">,</span> <span class="s2">&quot;0010_managedpdu_ip_address&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">migrations</span><span class="o">.</span><span class="n">AddField</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;managedpdu&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;last_config_saved&quot;</span><span class="p">,</span>
+            <span class="n">field</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Last Config Saved&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">migrations</span><span class="o">.</span><span class="n">AddField</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;managedpdu&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;config_backup_enabled&quot;</span><span class="p">,</span>
+            <span class="n">field</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Include this PDU in periodic config backup jobs&quot;</span><span class="p">,</span>
+                <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Config Backup Enabled&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+</code></pre></div>
+<p>If the auto-generated file differs cosmetically (field order, etc.) that's fine — what matters is both <code>AddField</code> operations are present with these exact field definitions.</p>
+<ul>
+<li>[ ] <strong>Step 5: Apply the migration and run the test</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py migrate netbox_pdu_control'</code>
+Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models.ManagedPDUModelTest.test_config_backup_defaults -v2'</code>
+Expected: PASS</p>
+<ul>
+<li>[ ] <strong>Step 6: Run the full model test suite to check nothing broke</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_models -v2'</code>
+Expected: all PASS</p>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>&lt;dev-host&gt;<span class="w"> </span><span class="s1">&#39;cd /opt/netbox/netbox-pdu-control &amp;&amp; git add netbox_pdu_control/models.py netbox_pdu_control/migrations/0011_managedpdu_config_backup.py netbox_pdu_control/tests/test_models.py &amp;&amp; git commit -m &quot;Add last_config_saved and config_backup_enabled fields to ManagedPDU&quot;&#39;</span>
+</code></pre></div>
+<hr />
+<h4 id="Task-3-config_backuppy--the-save-logic">Task 3: <code>config_backup.py</code> — the save logic<a class="headerlink" href="#Task-3-config_backuppy--the-save-logic" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong>
+- Create: <code>netbox_pdu_control/config_backup.py</code>
+- Test: <code>netbox_pdu_control/tests/test_config_backup.py</code> (new file)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>get_pdu_client(managed_pdu, request=None)</code> from <code>netbox_pdu_control.backends</code> (existing), <code>client.get_full_config() -&gt; dict</code> (Task 1), <code>ManagedPDU.last_config_saved</code> / <code>.device.local_context_data</code> (Task 2 + NetBox core <code>Device</code>)
+- Produces: <code>ConfigBackupResult</code> dataclass (<code>git_committed: bool | None</code>, <code>git_error: str | None</code>), <code>save_config_backup(managed_pdu, request=None) -&gt; ConfigBackupResult</code>, raises <code>PDUClientError</code> on fetch failure. Task 4 and Task 6 both call <code>save_config_backup</code>.</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing tests</strong></li>
+</ul>
+<p>Create <code>netbox_pdu_control/tests/test_config_backup.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for config_backup.py.</span>
+
+<span class="sd">Run inside Docker:</span>
+<span class="sd">  docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..config_backup</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_config_backup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.test_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_pdu</span>
+
+<span class="n">SAMPLE_CONFIG</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pdu&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pdu01&quot;</span><span class="p">},</span> <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;outlets&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;inlets&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SaveConfigBackupTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdu</span> <span class="o">=</span> <span class="n">create_test_pdu</span><span class="p">()</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.get_pdu_client&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_always_saves_to_local_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_client</span><span class="p">):</span>
+        <span class="n">mock_client</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_client</span><span class="o">.</span><span class="n">get_full_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">SAMPLE_CONFIG</span>
+        <span class="n">mock_get_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">local_context_data</span><span class="p">,</span> <span class="n">SAMPLE_CONFIG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">git_error</span><span class="p">)</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.get_pdu_client&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_updates_last_config_saved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_client</span><span class="p">):</span>
+        <span class="n">mock_client</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_client</span><span class="o">.</span><span class="n">get_full_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">SAMPLE_CONFIG</span>
+        <span class="n">mock_get_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">last_config_saved</span><span class="p">)</span>
+        <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">last_config_saved</span><span class="p">)</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.get_pdu_client&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_without_config_backup_path_skips_git</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_client</span><span class="p">):</span>
+        <span class="n">mock_client</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_client</span><span class="o">.</span><span class="n">get_full_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">SAMPLE_CONFIG</span>
+        <span class="n">mock_get_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client</span>
+
+        <span class="k">with</span> <span class="n">override_settings</span><span class="p">(</span><span class="n">PLUGINS_CONFIG</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{}}):</span>
+            <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.subprocess.run&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_run</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+
+        <span class="n">mock_run</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.get_pdu_client&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_with_config_backup_path_commits_to_git</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_client</span><span class="p">,</span> <span class="n">tmp_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+        <span class="n">mock_client</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_client</span><span class="o">.</span><span class="n">get_full_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">SAMPLE_CONFIG</span>
+        <span class="n">mock_get_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">override_settings</span><span class="p">(</span><span class="n">PLUGINS_CONFIG</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;config_backup_path&quot;</span><span class="p">:</span> <span class="n">tmpdir</span><span class="p">}}):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">git_error</span><span class="p">)</span>
+
+            <span class="n">log</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="s2">&quot;--oneline&quot;</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()),</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.get_pdu_client&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_second_call_with_same_config_does_not_recommit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_client</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+        <span class="n">mock_client</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_client</span><span class="o">.</span><span class="n">get_full_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">SAMPLE_CONFIG</span>
+        <span class="n">mock_get_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">override_settings</span><span class="p">(</span><span class="n">PLUGINS_CONFIG</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;config_backup_path&quot;</span><span class="p">:</span> <span class="n">tmpdir</span><span class="p">}}):</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+                <span class="n">second</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">second</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+
+            <span class="n">log</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="s2">&quot;--oneline&quot;</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()),</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup._commit_to_git&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.config_backup.get_pdu_client&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_failure_does_not_raise_and_still_saves_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_client</span><span class="p">,</span> <span class="n">mock_commit</span><span class="p">):</span>
+        <span class="n">mock_client</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_client</span><span class="o">.</span><span class="n">get_full_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">SAMPLE_CONFIG</span>
+        <span class="n">mock_get_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_client</span>
+        <span class="n">mock_commit</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;git commit failed: no permission&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">override_settings</span><span class="p">(</span><span class="n">PLUGINS_CONFIG</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;config_backup_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/some/path&quot;</span><span class="p">}}):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">local_context_data</span><span class="p">,</span> <span class="n">SAMPLE_CONFIG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;no permission&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">git_error</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run tests to verify they fail</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2'</code>
+Expected: FAIL with <code>ModuleNotFoundError: No module named 'netbox_pdu_control.config_backup'</code></p>
+<ul>
+<li>[ ] <strong>Step 3: Implement <code>config_backup.py</code></strong></li>
+</ul>
+<p>Create <code>netbox_pdu_control/config_backup.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pdu_client</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigBackupResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Outcome of save_config_backup(). git_committed is None when git backup is not configured.&quot;&quot;&quot;</span>
+
+    <span class="n">git_committed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">git_error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CompletedProcess</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">repo_path</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">],</span>
+        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_commit_to_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the snapshot into a local git repo and commit if changed. Returns True if committed.&quot;&quot;&quot;</span>
+    <span class="n">repo_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">repo_path</span><span class="p">)</span>
+    <span class="n">repo_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">repo_path</span> <span class="o">/</span> <span class="s2">&quot;.git&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="s2">&quot;init&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;git init failed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;user.email&quot;</span><span class="p">,</span> <span class="s2">&quot;netbox-pdu-control@localhost&quot;</span><span class="p">)</span>
+        <span class="n">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;user.name&quot;</span><span class="p">,</span> <span class="s2">&quot;netbox-pdu-control&quot;</span><span class="p">)</span>
+
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">repo_path</span> <span class="o">/</span> <span class="n">filename</span>
+    <span class="n">file_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;--porcelain&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">commit</span> <span class="o">=</span> <span class="n">_run_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="s2">&quot;commit&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Update config for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">commit</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;git commit failed: </span><span class="si">{</span><span class="n">commit</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">save_config_backup</span><span class="p">(</span><span class="n">managed_pdu</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConfigBackupResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch the PDU&#39;s full config and save it.</span>
+
+<span class="sd">    Always writes to `managed_pdu.device.local_context_data` (visible in NetBox&#39;s</span>
+<span class="sd">    Config Context tab; history via NetBox&#39;s own Change Log). Additionally commits</span>
+<span class="sd">    to a local git repo if `config_backup_path` is set in PLUGINS_CONFIG.</span>
+
+<span class="sd">    Raises PDUClientError on fetch failure (backend not supported, connection error).</span>
+<span class="sd">    Git failures are captured in the returned result rather than raised, since the</span>
+<span class="sd">    primary (local_context_data) save already succeeded by that point.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">get_pdu_client</span><span class="p">(</span><span class="n">managed_pdu</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_full_config</span><span class="p">()</span>
+
+    <span class="n">managed_pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">local_context_data</span> <span class="o">=</span> <span class="n">config</span>
+    <span class="n">managed_pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;local_context_data&quot;</span><span class="p">])</span>
+
+    <span class="n">plugin_config</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PLUGINS_CONFIG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">repo_path</span> <span class="o">=</span> <span class="n">plugin_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_backup_path&quot;</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">ConfigBackupResult</span><span class="p">(</span><span class="n">git_committed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repo_path</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slugify</span><span class="p">(</span><span class="n">managed_pdu</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">git_committed</span> <span class="o">=</span> <span class="n">_commit_to_git</span><span class="p">(</span><span class="n">repo_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">git_committed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">git_error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Git config backup failed [</span><span class="si">%s</span><span class="s2">]: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">managed_pdu</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="n">managed_pdu</span><span class="o">.</span><span class="n">last_config_saved</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">managed_pdu</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;last_config_saved&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Run tests to verify they pass</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup -v2'</code>
+Expected: all PASS</p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>&lt;dev-host&gt;<span class="w"> </span><span class="s1">&#39;cd /opt/netbox/netbox-pdu-control &amp;&amp; git add netbox_pdu_control/config_backup.py netbox_pdu_control/tests/test_config_backup.py &amp;&amp; git commit -m &quot;Add save_config_backup(): local_context_data + optional git backup&quot;&#39;</span>
+</code></pre></div>
+<hr />
+<h4 id="Task-4-ManagedPDUSaveConfigView--URL-route">Task 4: <code>ManagedPDUSaveConfigView</code> + URL route<a class="headerlink" href="#Task-4-ManagedPDUSaveConfigView--URL-route" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong>
+- Modify: <code>netbox_pdu_control/views.py</code> (add view after <code>ManagedPDUGetMetricsView</code>, ~line 247)
+- Modify: <code>netbox_pdu_control/urls.py</code> (add route after <code>managedpdu_get_metrics</code>)
+- Test: <code>netbox_pdu_control/tests/test_views.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>save_config_backup(managed_pdu, request=None) -&gt; ConfigBackupResult</code> (Task 3)
+- Produces: URL name <code>plugins:netbox_pdu_control:managedpdu_save_config</code> (used by Task 5's template button)</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing tests</strong></li>
+</ul>
+<p>Add to <code>netbox_pdu_control/tests/test_views.py</code> (append as a new class; check the top of the file for existing imports of <code>create_test_pdu</code>, <code>PluginViewTestCase</code>, <code>reverse</code>, <code>patch</code>, <code>MagicMock</code> and reuse them):</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ManagedPDUSaveConfigViewTest</span><span class="p">(</span><span class="n">PluginViewTestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests for ManagedPDUSaveConfigView.&quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUpTestData</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">pdu</span> <span class="o">=</span> <span class="n">create_test_pdu</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;plugins:netbox_pdu_control:managedpdu_save_config&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_without_permission_redirects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertHttpStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">302</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_without_permission_does_not_call_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.views.save_config_backup&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">())</span>
+            <span class="n">mock_save</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.views.save_config_backup&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_success_saves_and_redirects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_save</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">netbox_pdu_control.config_backup</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigBackupResult</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_permissions</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.change_managedpdu&quot;</span><span class="p">)</span>
+        <span class="n">mock_save</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">ConfigBackupResult</span><span class="p">(</span><span class="n">git_committed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">(),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertHttpStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">mock_save</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="s2">&quot;saved to NetBox&quot;</span> <span class="ow">in</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">))</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.views.save_config_backup&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_committed_shows_git_in_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_save</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">netbox_pdu_control.config_backup</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigBackupResult</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_permissions</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.change_managedpdu&quot;</span><span class="p">)</span>
+        <span class="n">mock_save</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">ConfigBackupResult</span><span class="p">(</span><span class="n">git_committed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">(),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="s2">&quot;git commit&quot;</span> <span class="ow">in</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">))</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.views.save_config_backup&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_error_shows_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_save</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">netbox_pdu_control.config_backup</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigBackupResult</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_permissions</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.change_managedpdu&quot;</span><span class="p">)</span>
+        <span class="n">mock_save</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">ConfigBackupResult</span><span class="p">(</span><span class="n">git_committed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">git_error</span><span class="o">=</span><span class="s2">&quot;git commit failed: boom&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">(),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="s2">&quot;git backup failed&quot;</span> <span class="ow">in</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">))</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.views.save_config_backup&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_fetch_error_shows_error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_save</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">netbox_pdu_control.backends.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">PDUClientError</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_permissions</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.change_managedpdu&quot;</span><span class="p">)</span>
+        <span class="n">mock_save</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">PDUClientError</span><span class="p">(</span><span class="s2">&quot;connection refused&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">(),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="s2">&quot;connection refused&quot;</span> <span class="ow">in</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">))</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run tests to verify they fail</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUSaveConfigViewTest -v2'</code>
+Expected: FAIL — <code>NoReverseMatch</code> (URL name doesn't exist yet)</p>
+<ul>
+<li>[ ] <strong>Step 3: Add the view</strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/views.py</code>, add after <code>ManagedPDUGetMetricsView</code> (check the top of the file for its existing imports of <code>logger</code>, <code>messages</code>, <code>redirect</code>, <code>get_object_or_404</code>, <code>View</code>, <code>_</code>, and reuse them — do not re-import):</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@register_model_view</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">ManagedPDU</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;save_config&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ManagedPDUSaveConfigView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    View that saves the PDU&#39;s on-device config to NetBox (Device.local_context_data)</span>
+<span class="sd">    and, if configured, a local git backup repo. Accepts POST requests only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+        <span class="n">managed_pdu</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">ManagedPDU</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.change_managedpdu&quot;</span><span class="p">):</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You do not have permission to save config for this PDU.&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">managed_pdu</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="n">managed_pdu</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">git_error</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Config saved to NetBox, but git backup failed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">git_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Config saved (NetBox + git commit).&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Config saved to NetBox.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Config save succeeded [</span><span class="si">%s</span><span class="s2">]: git_committed=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">managed_pdu</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">PDUClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Config save error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Config save failed [</span><span class="si">%s</span><span class="s2">]: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">managed_pdu</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">managed_pdu</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span>
+</code></pre></div>
+<p>Add the import at the top of <code>views.py</code> (near the other imports from <code>.config_backup</code> / local modules — add alongside existing <code>from .jobs import ...</code>-style imports):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">.config_backup</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_config_backup</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Add the URL route</strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/urls.py</code>, add after the <code>managedpdu_get_metrics</code> path:</p>
+<div class="highlight"><pre><span></span><code>    <span class="n">path</span><span class="p">(</span>
+        <span class="s2">&quot;managed-pdus/&lt;int:pk&gt;/save-config/&quot;</span><span class="p">,</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">ManagedPDUSaveConfigView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;managedpdu_save_config&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Run tests to verify they pass</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUSaveConfigViewTest -v2'</code>
+Expected: all PASS</p>
+<ul>
+<li>[ ] <strong>Step 6: Run the full view test suite to check nothing broke</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views -v2'</code>
+Expected: all PASS</p>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>&lt;dev-host&gt;<span class="w"> </span><span class="s1">&#39;cd /opt/netbox/netbox-pdu-control &amp;&amp; git add netbox_pdu_control/views.py netbox_pdu_control/urls.py netbox_pdu_control/tests/test_views.py &amp;&amp; git commit -m &quot;Add ManagedPDUSaveConfigView and save-config URL route&quot;&#39;</span>
+</code></pre></div>
+<hr />
+<h4 id="Task-5-Save-Config-button-and-Last-Config-Saved-row-in-the-template">Task 5: "Save Config" button and "Last Config Saved" row in the template<a class="headerlink" href="#Task-5-Save-Config-button-and-Last-Config-Saved-row-in-the-template" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong>
+- Modify: <code>netbox_pdu_control/templates/netbox_pdu_control/managedpdu.html</code> (button near line 156, status row near line 174)
+- Test: <code>netbox_pdu_control/tests/test_views.py</code> (extend <code>ManagedPDUViewTest.test_detail_view</code>)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: URL name <code>managedpdu_save_config</code> (Task 4), <code>object.last_config_saved</code> (Task 2)</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing test</strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/tests/test_views.py</code>, find <code>ManagedPDUViewTest.test_detail_view</code> and add a new test method in the same class:</p>
+<div class="highlight"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">test_detail_view_shows_save_config_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_permissions</span><span class="p">(</span><span class="s2">&quot;netbox_pdu_control.view_managedpdu&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;plugins:netbox_pdu_control:managedpdu&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdu</span><span class="o">.</span><span class="n">pk</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s2">&quot;managedpdu_save_config&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s2">&quot;Save Config&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>(Check the existing <code>test_detail_view</code> method in this class for the exact <code>self.pdu</code> attribute name and URL-reverse pattern already used in <code>setUpTestData</code> — reuse it rather than redefining.)</p>
+<ul>
+<li>[ ] <strong>Step 2: Run test to verify it fails</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUViewTest.test_detail_view_shows_save_config_button -v2'</code>
+Expected: FAIL — response does not contain "Save Config"</p>
+<ul>
+<li>[ ] <strong>Step 3: Add the button to the template</strong></li>
+</ul>
+<p>In <code>netbox_pdu_control/templates/netbox_pdu_control/managedpdu.html</code>, locate the existing block around line 150-160:</p>
+<div class="highlight"><pre><span></span><code>            <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;{% url &#39;plugins:netbox_pdu_control:managedpdu_sync&#39; pk=object.pk %}&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;d-inline&quot;</span><span class="p">&gt;</span>
+              {% csrf_token %}
+              <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-primary btn-sm&quot;</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;mdi mdi-refresh&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span> Sync PDU
+              <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;{% url &#39;plugins:netbox_pdu_control:managedpdu_get_metrics&#39; pk=object.pk %}&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;d-inline&quot;</span><span class="p">&gt;</span>
+              {% csrf_token %}
+              <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-outline-primary btn-sm&quot;</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Add immediately after the <code>Get Metrics</code> form's closing <code>&lt;/form&gt;</code> tag:</p>
+<div class="highlight"><pre><span></span><code>            <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;{% url &#39;plugins:netbox_pdu_control:managedpdu_save_config&#39; pk=object.pk %}&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;d-inline&quot;</span><span class="p">&gt;</span>
+              {% csrf_token %}
+              <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-outline-secondary btn-sm&quot;</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;mdi mdi-content-save&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span> Save Config
+              <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Then locate the "Last Synced" row (around line 173-174):</p>
+<div class="highlight"><pre><span></span><code>          <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">th</span> <span class="na">scope</span><span class="o">=</span><span class="s">&quot;row&quot;</span><span class="p">&gt;</span>Last Synced<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ object.last_synced|placeholder }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Add a new row immediately after it:</p>
+<div class="highlight"><pre><span></span><code>          <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">th</span> <span class="na">scope</span><span class="o">=</span><span class="s">&quot;row&quot;</span><span class="p">&gt;</span>Last Config Saved<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>{{ object.last_config_saved|placeholder }}<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Run test to verify it passes</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_views.ManagedPDUViewTest -v2'</code>
+Expected: all PASS</p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>&lt;dev-host&gt;<span class="w"> </span><span class="s1">&#39;cd /opt/netbox/netbox-pdu-control &amp;&amp; git add netbox_pdu_control/templates/netbox_pdu_control/managedpdu.html netbox_pdu_control/tests/test_views.py &amp;&amp; git commit -m &quot;Add Save Config button and Last Config Saved row to PDU detail page&quot;&#39;</span>
+</code></pre></div>
+<hr />
+<h4 id="Task-6-Periodic-PDUConfigBackupJob--README-documentation">Task 6: Periodic <code>PDUConfigBackupJob</code> + README documentation<a class="headerlink" href="#Task-6-Periodic-PDUConfigBackupJob--README-documentation" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong>
+- Modify: <code>netbox_pdu_control/jobs.py</code> (add job after <code>PDUSyncJob</code>, at end of file)
+- Modify: <code>README.md</code> (document new <code>PLUGINS_CONFIG</code> key, in the existing <code>PLUGINS_CONFIG</code> example block)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>save_config_backup(managed_pdu) -&gt; ConfigBackupResult</code> (Task 3), <code>ManagedPDU.objects.filter(config_backup_enabled=True)</code> (Task 2)
+- Produces: <code>PDUConfigBackupJob</code> class, registered via <code>@system_job(interval=...)</code> only when <code>config_backup_poll_interval &gt; 0</code> — same convention as <code>PDUSyncJob</code>/<code>PDUGetMetricsJob</code>, which also have no dedicated unit tests in this codebase (see <code>Global Constraints</code>), so no new test file is added here; correctness is covered by Task 3's tests of <code>save_config_backup</code> itself.</p>
+<ul>
+<li>[ ] <strong>Step 1: Add the job to <code>jobs.py</code></strong></li>
+</ul>
+<p>At the end of <code>netbox_pdu_control/jobs.py</code>, after the existing <code>_sync_interval = ...</code> line and before the <code>if _metrics_interval &gt; 0 or _sync_interval &gt; 0:</code> block, add:</p>
+<div class="highlight"><pre><span></span><code><span class="n">_config_backup_interval</span> <span class="o">=</span> <span class="n">_plugin_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_backup_poll_interval&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<p>Change the existing conditional import line from:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">_metrics_interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">_sync_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">netbox.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobFailed</span><span class="p">,</span> <span class="n">JobRunner</span><span class="p">,</span> <span class="n">system_job</span>
+</code></pre></div>
+<p>to:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">_metrics_interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">_sync_interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">_config_backup_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">netbox.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobFailed</span><span class="p">,</span> <span class="n">JobRunner</span><span class="p">,</span> <span class="n">system_job</span>
+</code></pre></div>
+<p>Then append at the very end of the file (after the existing <code>PDUSyncJob</code> class):</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">_config_backup_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+    <span class="nd">@system_job</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">_config_backup_interval</span><span class="p">)</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">PDUConfigBackupJob</span><span class="p">(</span><span class="n">JobRunner</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PDU Config Backup&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.config_backup</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_config_backup</span>
+
+            <span class="n">pdus</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManagedPDU</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">config_backup_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">success</span><span class="p">,</span> <span class="n">failed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">pdu</span> <span class="ow">in</span> <span class="n">pdus</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">save_config_backup</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config backup [</span><span class="si">{</span><span class="n">pdu</span><span class="si">}</span><span class="s2">]: git_committed=</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">git_committed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">success</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config backup failed [</span><span class="si">{</span><span class="n">pdu</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">failed</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Periodic config backup complete: </span><span class="si">{</span><span class="n">success</span><span class="si">}</span><span class="s2"> OK, </span><span class="si">{</span><span class="n">failed</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">failed</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">success</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">JobFailed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All </span><span class="si">{</span><span class="n">failed</span><span class="si">}</span><span class="s2"> PDU(s) failed config backup&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">failed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">failed</span><span class="si">}</span><span class="s2"> PDU(s) failed config backup (</span><span class="si">{</span><span class="n">success</span><span class="si">}</span><span class="s2"> succeeded)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Verify the module still imports cleanly</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests.test_config_backup netbox_pdu_control.tests.test_models netbox_pdu_control.tests.test_views -v2'</code>
+Expected: all PASS (this indirectly confirms <code>jobs.py</code> still imports without error, since <code>apps.py</code>/plugin loading pulls it in)</p>
+<ul>
+<li>[ ] <strong>Step 3: Update README.md</strong></li>
+</ul>
+<p>In <code>README.md</code>, find the existing <code>PLUGINS_CONFIG</code> example block (in the <code>Install</code> section, shown earlier in this session):</p>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGINS_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Interval in minutes for automatic Prometheus metrics fetch.</span>
+        <span class="c1"># Set to 0 or remove to disable periodic fetching.</span>
+        <span class="s2">&quot;metrics_poll_interval&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="c1"># Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).</span>
+        <span class="c1"># Set to 0 or remove to disable periodic syncing.</span>
+        <span class="s2">&quot;sync_poll_interval&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="c1"># Only needed if netbox-secrets is installed and used for PDU credentials —</span>
+        <span class="c1"># lets background/system jobs decrypt secrets without an HTTP session.</span>
+        <span class="c1"># &quot;service_account&quot;: &quot;pdu-sync&quot;,</span>
+        <span class="c1"># &quot;service_private_key_path&quot;: &quot;/opt/netbox/pdu-sync.pem&quot;,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Replace it with (adding the two new keys before the closing brace):</p>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGINS_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Interval in minutes for automatic Prometheus metrics fetch.</span>
+        <span class="c1"># Set to 0 or remove to disable periodic fetching.</span>
+        <span class="s2">&quot;metrics_poll_interval&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="c1"># Interval in minutes for automatic full PDU sync (hardware info, outlets, inlets).</span>
+        <span class="c1"># Set to 0 or remove to disable periodic syncing.</span>
+        <span class="s2">&quot;sync_poll_interval&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="c1"># Optional: directory for an additional local git-backed PDU config backup,</span>
+        <span class="c1"># for unlimited-retention history beyond NetBox&#39;s own Change Log (which</span>
+        <span class="c1"># defaults to 90 days via the CHANGELOG_RETENTION admin setting). The plugin</span>
+        <span class="c1"># runs `git init` here automatically on first use. Config is always saved to</span>
+        <span class="c1"># the PDU&#39;s Device &gt; Config Context regardless of this setting.</span>
+        <span class="c1"># &quot;config_backup_path&quot;: &quot;/opt/netbox/pdu-config-backups&quot;,</span>
+        <span class="c1"># Interval in minutes for automatic config backup. Set to 0 or remove to disable.</span>
+        <span class="s2">&quot;config_backup_poll_interval&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="c1"># Only needed if netbox-secrets is installed and used for PDU credentials —</span>
+        <span class="c1"># lets background/system jobs decrypt secrets without an HTTP session.</span>
+        <span class="c1"># &quot;service_account&quot;: &quot;pdu-sync&quot;,</span>
+        <span class="c1"># &quot;service_private_key_path&quot;: &quot;/opt/netbox/pdu-sync.pem&quot;,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Also add a bullet to the <code>## Features</code> list (after the existing "Background jobs" bullet):</p>
+<div class="highlight"><pre><span></span><code><span class="k">-</span><span class="w"> </span><span class="gs">**Config backup**</span> — save the PDU&#39;s on-device configuration to NetBox (Device Config Context) and, optionally, a local git repo, via a manual button or periodic job (Raritan only)
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>&lt;dev-host&gt;<span class="w"> </span><span class="s1">&#39;cd /opt/netbox/netbox-pdu-control &amp;&amp; git add netbox_pdu_control/jobs.py README.md &amp;&amp; git commit -m &quot;Add PDUConfigBackupJob periodic job and document config_backup_path&quot;&#39;</span>
+</code></pre></div>
+<hr />
+<h4 id="Task-7-Full-test-suite--ruff-and-final-review">Task 7: Full test suite + ruff, and final review<a class="headerlink" href="#Task-7-Full-test-suite--ruff-and-final-review" title="Permanent link">&para;</a></h4>
+<p><strong>Files:</strong> none (verification only)</p>
+<ul>
+<li>[ ] <strong>Step 1: Run the entire plugin test suite</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-docker &amp;&amp; docker compose exec netbox python manage.py test netbox_pdu_control.tests -v2'</code>
+Expected: all PASS, zero failures/errors</p>
+<ul>
+<li>[ ] <strong>Step 2: Run the standalone (non-Django) backend tests</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-pdu-control &amp;&amp; python3 -m pytest netbox_pdu_control/tests/test_backends_raritan.py netbox_pdu_control/tests/test_factory.py -v'</code>
+Expected: all PASS</p>
+<ul>
+<li>[ ] <strong>Step 3: Run ruff</strong></li>
+</ul>
+<p>Run: <code>ssh &lt;dev-host&gt; 'cd /opt/netbox/netbox-pdu-control &amp;&amp; python3 -m ruff check netbox_pdu_control/config_backup.py netbox_pdu_control/backends/base.py netbox_pdu_control/backends/raritan.py netbox_pdu_control/models.py netbox_pdu_control/views.py netbox_pdu_control/urls.py netbox_pdu_control/jobs.py netbox_pdu_control/tests/test_config_backup.py'</code>
+Expected: <code>All checks passed!</code> — fix any reported issues and re-run before moving on</p>
+<ul>
+<li>[ ] <strong>Step 4: Manual smoke test via the real dev environment</strong></li>
+</ul>
+<p>This plugin is already installed against <code>&lt;dev-host&gt;</code>'s Docker NetBox with real Raritan PDUs registered (<code>pdu01</code>, <code>pdu02</code>, <code>pdu03</code> — see Task 3 of the design spec's live-data confirmation). After migrating:</p>
+<ol>
+<li>Log into the NetBox UI, navigate to a <code>ManagedPDU</code> detail page (e.g. <code>pdu01</code>)</li>
+<li>Click "Save Config" — expect a green "Config saved to NetBox." message</li>
+<li>Navigate to the underlying Device's page → "Config Context" tab → confirm the JSON snapshot (matching the shape confirmed in the design spec) is visible</li>
+<li>Navigate to the Device's "Change Log" tab → confirm a new change entry was recorded</li>
+<li>Click "Save Config" again with no PDU-side changes → still succeeds (message doesn't imply an error)</li>
+<li>
+<p>(Optional, only if testing the git path) Set <code>config_backup_path</code> in <code>configuration.py</code>, restart, click "Save Config" again, then <code>ssh &lt;dev-host&gt; 'git -C &lt;path&gt; log --oneline'</code> to confirm a commit was made</p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Report status to the user</strong></p>
+</li>
+</ol>
+<p>Summarize: tests passing, ruff clean, manual smoke test result, and remind the user that all commits are local-only on <code>release/0.5.0</code> (not pushed) pending their decision to open a PR.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/netbox-community/cookiecutter-netbox-plugin" target="_blank" rel="noopener" title="Tweet" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/netbox-community/cookiecutter-netbox-plugin" target="_blank" rel="noopener" title="Facebook" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/tak-labo/netbox-pdu-control" target="_blank" rel="noopener" title="Github" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:8895617+tak-55@users.noreply.github.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20 8-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.indexes", "navigation.instant", "navigation.tabs.sticky"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

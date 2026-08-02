@@ -1,0 +1,1240 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://tak-labo.github.io/netbox-pdu-control/netbox-secrets-setup/">
+      
+      
+        <link rel="prev" href="../design/">
+      
+      
+        <link rel="next" href="../contributing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>netbox-secrets Setup - NetBox PDU Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#netbox-secrets-連携セットアップ手順" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NetBox PDU Control" class="md-header__button md-logo" aria-label="NetBox PDU Control" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NetBox PDU Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              netbox-secrets Setup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tak-labo/netbox-pdu-control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tak-labo/netbox-pdu-control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NetBox PDU Control" class="md-nav__button md-logo" aria-label="NetBox PDU Control" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NetBox PDU Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tak-labo/netbox-pdu-control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tak-labo/netbox-pdu-control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    netbox-secrets Setup
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    netbox-secrets Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#netbox-secrets-連携セットアップ手順" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        netbox-secrets 連携セットアップ手順
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="netbox-secrets 連携セットアップ手順">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-前提-netbox-secrets-のインストール有効化" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 前提: netbox-secrets のインストール・有効化
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 前提: netbox-secrets のインストール・有効化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#通常環境非Docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        通常環境(非Docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Docker-環境netbox-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker 環境(netbox-docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-SecretRole-を作成する" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. SecretRole を作成する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-管理者あなた自身の-User-Key-を作成有効化する" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 管理者(あなた自身)の User Key を作成・有効化する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-サービスアカウントを作成するバックグラウンドジョブ用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. サービスアカウントを作成する(バックグラウンドジョブ用)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. サービスアカウントを作成する(バックグラウンドジョブ用)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#通常環境非Docker_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        通常環境(非Docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Docker-環境netbox-docker_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker 環境(netbox-docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#サービスアカウントの権限モデル2層構造" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サービスアカウントの権限モデル(2層構造)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-PDU-の認証情報を-Secret-として登録する" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. PDU の認証情報を Secret として登録する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-動作確認" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 動作確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-トラブルシューティング" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#関連ドキュメント" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ドキュメント
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#netbox-secrets-連携セットアップ手順" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        netbox-secrets 連携セットアップ手順
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="netbox-secrets 連携セットアップ手順">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-前提-netbox-secrets-のインストール有効化" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 前提: netbox-secrets のインストール・有効化
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 前提: netbox-secrets のインストール・有効化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#通常環境非Docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        通常環境(非Docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Docker-環境netbox-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker 環境(netbox-docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-SecretRole-を作成する" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. SecretRole を作成する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-管理者あなた自身の-User-Key-を作成有効化する" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 管理者(あなた自身)の User Key を作成・有効化する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-サービスアカウントを作成するバックグラウンドジョブ用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. サービスアカウントを作成する(バックグラウンドジョブ用)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. サービスアカウントを作成する(バックグラウンドジョブ用)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#通常環境非Docker_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        通常環境(非Docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Docker-環境netbox-docker_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker 環境(netbox-docker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#サービスアカウントの権限モデル2層構造" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サービスアカウントの権限モデル(2層構造)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-PDU-の認証情報を-Secret-として登録する" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. PDU の認証情報を Secret として登録する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-動作確認" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 動作確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-トラブルシューティング" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#関連ドキュメント" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ドキュメント
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>netbox-secrets Setup</h1>
+
+<h2 id="netbox-secrets-連携セットアップ手順">netbox-secrets 連携セットアップ手順<a class="headerlink" href="#netbox-secrets-連携セットアップ手順" title="Permanent link">&para;</a></h2>
+<p>本ドキュメントは、PDU の API 認証情報(ユーザー名・パスワード)を平文フィールドではなく
+<a href="https://github.com/Onemind-Services-LLC/netbox-secrets">netbox-secrets</a> 経由で管理するための
+セットアップ手順です。アーキテクチャの詳細は <a href="../design/#9-セキュリティ上の考慮事項">design.md §9</a> を参照してください。</p>
+<p>対象読者: NetBox 管理者・本プラグインの運用担当者。</p>
+<hr />
+<h3 id="1-前提-netbox-secrets-のインストール有効化">1. 前提: netbox-secrets のインストール・有効化<a class="headerlink" href="#1-前提-netbox-secrets-のインストール有効化" title="Permanent link">&para;</a></h3>
+<p>netbox-secrets 自体のインストール手順は <a href="https://github.com/Onemind-Services-LLC/netbox-secrets">公式リポジトリ</a> に従ってください。
+以下は本プラグインとの組み合わせで最低限必要な設定です。</p>
+<p>netbox-pdu-control 側は netbox-secrets を<strong>ソフト依存</strong>として扱うため(<code>pyproject.toml</code> に依存関係として追加していません)、
+netbox-secrets が未導入でも既存の平文フィールド(<code>API Username</code> / <code>API Password</code>)がそのまま動作します。
+以降の手順は netbox-secrets を実際に使う場合のみ必要です。</p>
+<h4 id="通常環境非Docker">通常環境(非Docker)<a class="headerlink" href="#通常環境非Docker" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>netbox-secrets
+</code></pre></div>
+<p><code>configuration.py</code> に追加:</p>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGINS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;netbox_secrets&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">PLUGINS_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;netbox_secrets&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Secret をどのモデルに割り当て可能にするか。Device に割り当てるので必須。</span>
+        <span class="s2">&quot;apps&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;dcim.device&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>マイグレーションと static ファイル収集:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>manage.py<span class="w"> </span>migrate
+python<span class="w"> </span>manage.py<span class="w"> </span>collectstatic<span class="w"> </span>--no-input
+</code></pre></div>
+<h4 id="Docker-環境netbox-docker">Docker 環境(netbox-docker)<a class="headerlink" href="#Docker-環境netbox-docker" title="Permanent link">&para;</a></h4>
+<p>参考: <a href="https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins">Using NetBox Plugins</a>
+(netbox-pdu-control 自体の Docker セットアップ手順は <a href="../README.md#docker-netbox-docker">README</a> を参照)</p>
+<p><strong>1. <code>plugin_requirements.txt</code> に追加</strong></p>
+<div class="highlight"><pre><span></span><code>netbox-pdu-control
+netbox-secrets
+</code></pre></div>
+<p><strong>2. <code>configuration/plugins.py</code> に追加</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGINS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">,</span> <span class="s2">&quot;netbox_secrets&quot;</span><span class="p">]</span>
+
+<span class="n">PLUGINS_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;netbox_secrets&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;apps&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;dcim.device&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># ...既存の設定...</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>3. ビルド・起動・マイグレーション</strong></p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>build<span class="w"> </span>--no-cache
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>netbox<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>migrate
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>netbox<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>collectstatic<span class="w"> </span>--no-input
+</code></pre></div>
+<p><strong><code>apps</code> について:</strong> netbox-secrets がどの NetBox モデルに Secret を紐付け可能にするかを、
+<code>app_label.model</code> 形式で列挙する設定です。ここに列挙されていないモデルには Secret を
+紐付けることはできません。効果は2つあります:</p>
+<ol>
+<li><strong>割り当て先の制限</strong> — Secret 作成時に <code>assigned_object_type</code> として選択できるモデルを、
+   ここに列挙したものだけに絞る(netbox-secrets 内部の <code>SECRET_ASSIGNABLE_MODELS</code> フィルタ)</li>
+<li><strong>UIへの自動表示</strong> — 列挙したモデルの詳細画面に「Secrets」パネル/タブが自動的に追加される</li>
+</ol>
+<p>本プラグインは PDU の認証情報を <strong>Device</strong> に紐付ける設計(§2〜§5 参照)なので、
+<code>"apps": ["dcim.device"]</code> が必須です。他のモデル(仮想マシンなど)にも netbox-secrets を
+使いたい場合は、そのモデルをこのリストに追記してください。</p>
+<hr />
+<h3 id="2-SecretRole-を作成する">2. SecretRole を作成する<a class="headerlink" href="#2-SecretRole-を作成する" title="Permanent link">&para;</a></h3>
+<p>本プラグインは role の <strong>slug が <code>pdu-credentials</code></strong> の <code>Secret</code> を検索します(<code>credentials.py</code> の <code>SECRET_ROLE_SLUG</code> 定数)。</p>
+<ol>
+<li>NetBox UI で <strong>Secrets → Secret Roles → Add</strong> を開く</li>
+<li>Name: 任意(例: <code>PDU Credentials</code>)、<strong>Slug は必ず <code>pdu-credentials</code></strong> にする</li>
+<li>保存</li>
+</ol>
+<hr />
+<h3 id="3-管理者あなた自身の-User-Key-を作成有効化する">3. 管理者(あなた自身)の User Key を作成・有効化する<a class="headerlink" href="#3-管理者あなた自身の-User-Key-を作成有効化する" title="Permanent link">&para;</a></h3>
+<p>netbox-secrets は「マスターキー」を各ユーザーの RSA 公開鍵で暗号化して保持する方式です。最初に有効化された
+User Key が自動的にマスターキーを生成します。</p>
+<ol>
+<li><strong>Secrets → User Keys → Add</strong> を開く</li>
+<li>RSA 鍵ペアを新規生成するか、既存の公開鍵を貼り付ける
+   (公開鍵生成 API: <code>GET /api/plugins/secrets/generate-rsa-key-pair/</code> でも生成可能)</li>
+<li>保存 — これが最初の User Key であれば、この時点で自動的にアクティブ化されマスターキーが生成される</li>
+<li>生成された <strong>秘密鍵は必ず安全な場所に保管</strong>する(サーバーには保存されない。失うと自分の Secret が復号できなくなる)</li>
+</ol>
+<hr />
+<h3 id="4-サービスアカウントを作成するバックグラウンドジョブ用">4. サービスアカウントを作成する(バックグラウンドジョブ用)<a class="headerlink" href="#4-サービスアカウントを作成するバックグラウンドジョブ用" title="Permanent link">&para;</a></h3>
+<p>定期同期(<code>PDUSyncJob</code> / <code>PDUGetMetricsJob</code>)や電源サイクル後のRQジョブはHTTPリクエストを持たないため、
+ログインユーザーのセッションキーではなく、専用のサービスアカウントの秘密鍵でマスターキーを復号します。</p>
+<ol>
+<li>NetBox に新規ユーザーを作成する(例: <code>pdu-sync</code>)。ログイン用途ではないので強力なランダムパスワードを設定し、
+   <code>is_superuser</code> は付けず、Permission (ObjectPermission) で以下のように最小権限を付与する:</li>
+<li><strong>定常運用時(推奨)</strong>: <code>netbox_secrets.secret</code> / <code>secretrole</code> / <code>userkey</code> に対する <strong><code>view</code></strong> のみ。
+     <code>credentials.py</code> はこれら3モデルを読むだけで、<code>sessionkey</code> は参照しない(セッションキー経由の
+     復号はログインユーザー本人の場合のみ使われる別経路のため)。</li>
+<li><strong>User Key の新規作成時のみ一時的に</strong>: <code>netbox_secrets.userkey</code> への <strong><code>add</code></strong> も必要
+     (<code>view</code> だけでは Secrets → User Keys → Add でオブジェクトを作成できない)。作成完了後は
+     <code>view</code> のみに戻してよい。</li>
+<li><strong>鍵ローテーション時のみ一時的に</strong>: 既存 User Key の <code>public_key</code> を更新する場合は <code>add</code> ではなく
+     <strong><code>change</code></strong> が必要。これも作業後は <code>view</code> のみに戻す。</li>
+</ol>
+<p><strong>設定例(Admin → Permissions → Add、URL: <code>/users/permissions/add/</code>)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>secret-access</code>(用途が分かる名前ならなんでも良い)</td>
+</tr>
+<tr>
+<td>Object types</td>
+<td><code>netbox_secrets \| Secret</code> / <code>netbox_secrets \| Secret Role</code> / <code>netbox_secrets \| User Key</code> の3つ(<code>Session Key</code> は含めない)</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td><code>View</code> のみ(User Key 作成直後は一時的に <code>Add</code> を追加 → 作成後に外す)</td>
+</tr>
+<tr>
+<td>Users</td>
+<td><code>pdu-sync</code></td>
+</tr>
+<tr>
+<td>Groups</td>
+<td>(空のまま)</td>
+</tr>
+<tr>
+<td>Constraints</td>
+<td>(空のまま、全インスタンス対象)</td>
+</tr>
+</tbody>
+</table>
+<p>実際にこの設定で運用できることを確認済み(<code>view</code> のみで <code>credentials.py</code> のサービスアカウント
+   経路が正常に動作し、<code>add</code> は User Key 作成時にのみ一時的に必要だった)。
+2. このユーザーで(または管理権限を持つユーザーが代理で)RSA鍵ペアを生成する
+3. <strong>Secrets → User Keys → Add</strong> で <code>pdu-sync</code> ユーザーの User Key を作成(この操作には上記の一時的な
+   <code>add</code> 権限が必要)
+   - 手順3で最初のUser Keyが既に存在する場合、この新しいUser Keyは非アクティブな状態で作成される
+   - <strong>Secrets → User Keys → Activate User Keys</strong> を開き、既にアクティブな鍵を持つ管理者が
+     自分の秘密鍵を使って <code>pdu-sync</code> の User Key を有効化する(マスターキーが <code>pdu-sync</code> の公開鍵でも
+     暗号化され、これで <code>pdu-sync</code> の秘密鍵でも復号可能になる)
+4. <code>pdu-sync</code> の<strong>秘密鍵</strong>をNetBoxサーバー上の安全な場所に配置する(例: <code>/opt/netbox/pdu-sync.pem</code>、
+   パーミッションは <code>600</code>、所有者は NetBox 実行ユーザーのみ読み取り可能に)</p>
+<h5 id="通常環境非Docker_1">通常環境(非Docker)<a class="headerlink" href="#通常環境非Docker_1" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/opt/netbox/pdu-sync.pem
+chown<span class="w"> </span>netbox:netbox<span class="w"> </span>/opt/netbox/pdu-sync.pem
+</code></pre></div>
+<p><code>configuration.py</code> に追記:</p>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGINS_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># ...既存の設定...</span>
+        <span class="s2">&quot;service_account&quot;</span><span class="p">:</span> <span class="s2">&quot;pdu-sync&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;service_private_key_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/opt/netbox/pdu-sync.pem&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>NetBox を再起動してPLUGINS_CONFIGを反映する。</p>
+<h5 id="Docker-環境netbox-docker_1">Docker 環境(netbox-docker)<a class="headerlink" href="#Docker-環境netbox-docker_1" title="Permanent link">&para;</a></h5>
+<p>秘密鍵はコンテナ内のファイルシステムに存在しないため、<strong>ホスト側からbind mountする</strong>必要があります
+(イメージに焼き込まない — 秘密鍵をビルドコンテキストやリポジトリに含めないこと)。</p>
+<ol>
+<li>ホスト側に鍵の置き場所を用意し、パーミッションを絞る(リポジトリの外、<code>.gitignore</code> 対象にする):</li>
+</ol>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>../netbox-docker/secrets
+mv<span class="w"> </span>pdu-sync.pem<span class="w"> </span>../netbox-docker/secrets/
+chmod<span class="w"> </span><span class="m">640</span><span class="w"> </span>../netbox-docker/secrets/pdu-sync.pem
+</code></pre></div>
+<p><strong>パーミッションについて:</strong> netbox-docker の <code>netbox</code>/<code>netbox-worker</code> コンテナは <code>uid=999</code>
+(<code>netbox</code> ユーザー)・<code>gid=0</code>(<code>root</code> グループ)で動作します。ファイル所有者を <code>root:root</code> の
+ままにする場合、<code>600</code>(所有者のみ読み取り可)ではコンテナ内の <code>netbox</code> ユーザーが読み取れず
+<code>Permission denied</code> になります。<strong><code>640</code></strong>(所有者rw・グループr)にして、グループ経由で
+読み取れるようにしてください。</p>
+<ol>
+<li><code>docker-compose.override.yml</code> の <code>netbox</code> (と、定期実行させる場合は <code>netbox-worker</code>)サービスに
+   volumeを追加してコンテナ内へ読み取り専用でマウントする:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">netbox</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./secrets/pdu-sync.pem:/opt/netbox/pdu-sync.pem:ro,z</span>
+<span class="w">  </span><span class="nt">netbox-worker</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./secrets/pdu-sync.pem:/opt/netbox/pdu-sync.pem:ro,z</span>
+</code></pre></div>
+<ol>
+<li><code>configuration/plugins.py</code> に追記(コンテナ内から見えるパスを指定):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">PLUGINS_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;netbox_pdu_control&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># ...既存の設定...</span>
+        <span class="s2">&quot;service_account&quot;</span><span class="p">:</span> <span class="s2">&quot;pdu-sync&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;service_private_key_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/opt/netbox/pdu-sync.pem&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>コンテナを再作成してマウント・設定を反映する:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>netbox<span class="w"> </span>netbox-worker
+</code></pre></div>
+<ol>
+<li>マウントできているか確認:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>netbox<span class="w"> </span>cat<span class="w"> </span>/opt/netbox/pdu-sync.pem<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1
+<span class="c1"># -----BEGIN PRIVATE KEY----- 等が表示されればOK</span>
+</code></pre></div>
+<h4 id="サービスアカウントの権限モデル2層構造">サービスアカウントの権限モデル(2層構造)<a class="headerlink" href="#サービスアカウントの権限モデル2層構造" title="Permanent link">&para;</a></h4>
+<p>サービスアカウント(<code>pdu-sync</code>)まわりの認可は、独立した2つの層で構成されます。<strong>どちらか一方
+だけでは不十分</strong>で、両方が揃って初めてバックグラウンドジョブがSecretを復号できます。</p>
+<pre class="mermaid"><code>graph TB
+    subgraph Layer1["① Unixファイルパーミッション(ホスト〜コンテナ)"]
+        HostFile["ホスト側 pdu-sync.pem&lt;br/&gt;owner=root:root, mode=640"]
+        Mount["bind mount (:ro)"]
+        ContainerUser["netbox コンテナプロセス&lt;br/&gt;uid=999, gid=0(root)"]
+        HostFile --&gt;|"group(root)経由で読み取り可"| Mount --&gt; ContainerUser
+    end
+
+    subgraph Layer2["② NetBox ObjectPermission(アプリ内DB)"]
+        Perm["secret-access&lt;br/&gt;actions=[view]&lt;br/&gt;models=Secret/SecretRole/UserKey"]
+        PduSyncUser["NetBoxユーザー pdu-sync&lt;br/&gt;is_superuser=False"]
+        Perm --&gt;|付与| PduSyncUser
+    end
+
+    ContainerUser --&gt;|"private_key=pdu-sync.pemの中身"| Decrypt["UserKey.get_master_key()&lt;br/&gt;(credentials.py)"]
+    PduSyncUser --&gt;|"UserKey.objects.get(user__username='pdu-sync')"| Decrypt
+    Decrypt --&gt; MasterKey["master_key を取得"]
+    MasterKey --&gt; SecretDecrypt["Secret.decrypt(master_key)&lt;br/&gt;→ PDU の username/password"]</code></pre>
+<ul>
+<li><strong>① が欠けると</strong>(パーミッション不足): コンテナがそもそも秘密鍵ファイルを読めず
+  <code>_master_key_from_service_account()</code> が例外を投げる → ログにERROR記録 → 平文フィールドへフォールバック</li>
+<li><strong>② が欠けると</strong>(ObjectPermission未設定・view権限なし): <code>credentials.py</code> は
+  <code>UserKey.objects.get(...)</code> を生のmodelマネージャで呼ぶため②は実は直接は参照されないが、
+  <code>pdu-sync</code> アカウント自体でNetBox UI/APIからSecretsを閲覧・管理する場合はこちらが必要になる
+  (詳細は本節冒頭の権限テーブルを参照)</li>
+</ul>
+<hr />
+<h3 id="5-PDU-の認証情報を-Secret-として登録する">5. PDU の認証情報を Secret として登録する<a class="headerlink" href="#5-PDU-の認証情報を-Secret-として登録する" title="Permanent link">&para;</a></h3>
+<p>各 <code>ManagedPDU</code> に対応する NetBox <code>Device</code> に、role <code>pdu-credentials</code> の Secret を1件作成します。</p>
+<ol>
+<li>対象デバイスの詳細画面を開く(または REST API <code>POST /api/plugins/secrets/secrets/</code>)</li>
+<li>Secret を追加:</li>
+<li><strong>Role</strong>: <code>pdu-credentials</code>(手順2で作成したもの)</li>
+<li><strong>Name</strong>: PDU の API ユーザー名(例: <code>admin</code>)— これが <code>credentials.py</code> で <code>username</code> として使われる</li>
+<li><strong>Plaintext</strong>: PDU の API パスワード — これが <code>password</code> として使われる</li>
+<li>保存にはセッションキーが必要。UI操作中であればブラウザが自動的に処理する
+   (未取得の場合は秘密鍵の入力を求められる)</li>
+</ol>
+<p>保存後、この Device に紐づく <code>ManagedPDU</code> の同期・電源制御は、次回アクセス時から
+このSecretの値を優先して使用します。既存の <code>API Username</code> / <code>API Password</code> フィールドの値は
+削除する必要はありません(フォールバックとして残しておけます)。</p>
+<hr />
+<h3 id="6-動作確認">6. 動作確認<a class="headerlink" href="#6-動作確認" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Web UI からの操作</strong>(Sync ボタン、Power ON/OFF など): ログイン中のユーザー自身の
+  セッションキーで復号されます。ブラウザでログインしていれば追加操作は不要です。</li>
+<li><strong>バックグラウンド/定期実行</strong>(<code>PDUSyncJob</code>、<code>PDUGetMetricsJob</code>、Power Cycle 後の RQ ジョブ):
+  手順4で設定したサービスアカウントの秘密鍵で復号されます。</li>
+</ul>
+<p>うまく復号できない場合(鍵の不一致、Secretが存在しない等)は、<code>netbox_pdu_control.credentials</code> ロガーに
+<code>ERROR</code> レベルで理由が記録され、既存の平文フィールドに自動フォールバックします(処理自体は止まりません)。
+ログを確認してください:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>netbox<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>netbox_pdu_control.credentials
+</code></pre></div>
+<hr />
+<h3 id="7-トラブルシューティング">7. トラブルシューティング<a class="headerlink" href="#7-トラブルシューティング" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>原因の候補</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>常に平文フィールドが使われる(Secretが反映されない)</td>
+<td>SecretRole の slug が <code>pdu-credentials</code> になっていない / Secret が対象 Device に紐づいていない</td>
+</tr>
+<tr>
+<td>Web UI操作時にフォールバックする</td>
+<td>自分の User Key が未作成・非アクティブ、またはセッションキー期限切れ</td>
+</tr>
+<tr>
+<td>バックグラウンドジョブ実行時にフォールバックする</td>
+<td><code>service_account</code> / <code>service_private_key_path</code> が未設定、またはそのユーザーの User Key が非アクティブ</td>
+</tr>
+<tr>
+<td>エラーログに "No UserKey found"</td>
+<td>該当ユーザー(ログインユーザーまたはサービスアカウント)の User Key が作成されていない</td>
+</tr>
+<tr>
+<td>エラーログに "No active session key"</td>
+<td>ブラウザ側でセッションキーが未取得(netbox-secrets 側のUI操作を一度行う)</td>
+</tr>
+<tr>
+<td><code>docker compose exec netbox cat &lt;pem&gt;</code> で <code>Permission denied</code>(Docker環境)</td>
+<td>秘密鍵ファイルのパーミッションが <code>600</code> かつ所有者が <code>root</code> のまま。コンテナ内の <code>netbox</code> ユーザーは <code>uid=999</code>/<code>gid=0(root)</code> で動作するため、<code>chmod 640</code> でグループ読み取りを許可する必要がある</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="関連ドキュメント">関連ドキュメント<a class="headerlink" href="#関連ドキュメント" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../design/">design.md</a> — アーキテクチャ全体・セキュリティ考慮事項</li>
+<li><a href="https://github.com/Onemind-Services-LLC/netbox-secrets">netbox-secrets 公式リポジトリ</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/netbox-community/cookiecutter-netbox-plugin" target="_blank" rel="noopener" title="Tweet" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5.3 9.1.3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53C87.4 130.8 165 172.4 252.1 176.9c-1.6-7.8-2.6-15.9-2.6-24C249.5 95.1 296.3 48 354.4 48c30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/netbox-community/cookiecutter-netbox-plugin" target="_blank" rel="noopener" title="Facebook" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/tak-labo/netbox-pdu-control" target="_blank" rel="noopener" title="Github" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:8895617+tak-55@users.noreply.github.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20 8-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.instant", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
