@@ -31,7 +31,8 @@ graph TB
 
     subgraph Plugin["netbox_pdu_control"]
         Views["views.py<br/>(ObjectView / power / sync / push-name)"]
-        Jobs["jobs.py<br/>sync_managed_pdu()<br/>fetch_pdu_metrics()"]
+        Jobs["jobs.py<br/>sync_managed_pdu()<br/>fetch_pdu_metrics()<br/>PDUConfigBackupJob"]
+        Backup["config_backup.py<br/>save_config_backup()<br/>get_config_diff()<br/>get_config_snapshot_pair()"]
         Factory["backends/__init__.py<br/>get_pdu_client()"]
         Base["backends/base.py<br/>BasePDUClient (ABC)"]
         Raritan["backends/raritan.py<br/>RaritanPDUClient"]
@@ -43,15 +44,22 @@ graph TB
         UniFiHW["Ubiquiti USP-PDU-Pro<br/>(UniFi Network Controller API)"]
     end
 
+    GitRepo[("ローカル git リポジトリ<br/>config_backup_path (任意)")]
+
     UI --> Views
     API --> DB
     GQL --> DB
     Views --> DB
     Views --> Jobs
     Views -. "power cycle は非同期" .-> RQ
+    Views --> Backup
     RQ --> Jobs
     SJ --> Jobs
     Jobs --> Factory
+    Jobs --> Backup
+    Backup --> Factory
+    Backup -->|"Device.local_context_data"| DB
+    Backup -.任意.-> GitRepo
     Factory --> Base
     Base -.implements.- Raritan
     Base -.implements.- UniFi
@@ -101,6 +109,9 @@ erDiagram
         string serial_number
         string firmware_version
         string grafana_panel_base_url
+        bool config_backup_enabled
+        string config_backup_status
+        datetime last_config_saved
     }
 
     PDUOutlet {
@@ -362,6 +373,36 @@ sequenceDiagram
     end
 ```
 
+### 5.5 Config backup / diff(`ManagedPDUSaveConfigView`, `DevicePDUConfigView`)
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant View as ManagedPDUSaveConfigView
+    participant Backup as save_config_backup()
+    participant Vendor as VendorClient
+    participant PDU as 実機PDU
+    participant DB as PostgreSQL
+    participant Git as ローカルgitリポジトリ<br/>(config_backup_path)
+
+    User->>View: POST /managed-pdus/<pk>/save-config/
+    View->>Backup: save_config_backup(managed_pdu, request)
+    Backup->>Vendor: get_full_config()
+    Vendor->>PDU: HTTPリクエスト
+    PDU-->>Vendor: 設定全体(dict)
+    Backup->>DB: Device.local_context_data に保存<br/>(常に実行、NetBox Config Context経由で履歴も見られる)
+    alt config_backup_path が設定済み
+        Backup->>Git: device{pk}-{slug}.json を書き込み、差分があれば commit<br/>(source="manual"/"auto" をコミットメッセージに記録)
+    end
+    Backup->>DB: last_config_saved=now, config_backup_status=success
+    Backup-->>View: ConfigBackupResult
+    View-->>User: メッセージ表示 + リダイレクト
+
+    Note over Backup,Git: 定期実行版は jobs.PDUConfigBackupJob が<br/>config_backup_enabled=True の全PDUに対して<br/>source="auto" で同じ関数を呼ぶ
+```
+
+Config diffの表示(`get_config_diff()` / `get_config_snapshot_pair()`)は、`config_backup_path` のgitログから対象ファイルの直近2コミット(`git log -n 2`)を取得し、日付・短縮ハッシュ付きで比較する。gitリポジトリ未設定、またはコミットが1件以下の場合は両関数とも `None` を返し、View側は「履歴不足」のプレースホルダを表示する。
+
 ---
 
 ## 6. バックグラウンド処理・定期実行
@@ -371,6 +412,7 @@ sequenceDiagram
 | RQワーカー(即時 enqueue) | `PDUOutletPowerView`(cycle時のみ) | `jobs.update_outlet_status()` | 電源サイクル5秒後の状態再取得 |
 | NetBox System Job | `settings.PLUGINS_CONFIG["netbox_pdu_control"]["sync_poll_interval"]` > 0 | `jobs.PDUSyncJob`(`system_job(interval=...)`) | `sync_enabled=True` の全PDUを定期フルシンク |
 | NetBox System Job | 同上 `metrics_poll_interval` | `jobs.PDUGetMetricsJob` | `metrics_enabled=True` の全PDUを定期メトリクス取得 |
+| NetBox System Job | 同上 `config_backup_poll_interval` | `jobs.PDUConfigBackupJob` | `config_backup_enabled=True` の全PDUを定期コンフィグバックアップ(`source="auto"`) |
 
 いずれも1台の失敗が全体を止めないよう `try/except` でPDUごとに独立して処理し、失敗PDUのみ `sync_status`/`metrics_status` を `failed` に更新する。
 
@@ -405,10 +447,13 @@ NetBox標準の `get_model_urls()` によるCRUD URL(一覧・詳細・作成・
 
 - `managed-pdus/<pk>/sync/` — フルシンク
 - `managed-pdus/<pk>/get-metrics/` — メトリクス取得
+- `managed-pdus/<pk>/save-config/` — コンフィグバックアップ(Save Config)
 - `managed-pdus/<pk>/bulk-power/` — 複数アウトレット一括電源制御
 - `managed-pdus/test-connection/`(pkなし)— Add/Edit フォームの入力値(未保存)で接続テスト
 - `outlets/<pk>/{sync,power-on,power-off,power-cycle,push-name}/`
 - `inlets/<pk>/{sync,push-name}/`
+- `dcim/devices/<pk>/pdu-config/` — コア `Device` 詳細ページの「PDU Config」タブ(`DevicePDUConfigView`、
+  `@register_model_view(Device, name="pdu_config", path="pdu-config")` で登録。ManagedPDUを持つDeviceにのみ表示)
 
 **Add/Edit フォームの接続テスト・IP自動入力:** `ManagedPDUEditView` は `template_name` を
 `netbox_pdu_control/managedpdu_edit.html` に明示的に上書きしている(NetBoxの generic
@@ -432,7 +477,8 @@ NetBox標準の `get_model_urls()` によるCRUD URL(一覧・詳細・作成・
   1. **netbox-secrets**(導入済みの場合)— role `pdu-credentials` を持ち Device に紐づけられた `Secret`。`Secret.name`=ユーザー名、`Secret.plaintext`=パスワード(RSA暗号化)。Web View 経由ならリクエストのセッションキーで、バックグラウンドジョブ(system job / RQ)なら `PLUGINS_CONFIG["netbox_pdu_control"]["service_account"]` のサービスアカウント秘密鍵で復号する。
   2. **平文フォールバック** — netbox-secrets 未導入・該当Secretなし・復号失敗時は `ManagedPDU.api_username`/`api_password` にフォールバックする。
   復号に失敗した場合はエラーログを残した上でフォールバックする(無音でのフォールバックは運用上気付きにくいため)。
-- `get_pdu_client(managed_pdu, request=None)` は `request` を `get_credential()` に転送する。View 層からは常に `request` を渡し、System Job/RQ ジョブからは `request=None`(サービスアカウント経路)で呼び出す。
+  Web View経路での復号失敗は、ほとんどの場合「このブラウザセッションで netbox-secrets を Unlock(秘密鍵入力→セッションキー取得)していない/期限切れ」が原因であり、コード上のバグではない。
+- `get_pdu_client(managed_pdu, request=None)` は `request` を `get_credential()` に転送する。View 層からは常に `request` を渡し、System Job/RQ ジョブからは `request=None`(サービスアカウント経路)で呼び出す。取得した credential の `password` が空の場合、`get_pdu_client()` はベンダーAPIにリクエストを送る前に `PDUClientError` を送出する(空credentialでの呼び出しは両バックエンドとも必ず失敗するため、PDU側の分かりにくい401より先に、netbox-secretsのUnlock不足を示すエラーメッセージで失敗させる)。
 - `ManagedPDU.api_password`(フォールバックフィールド)は **平文で DB に保存**される(NetBox標準の暗号化フィールドは未使用)。
 - REST APIシリアライザ・ログ出力のいずれにも `api_password` を含めないこと(`CLAUDE.md` にも明記された規約)。
 - 電源サイクル用のRQジョブ(`jobs.update_outlet_status`)は、以前は `managed_pdu.api_password` を平文でジョブ引数としてRedisに渡していたが、実装はその引数を使わず `outlet.managed_pdu` から再取得していたため、この不要な平文受け渡しは削除済み。

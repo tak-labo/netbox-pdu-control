@@ -270,7 +270,7 @@ Once at least two snapshots have been saved (git-backed only), two views compare
 
 | Plugin version | NetBox version |
 |---------------|----------------|
-| 0.4.0 – 0.5.0 | 4.6.0+ (NetBox 4.5.x support dropped) |
+| 0.4.0 – 0.6.0 | 4.6.0+ (NetBox 4.5.x support dropped) |
 | 0.3.0 – 0.3.6 | 4.5.0 – 4.6.xx |
 | 0.1.0 – 0.2.0 | 4.5.0 – 4.5.xx |
 
