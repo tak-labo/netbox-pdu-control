@@ -4,6 +4,8 @@
 
 対象読者: 本プラグインの開発・保守を行うエンジニア。
 
+> 全体構造をインタラクティブに探索したい場合は [structure.html](structure.html)(単体HTML、[structure.json](structure.json) を読み込んでノード図を描画)も参照してください。モジュール構成・データモデルの2タブで切り替えられます。
+
 ---
 
 ## 1. 概要
@@ -493,3 +495,4 @@ NetBox標準の `get_model_urls()` によるCRUD URL(一覧・詳細・作成・
 - [CONTRIBUTING](../CONTRIBUTING.md) — 開発フロー、リリース手順
 - [COMPATIBILITY](../COMPATIBILITY.md) — NetBoxバージョン互換表
 - [CHANGELOG](../CHANGELOG.md) — バージョンごとの変更履歴
+- [structure.html](structure.html) — モジュール構成・データモデルのインタラクティブなノード図(データは[structure.json](structure.json))
